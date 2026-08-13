@@ -1,0 +1,233 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% -----------------------------------------------------
+% bvraghav-tiet-ucs503p-article.sty
+% -----------------------------------------------------
+
+% Variable: Lab Instructor
+\makeatletter \newcommand{\BvrSetLabInstructor}[1]{%
+  \gdef\Bvr@LabInstructor{#1}}
+% default
+\newcommand{\Bvr@LabInstructor}{Dr. Raghav %
+  B. Venkataramaiyer}
+% public accessor
+\newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor}
+\makeatother
+
+% Add subtitle
+\usepackage{titling}
+% -- Set title bold
+\pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont}
+\makeatletter
+\newcommand{\BvrSubtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip 0.5em}%
+}
+\makeatother
+
+% Hints in the section title(s)
+\newcommand{\BvrHint}[1]{%
+  {\normalfont\normalsize\itshape\hfill #1}}
+
+% -----------------------------------------------------
+
+\title{Window: A Fast-Paced, Swipe-Based E-Commerce Application}
+
+\BvrSetLabInstructor{Miss Paramveer Kaur}
+
+\BvrSubtitle{%
+  Project Proposal for UCS503P  \\
+  Submitted to: \BvrLabInstructorValue \\ \bfseries
+  Thapar Institute of Engineering and Technology% 
+}
+
+\author{
+  Vanshika, CSED%
+  \thanks{Roll No: \texttt{1024030163}, %
+    Email: \texttt{vvanshika\_be24@thapar.edu}}
+  \and 
+  Vanshika, CSED%
+  \thanks{Roll No: \texttt{1024030166}, %
+    Email: \texttt{vbansal1\_be24@thapar.edu}}
+  \and 
+  Nandini Garg, CSED%
+  \thanks{Roll No: \texttt{1024030169}, %
+    Email: \texttt{ngarg2\_be24@thapar.edu}}
+}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Higher-order goal%
+  \BvrHint{\ldots secondary framing}}
+This project aims to revolutionize the way businesses---particularly those selling clothes, shoes, wardrobe items, paintings, decorations, and groceries---interact with their customers. By leveraging a fast-paced, swipe-based discovery interface similar to dating apps, we aim to increase customer engagement and facilitate direct interactions between buyers and sellers. The platform will be built using Tauri to ensure a fast, cross-platform desktop experience.
+
+\section{Time-to-value %
+\BvrHint{\ldots primary heuristic}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item We will deliver meaningful increments quickly by prototyping the core swipe-based product discovery and chat modules first, validating the interaction loop with mock data.
+    \item We will prioritize fast feedback by iterating weekly and ensuring the matching and communication pipelines are tested early.
+    \item Success is defined by what can be delivered and measured in the first iteration (a working swipe and chat loop), followed by subsequent additions like availability updates and reviews.
+\end{itemize}
+
+\section{Problem Statement}
+Currently, e-commerce platforms can be overwhelming for users due to cluttered interfaces and lack of direct communication with sellers. Businesses face challenges in engaging customers effectively. Common pain points include:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Decision Fatigue:} Traditional grids and lists of products lead to choice overload, making it hard for customers to make quick decisions.
+    \item \textbf{Impersonal Experience:} Buyers lack a direct line of communication with sellers, making negotiations or specific inquiries difficult.
+    \item \textbf{Static Listings:} Product availability is often not updated in real-time, leading to canceled orders and dissatisfaction.
+    \item \textbf{Lack of Engagement:} Standard catalogs fail to capture the user's attention in a fast-paced digital environment.
+\end{itemize}
+
+\textbf{Why this matters now:} With diminishing attention spans, a gamified, fast-paced shopping experience can significantly boost user retention. Furthermore, fostering direct communication helps businesses build stronger customer relationships.
+
+\section{Proposed Solution %
+\BvrHint{\ldots Software Proposition}}
+\subsection{Overview}
+Build a \textbf{cross-platform application} using \textbf{Tauri}, called \textbf{Window}, that provides a swipe-based e-commerce platform for businesses and buyers:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Swipe Interface:} A fast-paced discovery feed where users left/right swipe on products to show interest.
+    \item \textbf{Flexible Pricing:} Businesses can upload products without mandatory prices to encourage direct inquiries and negotiations, increasing interaction.
+    \item \textbf{Real-time Chat:} Direct communication channel between buyer and seller initiated upon showing interest.
+    \item \textbf{Live Availability:} Frequent and automated updates on product availability directly communicated to interested buyers.
+    \item \textbf{Review System:} Buyers can leave reviews and ratings for both the products and the sellers.
+\end{itemize}
+
+\subsection{Core workflow}
+\begin{enumerate}[leftmargin=0.7cm]
+    \item Business owners onboard and upload their product catalogs (with or without prices) onto the platform.
+    \item Buyers use the swipe interface to discover products, swiping right to show interest or left to skip.
+    \item A right swipe triggers a connection, opening a chat between the buyer and the seller for inquiries, negotiation, and finalizing the purchase.
+    \item The system continuously tracks and updates the buyer on the availability of their liked products.
+    \item Post-interaction, buyers can rate and review the product and the seller.
+\end{enumerate}
+
+\subsection{Operational constraints for an educational, course-project setting}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Ensure the application is lightweight and performs optimally on desktop via Tauri.
+    \item Focus on the core mechanics of swipe discovery and real-time chat rather than complex payment gateways.
+    \item Design for deployability and ease of use, using managed backend services.
+\end{itemize}
+
+\section{Solution Approach %
+\BvrHint{\ldots Engineering focus}}
+This project focuses on building a seamless, high-performance desktop application using modern web technologies wrapped in Tauri.
+
+\subsection{Core Mechanics %
+\BvrHint{\ldots non-research}}
+The system will rely on standard implementation patterns:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Swipe Logic:} Implemented via standard frontend gestures and state management, without needing complex recommendation algorithms initially.
+    \item \textbf{Real-time Chat:} Powered by WebSockets or standard real-time database integrations (e.g., Firebase, Supabase) to ensure instant message delivery.
+    \item \textbf{Availability Tracking:} Simple event-driven updates from the seller dashboard pushed to the buyer's notification queue.
+\end{itemize}
+
+\subsection{Architecture %
+\BvrHint{\ldots Tauri-based solution}}
+A modern, decoupled architecture:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Frontend (Tauri):} A responsive and performant UI built with a modern web framework (e.g., React, Vue, or Svelte) wrapped in Tauri to run natively on desktop operating systems.
+    \item \textbf{Backend API:} A centralized API handling authentication, product feeds, user profiles, and the chat engine.
+    \item \textbf{Database:} A fast, scalable database capable of handling real-time status updates and messaging payloads.
+\end{itemize}
+
+\subsection{CI/CD and fast delivery enabler}
+CI/CD pipelines will ensure:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Automated builds of the Tauri application across target operating systems.
+    \item Execution of unit tests for both frontend logic and backend services.
+    \item Rapid iteration cycles to refine the swiping and chat functionalities based on testing feedback.
+\end{itemize}
+
+\section{Evaluation Criterion %
+\BvrHint{\ldots measurable and attributable}}
+We define success by the fluidity of the user interaction and the reliability of the communication channels.
+
+\subsection{Primary evaluation metric}
+\textbf{Interaction Latency:} The time taken from a user swiping right on a product to the initiation of a chat session or interest logging.
+\begin{itemize}[leftmargin=0.7cm]
+    \item Target: Median interaction latency $\le$ 2 seconds.
+    \item Attribution: Measured via client-side telemetry and database timestamp logging.
+\end{itemize}
+
+\subsection{Secondary evaluation metrics}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Message Delivery Time:} The time taken for a chat message to be delivered from buyer to seller (Target: $\le$ 1 second).
+    \item \textbf{Availability Sync Accuracy:} The delay between a seller marking a product out-of-stock and the buyer's UI reflecting the change.
+    \item \textbf{User Engagement:} The average number of swipes per active session during pilot testing.
+\end{itemize}
+
+\subsection{Pilot validation plan %
+\BvrHint{\ldots high-level}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Mock a catalog with 50-100 diverse products across categories (clothes, shoes, groceries, etc.).
+    \item Recruit small groups of testers to act as buyers and mock businesses, evaluating the discoverability and chat experience.
+\end{itemize}
+
+\section{Scalability %
+\BvrHint{\ldots with foresight}}
+\begin{enumerate}[leftmargin=0.7cm]
+    \item \textbf{Scalable (theoretically):} The system should support high concurrent user loads by:
+    \begin{itemize}[leftmargin=0.7cm]
+        \item Decoupling the product feed generation from the real-time chat service.
+        \item Caching product catalogs effectively.
+        \item Employing scalable WebSocket architectures for the chat functionality.
+    \end{itemize}
+    
+    \item \textbf{Operationally deployable (practically):}
+    \begin{itemize}[leftmargin=0.7cm]
+        \item The Tauri app can be easily distributed as standalone binaries.
+        \item The backend will run on cloud infrastructure with auto-scaling capabilities for the chat servers.
+    \end{itemize}
+\end{enumerate}
+
+\section{Engine availability heuristic}
+A rich ecosystem of tools is available to implement this:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Tauri} for the desktop application wrapper (combining Rust backend with web frontend).
+    \item Modern frontend frameworks (React/Vue) for swipe animations and interactive UI.
+    \item Real-time backend platforms (e.g., Supabase, Firebase) for chat and live availability updates.
+    \item Cloud storage solutions for product images.
+    \item Automated build tools like GitHub Actions for cross-platform Tauri compilation.
+\end{itemize}
+We will leverage these existing technologies to focus on user experience and workflow rather than foundational infrastructure.
+
+\section{Project scope and deliverables %
+\BvrHint{\ldots iteration-friendly}}
+\subsection{Initial deliverable %
+\BvrHint{\ldots first iteration}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Seller dashboard to upload products (image, description, optional price).
+    \item Buyer application (Tauri-based) featuring the swipe interface (right = interest, left = pass).
+    \item Core interest-logging mechanism saving matched products to the buyer's profile.
+\end{itemize}
+
+\subsection{Subsequent deliverables}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Real-time chat module for buyer-seller communication on 'matched' products.
+    \item Live availability updates and push notifications.
+    \item Review and rating system for sellers and specific products.
+    \item Polished animations and enhanced UI/UX elements.
+\end{itemize}
+
+\section{Risks and mitigations}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Spam and Quality Control:} Unpriced products might lead to spam inquiries. Mitigation: Limit daily swipes or require basic verification for buyers.
+    \item \textbf{Performance on low-end devices:} Swipe animations can be resource-intensive. Mitigation: Optimize frontend code and leverage Tauri's lightweight nature over Electron.
+    \item \textbf{Real-time Infrastructure Complexity:} Managing WebSockets can be challenging. Mitigation: Use established BaaS providers (like Supabase) to handle real-time sync robustly.
+    \item \textbf{App Distribution:} Distributing desktop apps requires code signing. Mitigation: Use generic builds for testing or rely on GitHub Actions for automated basic builds.
+\end{itemize}
+
+\section{Summary}
+Window is a proposed Tauri-based e-commerce platform designed to bring the fast-paced, engaging experience of swipe-based discovery to retail businesses. By omitting mandatory pricing to foster communication, integrating real-time chat, and providing live availability updates, the platform aims to create a highly interactive and personalized shopping experience. The project emphasizes rapid iteration, focusing on interaction latency and reliable communication as key success metrics, utilizing a modern decoupled architecture suitable for an educational environment.
+
+\end{document}
