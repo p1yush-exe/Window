@@ -207,22 +207,25 @@ export function PageHeader({ title, subtitle, right }: { title: string; subtitle
   )
 }
 
+export function placeholderImage(label: string) {
+  return `https://placehold.co/640x854/ede9fe/5518d8/png?text=${encodeURIComponent(label.slice(0, 40))}&font=inter`
+}
+
 export function ProductImage({ src, alt, className }: { src: string | null | undefined; alt: string; className?: string }) {
-  return src ? (
+  return (
     <img
-      src={src}
+      src={src || placeholderImage(alt)}
       alt={alt}
       loading="lazy"
-      className={cx('object-cover', className)}
+      draggable={false}
+      className={cx('object-cover select-none', className)}
       onError={(e) => {
         const el = e.currentTarget
         if (!el.dataset.fallback) {
           el.dataset.fallback = '1'
-          el.src = `https://picsum.photos/seed/${encodeURIComponent(alt)}/600/800`
+          el.src = placeholderImage(alt)
         }
       }}
     />
-  ) : (
-    <div className={cx('flex items-center justify-center bg-neutral-100 text-neutral-400', className)}>No image</div>
   )
 }

@@ -1,0 +1,710 @@
+{
+  "vendors": [
+    {
+      "email": "threads@window.demo",
+      "owner": "Simran Kaur",
+      "name": "Patiala Threads",
+      "description": "Hand-block printed kurtas, phulkari dupattas and everyday cottons made in Patiala.",
+      "products": [
+        {
+          "slug": "indigo-kurta",
+          "title": "Indigo block-print kurta",
+          "description": "Pure cotton, hand block printed. Sizes S to XXL.",
+          "price": 1299,
+          "category": "Clothes",
+          "query": [
+            "blue kurta",
+            "kurta cotton",
+            "kurta"
+          ]
+        },
+        {
+          "slug": "phulkari-dupatta",
+          "title": "Phulkari dupatta",
+          "description": "Traditional Punjabi embroidery on georgette. Ask for colours.",
+          "price": null,
+          "category": "Clothes",
+          "query": [
+            "phulkari",
+            "phulkari dupatta"
+          ]
+        },
+        {
+          "slug": "linen-shirt",
+          "title": "Relaxed linen shirt",
+          "description": "Breathable summer linen in sand and olive.",
+          "price": 1799,
+          "category": "Clothes",
+          "query": [
+            "linen shirt",
+            "shirt linen"
+          ]
+        },
+        {
+          "slug": "denim-jacket",
+          "title": "Vintage wash denim jacket",
+          "description": "Oversized fit, brass buttons.",
+          "price": 2499,
+          "category": "Clothes",
+          "query": [
+            "denim jacket"
+          ],
+          "availability": "low"
+        },
+        {
+          "slug": "cotton-saree",
+          "title": "Mul cotton saree",
+          "description": "Lightweight daily-wear saree with running blouse.",
+          "price": 2199,
+          "category": "Clothes",
+          "query": [
+            "cotton saree",
+            "saree"
+          ]
+        },
+        {
+          "slug": "kids-frock",
+          "title": "Kids cotton frock",
+          "description": "Ages 2 to 8. Soft and machine washable.",
+          "price": 699,
+          "category": "Clothes",
+          "query": [
+            "girl dress",
+            "frock",
+            "dress child"
+          ]
+        },
+        {
+          "slug": "wool-shawl",
+          "title": "Kullu wool shawl",
+          "description": "Warm handloom shawl, winter special.",
+          "price": null,
+          "category": "Wardrobe",
+          "query": [
+            "kullu shawl",
+            "wool shawl"
+          ]
+        },
+        {
+          "slug": "nehru-jacket",
+          "title": "Nehru jacket",
+          "description": "Jacquard weave for weddings and functions.",
+          "price": 3499,
+          "category": "Clothes",
+          "query": [
+            "nehru jacket",
+            "bandhgala"
+          ]
+        },
+        {
+          "slug": "chikankari-kurti",
+          "title": "Chikankari kurti",
+          "description": "Lucknowi hand embroidery on white mul.",
+          "price": 1599,
+          "category": "Clothes",
+          "query": [
+            "chikankari",
+            "chikan embroidery"
+          ]
+        },
+        {
+          "slug": "palazzo-set",
+          "title": "Printed palazzo set",
+          "description": "Kurta and palazzo, bagru print.",
+          "price": 1899,
+          "category": "Clothes",
+          "query": [
+            "bagru print",
+            "block print textile"
+          ]
+        },
+        {
+          "slug": "hoodie",
+          "title": "Fleece hoodie",
+          "description": "Campus favourite, heavy fleece.",
+          "price": 999,
+          "category": "Clothes",
+          "query": [
+            "hoodie",
+            "hooded sweatshirt"
+          ]
+        },
+        {
+          "slug": "kids-kurta",
+          "title": "Kids kurta pyjama",
+          "description": "Festival set for ages 3 to 10.",
+          "price": 899,
+          "category": "Clothes",
+          "query": [
+            "boy kurta",
+            "kurta child",
+            "children kurta"
+          ]
+        },
+        {
+          "slug": "silk-stole",
+          "title": "Tussar silk stole",
+          "description": "Natural dyed, limited pieces.",
+          "price": 1299,
+          "category": "Wardrobe",
+          "query": [
+            "silk stole",
+            "silk shawl",
+            "silk dupatta"
+          ],
+          "availability": "low"
+        },
+        {
+          "slug": "cargo-pants",
+          "title": "Cargo pants",
+          "description": "Six pockets, stretch twill.",
+          "price": 1499,
+          "category": "Clothes",
+          "query": [
+            "cargo pants",
+            "cargo trousers"
+          ]
+        },
+        {
+          "slug": "bandhani-dupatta",
+          "title": "Bandhani dupatta",
+          "description": "Tie-dye from Kutch, many colours.",
+          "price": 799,
+          "category": "Clothes",
+          "query": [
+            "bandhani",
+            "bandhej"
+          ]
+        }
+      ]
+    },
+    {
+      "email": "kicks@window.demo",
+      "owner": "Arjun Mehta",
+      "name": "Kicks Corner",
+      "description": "Sneakers, juttis and sandals. Try before you buy at our Leela Bhawan store.",
+      "products": [
+        {
+          "slug": "white-sneakers",
+          "title": "Classic white sneakers",
+          "description": "Leather upper, cushioned sole. UK 6 to 11.",
+          "price": 2999,
+          "category": "Shoes",
+          "query": [
+            "white sneakers"
+          ]
+        },
+        {
+          "slug": "punjabi-jutti",
+          "title": "Hand-embroidered jutti",
+          "description": "Traditional Punjabi jutti, zari work.",
+          "price": 1199,
+          "category": "Shoes",
+          "query": [
+            "jutti",
+            "juttis",
+            "punjabi jutti"
+          ]
+        },
+        {
+          "slug": "running-shoes",
+          "title": "Lightweight running shoes",
+          "description": "Breathable mesh, 240 g.",
+          "price": 3499,
+          "category": "Shoes",
+          "query": [
+            "running shoes"
+          ]
+        },
+        {
+          "slug": "leather-loafers",
+          "title": "Tan leather loafers",
+          "description": "Full grain leather, Goodyear welt.",
+          "price": 4499,
+          "category": "Shoes",
+          "query": [
+            "loafers shoes",
+            "penny loafers",
+            "loafer"
+          ],
+          "availability": "low"
+        },
+        {
+          "slug": "kolhapuri",
+          "title": "Kolhapuri chappals",
+          "description": "Vegetable tanned leather, unisex.",
+          "price": 899,
+          "category": "Shoes",
+          "query": [
+            "kolhapuri chappal",
+            "kolhapuri"
+          ]
+        },
+        {
+          "slug": "high-tops",
+          "title": "Canvas high-tops",
+          "description": "Black and red available.",
+          "price": 1999,
+          "category": "Shoes",
+          "query": [
+            "converse high top",
+            "high top sneakers"
+          ]
+        },
+        {
+          "slug": "trekking-boots",
+          "title": "Trekking boots",
+          "description": "Waterproof, ankle support. Ask for sizes.",
+          "price": null,
+          "category": "Shoes",
+          "query": [
+            "hiking boots"
+          ]
+        },
+        {
+          "slug": "kids-sneakers",
+          "title": "Kids velcro sneakers",
+          "description": "Light-up soles, sizes 8C to 3Y.",
+          "price": 1299,
+          "category": "Shoes",
+          "query": [
+            "children sneakers",
+            "kids shoes"
+          ]
+        },
+        {
+          "slug": "formal-oxfords",
+          "title": "Black oxfords",
+          "description": "Office and interview ready.",
+          "price": 2799,
+          "category": "Shoes",
+          "query": [
+            "oxford shoes black",
+            "oxford shoe"
+          ]
+        },
+        {
+          "slug": "slides",
+          "title": "Cushion slides",
+          "description": "Cloud-soft EVA slides.",
+          "price": 599,
+          "category": "Shoes",
+          "query": [
+            "slide sandals",
+            "slides footwear"
+          ]
+        },
+        {
+          "slug": "heels",
+          "title": "Block heels",
+          "description": "Comfortable 2.5 inch block heel.",
+          "price": 1899,
+          "category": "Shoes",
+          "query": [
+            "block heels",
+            "high heels shoes"
+          ]
+        },
+        {
+          "slug": "football-boots",
+          "title": "Football boots",
+          "description": "Firm ground studs.",
+          "price": 3299,
+          "category": "Shoes",
+          "query": [
+            "football boots"
+          ],
+          "availability": "out_of_stock"
+        },
+        {
+          "slug": "mojari",
+          "title": "Rajasthani mojari",
+          "description": "Camel leather, hand stitched.",
+          "price": 1499,
+          "category": "Shoes",
+          "query": [
+            "mojari",
+            "juttis footwear",
+            "jutti shoes"
+          ]
+        },
+        {
+          "slug": "chelsea-boots",
+          "title": "Suede chelsea boots",
+          "description": "Elastic side panels, taupe suede.",
+          "price": 3999,
+          "category": "Shoes",
+          "query": [
+            "chelsea boots"
+          ]
+        },
+        {
+          "slug": "flip-flops",
+          "title": "Rubber flip-flops",
+          "description": "Hostel essential. Many colours.",
+          "price": 299,
+          "category": "Shoes",
+          "query": [
+            "flip flops",
+            "flip-flops"
+          ]
+        }
+      ]
+    },
+    {
+      "email": "canvas@window.demo",
+      "owner": "Meera Joshi",
+      "name": "Canvas & Clay",
+      "description": "Original paintings, prints, pottery and home decor by Patiala artists.",
+      "products": [
+        {
+          "slug": "sunset-oil",
+          "title": "Sunset over Sheesh Mahal (oil)",
+          "description": "24x36 inch oil on canvas, framed.",
+          "price": 12000,
+          "category": "Paintings",
+          "query": [
+            "sunset oil painting",
+            "sunset painting"
+          ]
+        },
+        {
+          "slug": "abstract-blue",
+          "title": "Abstract in blue",
+          "description": "Acrylic, 18x24 inch. Open to offers.",
+          "price": null,
+          "category": "Paintings",
+          "query": [
+            "abstract painting",
+            "abstract art painting"
+          ]
+        },
+        {
+          "slug": "madhubani",
+          "title": "Madhubani fish print",
+          "description": "Giclee print on archival paper, A3.",
+          "price": 1500,
+          "category": "Paintings",
+          "query": [
+            "madhubani painting fish",
+            "madhubani painting"
+          ]
+        },
+        {
+          "slug": "terracotta-planter",
+          "title": "Terracotta planter set",
+          "description": "Set of three hand-thrown planters.",
+          "price": 1299,
+          "category": "Decor",
+          "query": [
+            "terracotta pot",
+            "clay pots",
+            "flower pots terracotta"
+          ]
+        },
+        {
+          "slug": "brass-diya",
+          "title": "Brass diya set",
+          "description": "Six diyas, antique finish.",
+          "price": 899,
+          "category": "Decor",
+          "query": [
+            "diya",
+            "oil lamp brass",
+            "brass lamp"
+          ]
+        },
+        {
+          "slug": "macrame",
+          "title": "Macrame wall hanging",
+          "description": "Cotton rope, 60 cm wide.",
+          "price": 1199,
+          "category": "Decor",
+          "query": [
+            "macrame wall hanging",
+            "macrame"
+          ]
+        },
+        {
+          "slug": "ceramic-mugs",
+          "title": "Stoneware mugs (pair)",
+          "description": "Speckled glaze, dishwasher safe.",
+          "price": 799,
+          "category": "Decor",
+          "query": [
+            "coffee mug ceramic",
+            "mug"
+          ],
+          "availability": "low"
+        },
+        {
+          "slug": "charcoal-portrait",
+          "title": "Custom charcoal portrait",
+          "description": "Send a photo, get a portrait in a week.",
+          "price": null,
+          "category": "Paintings",
+          "query": [
+            "charcoal portrait drawing",
+            "charcoal drawing portrait"
+          ]
+        },
+        {
+          "slug": "wooden-tray",
+          "title": "Mango wood serving tray",
+          "description": "Hand carved edges.",
+          "price": 1099,
+          "category": "Decor",
+          "query": [
+            "tray wooden",
+            "wood serving tray",
+            "serving tray"
+          ]
+        },
+        {
+          "slug": "jute-rug",
+          "title": "Round jute rug",
+          "description": "120 cm, natural fibre.",
+          "price": 1899,
+          "category": "Decor",
+          "query": [
+            "jute rug",
+            "jute mat"
+          ]
+        },
+        {
+          "slug": "watercolor-set",
+          "title": "Botanical watercolours (set of 4)",
+          "description": "A4 prints, unframed.",
+          "price": 1200,
+          "category": "Paintings",
+          "query": [
+            "botanical watercolor",
+            "botanical illustration watercolour"
+          ]
+        },
+        {
+          "slug": "scented-candles",
+          "title": "Soy candles trio",
+          "description": "Mogra, sandalwood, lemongrass.",
+          "price": 699,
+          "category": "Decor",
+          "query": [
+            "scented candles",
+            "candle jar"
+          ]
+        },
+        {
+          "slug": "mirror",
+          "title": "Rattan round mirror",
+          "description": "50 cm, boho style.",
+          "price": 2299,
+          "category": "Decor",
+          "query": [
+            "rattan mirror",
+            "round wall mirror"
+          ]
+        },
+        {
+          "slug": "warli-canvas",
+          "title": "Warli village scene",
+          "description": "Acrylic on canvas, 20x30 inch.",
+          "price": 4500,
+          "category": "Paintings",
+          "query": [
+            "warli painting",
+            "warli art"
+          ]
+        },
+        {
+          "slug": "table-lamp",
+          "title": "Ceramic table lamp",
+          "description": "Warm LED bulb included.",
+          "price": 2499,
+          "category": "Decor",
+          "query": [
+            "table lamp",
+            "bedside lamp"
+          ]
+        }
+      ]
+    },
+    {
+      "email": "fresh@window.demo",
+      "owner": "Gurpreet Singh",
+      "name": "Sangrur Fresh",
+      "description": "Farm to hostel. Fresh produce, dairy and pantry staples delivered around campus.",
+      "products": [
+        {
+          "slug": "alphonso",
+          "title": "Alphonso mangoes (dozen)",
+          "description": "Ratnagiri, naturally ripened.",
+          "price": 899,
+          "category": "Groceries",
+          "query": [
+            "alphonso mango",
+            "mangoes"
+          ],
+          "availability": "low"
+        },
+        {
+          "slug": "basmati",
+          "title": "Aged basmati rice 5 kg",
+          "description": "Extra long grain, 2 years aged.",
+          "price": 749,
+          "category": "Groceries",
+          "query": [
+            "rice bag",
+            "uncooked rice",
+            "white rice grains"
+          ]
+        },
+        {
+          "slug": "paneer",
+          "title": "Fresh paneer 500 g",
+          "description": "Made every morning. Order by 10 am.",
+          "price": 220,
+          "category": "Groceries",
+          "query": [
+            "paneer cheese",
+            "paneer"
+          ]
+        },
+        {
+          "slug": "desi-ghee",
+          "title": "Desi cow ghee 1 L",
+          "description": "Bilona method, glass jar.",
+          "price": 1100,
+          "category": "Groceries",
+          "query": [
+            "ghee jar",
+            "ghee bowl",
+            "ghee"
+          ]
+        },
+        {
+          "slug": "honey",
+          "title": "Raw forest honey 500 g",
+          "description": "Unprocessed, from Himachal.",
+          "price": 450,
+          "category": "Groceries",
+          "query": [
+            "honey jar",
+            "honey"
+          ]
+        },
+        {
+          "slug": "veg-box",
+          "title": "Weekly veg box",
+          "description": "Seasonal mix for two people. Ask what is in this week.",
+          "price": null,
+          "category": "Groceries",
+          "query": [
+            "vegetables market",
+            "vegetables basket",
+            "vegetables"
+          ]
+        },
+        {
+          "slug": "masala-kit",
+          "title": "Punjabi masala kit",
+          "description": "Six jars of freshly ground spices.",
+          "price": 599,
+          "category": "Groceries",
+          "query": [
+            "indian spices",
+            "masala spices"
+          ]
+        },
+        {
+          "slug": "jaggery",
+          "title": "Organic jaggery 1 kg",
+          "description": "Chemical free, from our own farm.",
+          "price": 180,
+          "category": "Groceries",
+          "query": [
+            "jaggery",
+            "gur jaggery"
+          ]
+        },
+        {
+          "slug": "cold-pressed-oil",
+          "title": "Cold-pressed mustard oil 1 L",
+          "description": "Kachi ghani.",
+          "price": 320,
+          "category": "Groceries",
+          "query": [
+            "mustard oil",
+            "mustard oil bottle"
+          ]
+        },
+        {
+          "slug": "eggs",
+          "title": "Free-range eggs (30)",
+          "description": "Brown eggs, collected daily.",
+          "price": 270,
+          "category": "Groceries",
+          "query": [
+            "egg carton",
+            "hen eggs",
+            "chicken egg"
+          ]
+        },
+        {
+          "slug": "makhana",
+          "title": "Roasted makhana 200 g",
+          "description": "Peri peri and classic salt.",
+          "price": 199,
+          "category": "Groceries",
+          "query": [
+            "makhana",
+            "fox nuts"
+          ]
+        },
+        {
+          "slug": "pickle",
+          "title": "Homemade mango pickle",
+          "description": "Grandmother recipe, 500 g jar.",
+          "price": 250,
+          "category": "Groceries",
+          "query": [
+            "mango pickle",
+            "indian pickle achar"
+          ]
+        },
+        {
+          "slug": "green-tea",
+          "title": "Kangra green tea 100 g",
+          "description": "First flush.",
+          "price": 399,
+          "category": "Groceries",
+          "query": [
+            "green tea leaves",
+            "green tea"
+          ]
+        },
+        {
+          "slug": "strawberries",
+          "title": "Strawberries 500 g",
+          "description": "Mahabaleshwar, in season only.",
+          "price": 350,
+          "category": "Groceries",
+          "query": [
+            "strawberries"
+          ],
+          "availability": "out_of_stock"
+        },
+        {
+          "slug": "lassi",
+          "title": "Fresh lassi (6 pack)",
+          "description": "Sweet or salted.",
+          "price": 240,
+          "category": "Groceries",
+          "query": [
+            "lassi",
+            "lassi glass"
+          ]
+        }
+      ]
+    }
+  ]
+}

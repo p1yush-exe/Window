@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Link } from 'react-router'
 import { Button, EmptyState, ErrorBanner, FullPageSpinner } from '@/components/ui'
@@ -11,6 +11,7 @@ export function FeedPage() {
   const { profile } = useSession()
   const feed = useFeed(profile)
   const [lastDirection, setLastDirection] = useState<SwipeDirection>('right')
+  const wheel = useRef({ dx: 0, at: 0, locked: false })
   const visible = feed.queue.slice(0, 3)
   const top = visible[0]
 
@@ -31,6 +32,24 @@ export function FeedPage() {
     return () => window.removeEventListener('keydown', onKey)
   })
 
+  // Two-finger horizontal scroll on a touchpad also swipes the top card.
+  function onWheel(e: React.WheelEvent) {
+    if (!top || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return
+    const now = Date.now()
+    const w = wheel.current
+    if (now - w.at > 250) {
+      w.dx = 0
+      w.locked = false
+    }
+    w.at = now
+    if (w.locked) return
+    w.dx += e.deltaX
+    if (Math.abs(w.dx) > 160) {
+      w.locked = true
+      swipe(w.dx > 0 ? 'right' : 'left')
+    }
+  }
+
   useEffect(() => {
     if (!feed.lastMatch) return
     const t = setTimeout(feed.dismissMatch, 2200)
@@ -50,7 +69,7 @@ export function FeedPage() {
       </div>
       <ErrorBanner message={feed.error} />
 
-      <div className="relative mx-auto w-full max-w-sm flex-1" style={{ minHeight: 'min(68vh, 620px)' }}>
+      <div className="relative mx-auto w-full max-w-sm flex-1" style={{ minHeight: 'min(68vh, 620px)' }} onWheel={onWheel}>
         <AnimatePresence custom={lastDirection}>
           {visible.map((p, i) => (
             <SwipeCard key={p.id} product={p} index={i} isTop={i === 0} onSwipe={swipe} />
@@ -82,7 +101,7 @@ export function FeedPage() {
           ♥
         </Button>
       </div>
-      <p className="hidden pb-2 text-center text-xs text-neutral-400 md:block">Tip: use ← and → keys</p>
+      <p className="hidden pb-2 text-center text-xs text-neutral-400 md:block">Drag the card, swipe two fingers on the touchpad, or use ← and → keys</p>
 
       <AnimatePresence>
         {feed.lastMatch && (

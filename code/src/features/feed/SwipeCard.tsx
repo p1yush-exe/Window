@@ -35,6 +35,7 @@ export function SwipeCard({ product, isTop, index, onSwipe }: Props) {
     <motion.div
       className="absolute inset-0 touch-none select-none"
       style={{ x, rotate, zIndex: 10 - index }}
+      draggable={false}
       initial={{ scale, y, opacity: index > 2 ? 0 : 1 }}
       animate={{ scale, y, opacity: index > 2 ? 0 : 1 }}
       variants={{
