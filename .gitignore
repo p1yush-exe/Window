@@ -466,3 +466,5 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
  
+# Window app: the Python template rule 'lib/' above must not hide the app's source
+!code/src/lib/
