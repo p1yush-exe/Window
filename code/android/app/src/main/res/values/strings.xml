@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Window</string>
+    <string name="title_activity_main">Window</string>
+    <string name="package_name">app.window.shop</string>
+    <string name="custom_url_scheme">app.window.shop</string>
+</resources>

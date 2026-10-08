@@ -1,40 +1,47 @@
-﻿![Tiet Logo](assets/tiet-logo.svg){ .tiet-logo }
+![Tiet Logo](assets/tiet-logo.svg){ .tiet-logo }
 
 **UCS503: Software Engineering (Project)**  
 **TIET Patiala**
 
-# The Sum Function in C++
+# Window: swipe-based shopping
 
-**Author(s)**:
+**Team**: Piyush Malik (1024030167), Paarth Singh (1024030160), Bhuvik Garg (1024030550), CSED.  
+**Lab instructor**: Miss Paramveer Kaur.
 
-`(RGB)` Raghav B. Venkataramaiyer `<bv.raghav -at-
-thapar -dot- edu>`
+Window is a mobile-first shopping app, available as a website and as an
+Android app, where buyers discover products one card at a time. A right
+swipe opens a chat with the seller, sellers push live stock updates to
+everyone who liked a product, and buyers leave reviews after talking to
+the seller. Prices are optional so that the conversation, not the
+catalogue, closes the sale.
 
-This project creates a sum function in c++ as a sample
-to illustrate how to compile a shared library and
-distribute it for use along with the binary.
+## What it does
 
-## Installation
+| Role | Features |
+|---|---|
+| Buyer | Sign up, swipe feed (drag, buttons or arrow keys), liked list with live stock, chat per match, stock alerts, reviews, store and product pages |
+| Seller | Store profile, product listing with optional price and photos, availability switch that notifies interested buyers instantly, inbox grouped by product |
 
-``` shell
-make -C code
-```
+## Stack
 
-This will create create a folder `dist` in `code`
-folder, with following contents
+| Layer | Choice |
+|---|---|
+| App | Vite + React 19 + TypeScript + Tailwind 4, one mobile-first codebase |
+| Android | Capacitor 8 wrapping the same web build into an APK |
+| Backend | Firebase Authentication + Cloud Firestore, all logic in the client under security rules |
+| Images | Cloudinary unsigned uploads |
+| Hosting | Vercel (web), GitHub Actions artifact (APK) |
+| CI | GitHub Actions: lint, typecheck, unit tests, Firestore rules tests on the emulator, APK build, rules deploy, docs deploy |
 
-```
-dist
- +-lib
- |  \-libbvr_math.so
- +-bin
-    \-run
-```
+See [Setup](setup.md) to run it and [Architecture](architecture.md) for the data model and the real-time mechanics.
 
-## Usage
+## Evaluation metrics
 
-``` shell
-cd code
-export LD_LIBRARY_PATH=dist/lib
-./dist/bin/run
-```
+The proposal defines three measurable targets. The app records them on the
+device and shows them on the hidden `/metrics` page (Profile → Evaluation metrics).
+
+| Metric | Target | How it is measured |
+|---|---|---|
+| Swipe → match latency (primary) | median ≤ 2 s | right swipe until the batched write is acknowledged by Firestore |
+| Message delivery | ≤ 1 s | sender's clock to arrival on the receiving device |
+| Availability sync | seconds | seller changes stock → alert arrives on the buyer's device |

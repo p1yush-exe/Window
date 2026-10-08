@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-brand-50: #f3f1ff;
+  --color-brand-100: #e9e5ff;
+  --color-brand-200: #d5ceff;
+  --color-brand-300: #b7a8ff;
+  --color-brand-400: #9478ff;
+  --color-brand-500: #7447ff;
+  --color-brand-600: #6424f5;
+  --color-brand-700: #5518d8;
+  --color-brand-800: #4615b0;
+  --color-brand-900: #3b148d;
+  --color-like: #16a34a;
+  --color-nope: #e11d48;
+}
+
+:root {
+  color-scheme: light;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #f6f6f8;
+  color: #111118;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pt-safe { padding-top: var(--safe-top); }
+.pb-safe { padding-bottom: var(--safe-bottom); }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #ececf1 25%, #f6f6f8 37%, #ececf1 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}

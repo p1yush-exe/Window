@@ -1,45 +1,21 @@
-# UCS503P Project Template
+# Window
 
-This is a project template for UCS503P Project (2026-27
-ODD). 
+Swipe-based shopping that connects buyers directly with local sellers.
+UCS503P course project, Thapar Institute of Engineering and Technology.
 
-There are 3 reports in LaTeX format, namely *a*)
-Project Proposal, *b*) Project Report Prototype Stage,
-and *c*) Project Report Final -- each in their
-respective folders.
+- **App code**: [`code/`](code) (Vite + React + Capacitor + Firebase). See [docs/setup.md](docs/setup.md).
+- **Docs**: [`docs/`](docs), built with mkdocs and published on every push to `main`.
+- **Reports**: `project-proposal/`, `project-report-prototype-stage/`, `project-report-final/`.
+- **Journals**: one folder per team member under `journals/`.
 
-Journals are stacked under the folder `journals`, one
-folder for each team member.  A sample entry has been
-made for example.
+## Quick start
 
-The source code is contained within the folder `code`.
-
-The documentation is under folder `docs`.
-
-All other aspects of code organisation are left to the
-discretion of the user(s).
-
-
-## Docs
-
-As of now, the `docs` is just an organised collection
-of markdown (`md`) files.  But the build procedure is
-using [`mkdocs`](https://google.com/search?q=mkdocs)
-backend.  As a result, any commit into the `master`
-branch of github repository would result in CI/CD based
-build and deployment of the documentation including the
-journals.
-
-For a local DEV-version of the docs for viewing and
-testing, install the local env and issue the following
-command:
-
-``` shell
-make docs
+```shell
+cd code
+pnpm install
+pnpm emulators      # local Firebase (Auth + Firestore)
+pnpm seed:emu       # demo sellers and products
+pnpm dev:emu        # http://localhost:5173
 ```
 
-### Local `env` for `docs`
-
-``` shell
-
-```
+Demo password for all seeded accounts: `window123`.

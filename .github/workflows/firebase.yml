@@ -1,0 +1,37 @@
+name: firebase
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'code/firestore.rules'
+      - 'code/firestore.indexes.json'
+      - 'code/firebase.json'
+      - '.github/workflows/firebase.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: code
+
+jobs:
+  deploy-rules:
+    name: deploy firestore rules + indexes
+    runs-on: ubuntu-latest
+    if: ${{ vars.FIREBASE_PROJECT_ID != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: code/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Write service account
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/sa.json"
+      - run: pnpm exec firebase deploy --only firestore --project "${{ vars.FIREBASE_PROJECT_ID }}" --non-interactive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json

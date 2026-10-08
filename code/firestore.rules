@@ -1,0 +1,143 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isUser(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    function userDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+    function isVendor() {
+      return signedIn() && userDoc(request.auth.uid).role == 'vendor';
+    }
+    function matchDoc(id) {
+      return get(/databases/$(database)/documents/matches/$(id)).data;
+    }
+    function productDoc(id) {
+      return get(/databases/$(database)/documents/products/$(id)).data;
+    }
+    function unchanged(field) {
+      return request.resource.data[field] == resource.data[field];
+    }
+    function validAvailability(v) {
+      return v in ['in_stock', 'low', 'out_of_stock'];
+    }
+
+    // ---------- users ----------
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if isUser(uid)
+        && request.resource.data.role in ['buyer', 'vendor']
+        && request.resource.data.displayName is string;
+      allow update: if isUser(uid) && unchanged('role');
+      allow delete: if false;
+
+      match /swipes/{productId} {
+        allow read, write: if isUser(uid);
+      }
+
+      match /notifications/{nid} {
+        allow read, update, delete: if isUser(uid);
+        // The owner may write their own notifications. A vendor may write an
+        // availability notification to a buyer only when a match between them
+        // exists for that product.
+        allow create: if isUser(uid)
+          || (
+            signedIn()
+            && request.resource.data.type == 'availability'
+            && request.resource.data.matchId is string
+            && matchDoc(request.resource.data.matchId).vendorId == request.auth.uid
+            && matchDoc(request.resource.data.matchId).buyerUid == uid
+          );
+      }
+    }
+
+    // ---------- vendors (doc id == owner uid) ----------
+    match /vendors/{vendorId} {
+      allow read: if true;
+      allow create: if isUser(vendorId)
+        && request.resource.data.ownerUid == vendorId
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+      allow update: if isUser(vendorId) && unchanged('ownerUid');
+      allow delete: if false;
+    }
+
+    // ---------- products ----------
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isVendor()
+        && request.resource.data.vendorId == request.auth.uid
+        && exists(/databases/$(database)/documents/vendors/$(request.auth.uid))
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && validAvailability(request.resource.data.availability);
+      allow update: if signedIn()
+        && resource.data.vendorId == request.auth.uid
+        && unchanged('vendorId')
+        && validAvailability(request.resource.data.availability);
+      allow delete: if signedIn() && resource.data.vendorId == request.auth.uid;
+    }
+
+    // ---------- matches (doc id == buyerUid_productId) ----------
+    match /matches/{matchId} {
+      function participant() {
+        return signedIn()
+          && (resource.data.buyerUid == request.auth.uid
+              || resource.data.vendorId == request.auth.uid);
+      }
+      allow read: if participant();
+      allow create: if signedIn()
+        && request.resource.data.buyerUid == request.auth.uid
+        && matchId == request.auth.uid + '_' + request.resource.data.productId
+        && productDoc(request.resource.data.productId).vendorId == request.resource.data.vendorId
+        && request.resource.data.vendorId != request.auth.uid;
+      allow update: if participant()
+        && unchanged('buyerUid') && unchanged('vendorId') && unchanged('productId');
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        function parentMatch() {
+          return matchDoc(matchId);
+        }
+        function isParticipant() {
+          return signedIn()
+            && (parentMatch().buyerUid == request.auth.uid
+                || parentMatch().vendorId == request.auth.uid);
+        }
+        allow read: if isParticipant();
+        allow create: if isParticipant()
+          && request.resource.data.senderUid == request.auth.uid
+          && request.resource.data.body is string
+          && request.resource.data.body.size() > 0
+          && request.resource.data.body.size() <= 2000;
+        allow update, delete: if false;
+      }
+    }
+
+    // ---------- reviews (doc id == buyerUid_productId) ----------
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.buyerUid == request.auth.uid
+        && reviewId == request.auth.uid + '_' + request.resource.data.productId
+        && exists(/databases/$(database)/documents/matches/$(reviewId))
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.vendorId == productDoc(request.resource.data.productId).vendorId;
+      allow update: if signedIn()
+        && resource.data.buyerUid == request.auth.uid
+        && unchanged('buyerUid') && unchanged('productId') && unchanged('vendorId')
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5;
+      allow delete: if signedIn() && resource.data.buyerUid == request.auth.uid;
+    }
+  }
+}
