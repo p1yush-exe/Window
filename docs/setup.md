@@ -60,6 +60,10 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 
 ## 6. Deploy the website
 
-The repo is linked to Vercel with root directory `code/`. Every push to
-`main` deploys production; pull requests get preview URLs. The
-`VITE_*` variables from `.env.example` are set in the Vercel project.
+The repo is linked to the Vercel project `window` (root directory
+`code/`), live at <https://window-beige.vercel.app>. Every push to `main`
+deploys production; pull requests get preview URLs. The `VITE_*`
+variables from `.env.example` are set in the Vercel project settings.
+
+Firebase project: `window-56674` (Firestore in `asia-south1`, Email/Password
+and Google sign-in enabled).

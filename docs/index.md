@@ -15,6 +15,10 @@ everyone who liked a product, and buyers leave reviews after talking to
 the seller. Prices are optional so that the conversation, not the
 catalogue, closes the sale.
 
+**Live**: website at <https://window-beige.vercel.app> · Android APK on the
+[releases page](https://github.com/p1yush-exe/Window/releases/latest).
+Demo accounts (password `window123`): `buyer@window.demo`, `threads@window.demo`.
+
 ## What it does
 
 | Role | Features |

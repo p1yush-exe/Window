@@ -3,6 +3,10 @@
 Swipe-based shopping that connects buyers directly with local sellers.
 UCS503P course project, Thapar Institute of Engineering and Technology.
 
+- **Website**: https://window-beige.vercel.app
+- **Android APK**: https://github.com/p1yush-exe/Window/releases/latest
+- **Docs**: https://p1yush-exe.github.io/Window
+
 - **App code**: [`code/`](code) (Vite + React + Capacitor + Firebase). See [docs/setup.md](docs/setup.md).
 - **Docs**: [`docs/`](docs), built with mkdocs and published on every push to `main`.
 - **Reports**: `project-proposal/`, `project-report-prototype-stage/`, `project-report-final/`.
