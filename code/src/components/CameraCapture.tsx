@@ -21,8 +21,9 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
   const [error, setError] = useState<string | null>(null)
   const native = isApp()
 
+  const [previewFailed, setPreviewFailed] = useState(false)
+
   useEffect(() => {
-    if (native) return
     let cancelled = false
     setReady(false)
     if (!window.isSecureContext) {
@@ -43,7 +44,10 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
         }
         setReady(true)
       })
-      .catch(() => setError('Camera not available. Choose a photo from your gallery instead.'))
+      .catch(() => {
+        setPreviewFailed(true)
+        if (!native) setError('Camera not available. Choose a photo from your gallery instead.')
+      })
     return () => {
       cancelled = true
       stream.current?.getTracks().forEach((t) => t.stop())
@@ -88,7 +92,7 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
         <button type="button" onClick={onCancel} className="rounded border border-white/60 p-1.5 text-white" aria-label="Close"><X {...ICON} size={16} /></button>
       </div>
       <div className="relative flex flex-1 items-center justify-center overflow-hidden">
-        {native ? (
+        {native && previewFailed ? (
           <div className="px-6 text-center">
             <Camera size={48} strokeWidth={1.5} absoluteStrokeWidth className="mx-auto text-white" />
             <p className="mt-3 text-[15px] text-white/85">Take a photo with the camera or pick one from your gallery.</p>
@@ -102,7 +106,7 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
         ) : (
           <video ref={video} playsInline muted className="h-full w-full object-cover" style={{ transform: facing === 'user' ? 'scaleX(-1)' : undefined }} />
         )}
-        {!native && !ready && !error && <p className="absolute font-mono text-[12px] text-white/75 uppercase">Starting camera…</p>}
+        {!ready && !error && !(native && previewFailed) && <p className="absolute font-mono text-[12px] text-white/75 uppercase">Starting camera…</p>}
         <div className="pointer-events-none absolute inset-6 border border-white/60" aria-hidden="true" />
       </div>
       <div className="space-y-3 px-5 pt-4 pb-[calc(var(--safe-bottom)+20px)]">
@@ -120,14 +124,14 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
           )}
           <button
             type="button"
-            onClick={() => (native ? void nativePick('camera') : snap())}
-            disabled={!native && !ready}
+            onClick={() => (native && previewFailed ? void nativePick('camera') : snap())}
+            disabled={!ready && !(native && previewFailed)}
             className="flex h-18 w-18 items-center justify-center rounded-full border-4 border-white bg-eager-green disabled:opacity-40"
             aria-label="Take photo"
           >
             <Camera size={28} strokeWidth={2} absoluteStrokeWidth className="text-white" />
           </button>
-          {native ? (
+          {native && previewFailed ? (
             <span className="h-12 w-12" />
           ) : (
             <Button type="button" variant="ghost" className="h-12 w-12 border-2 border-white/60 px-0 text-white" onClick={() => setFacing((f) => (f === 'user' ? 'environment' : 'user'))} aria-label="Flip camera">

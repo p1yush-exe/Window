@@ -276,6 +276,6 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 .fab-add { position: fixed; z-index: 30; left: 50%; bottom: calc(var(--safe-bottom) + 14px); transform: translateX(-50%); width: 64px; height: 64px; border-radius: 9999px; background: #58cc02; border: 3px solid #fff; outline: 2px solid #46a302; display: flex; align-items: center; justify-content: center; color: #fff; }
 .fab-add.is-active { background: #46a302; }
 .notch.is-active { background: #58cc02; border-color: #58cc02; color: #fff; }
-.notch-btn { display: flex; align-items: center; gap: 6px; color: #4b4b4b; font-weight: 800; font-size: 16px; }
+.notch-btn { display: flex; align-items: center; gap: 8px; color: #4b4b4b; font-weight: 800; font-size: 19px; }
 .notch.is-active .notch-btn { color: #fff; }
-.notch-sep { width: 2px; height: 22px; background: #ececec; border-radius: 2px; }
+.notch-sep { width: 2px; height: 28px; background: #ececec; border-radius: 2px; }

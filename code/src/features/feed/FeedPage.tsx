@@ -28,7 +28,7 @@ export function FeedPage() {
   const [drag, setDrag] = useState(0)
   const [upgrade, setUpgrade] = useState<Product | null>(null) // "Upgrade to super swipe?" prompt target
   const [sweep, setSweep] = useState(0)
-  const [exhausted, setExhausted] = useState(false)
+  const [exhausted, setExhausted] = useState<null | 'swipes' | 'super'>(null)
   const [buyOpen, setBuyOpen] = useState<'swipes' | 'superSwipes' | null>(null)
   const [error, setError] = useState<string | null>(null)
   const visible = feed.queue.slice(0, 3)
@@ -70,14 +70,12 @@ export function FeedPage() {
       return
     }
     if (top.superOnly) {
-      if (profile.superSwipes > 0) {
-        setUpgrade(top)
-        setError('This product only accepts super swipes.')
-      } else setExhausted(true)
+      if (profile.superSwipes > 0) setUpgrade(top)
+      else setExhausted('super')
       return
     }
     if (profile.swipes <= 0) {
-      setExhausted(true)
+      setExhausted('swipes')
       return
     }
     setUpgrade(top)
@@ -120,7 +118,7 @@ export function FeedPage() {
   async function superSwipe(product: Product) {
     if (!profile) return setPending(product)
     if (profile.superSwipes <= 0) {
-      setExhausted(true)
+      setExhausted('super')
       return
     }
     const wasUpgrade = upgrade?.id === product.id
@@ -233,26 +231,41 @@ export function FeedPage() {
         )}
       </AnimatePresence>
 
-      {/* Swipes exhausted overlay */}
+      {/* Out of swipes / super-only overlay */}
       <AnimatePresence>
         {exhausted && profile && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 flex items-end justify-center bg-white/90 p-5 pb-[calc(6rem+var(--safe-bottom))] backdrop-blur-sm md:items-center">
-            <div className="w-full max-w-sm border border-eager-green bg-white p-5">
-              <p className="label">Swipes are over</p>
-              <h2 className="mt-1 text-[29px] leading-none ">{profile.swipes === 0 ? 'No swipes left today.' : 'Not enough for this one.'}</h2>
-              <p className="mt-2 text-[14px] text-pencil-gray">You get 5 free swipes every day. Use a super swipe or buy more now.</p>
-              <div className="mt-4 flex flex-col gap-2">
-                {profile.superSwipes > 0 && top && (
-                  <Button onClick={() => { setExhausted(false); void superSwipe(top) }}><HeartPlus {...ICON} size={14} /> Use a super swipe ({profile.superSwipes})</Button>
-                )}
-                <Button variant={profile.superSwipes > 0 ? 'secondary' : 'primary'} onClick={() => { setExhausted(false); setBuyOpen('swipes') }}>Buy swipes</Button>
-                {isWeb() && !profile.appBonusGranted && (
-                  <a href={APK_URL} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded border-2 border-faded-gray px-4 py-3 font-mono text-[13px] text-charcoal uppercase">
-                    <Download {...ICON} size={16} /> Get the app · 2 free super swipes
-                  </a>
-                )}
-                <button type="button" onClick={() => setExhausted(false)} className="py-2 font-mono text-[12px] text-pencil-gray uppercase">Keep browsing left</button>
-              </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 flex items-end justify-center bg-white/85 p-5 pb-[calc(6rem+var(--safe-bottom))] backdrop-blur-sm md:items-center">
+            <div className="w-full max-w-sm rounded-2xl border-2 border-eager-green bg-white p-5">
+              {exhausted === 'super' ? (
+                <>
+                  <p className="label">Super swipe only</p>
+                  <h2 className="mt-1 text-[29px] leading-none">{top?.title ?? 'This product'} only takes super swipes.</h2>
+                  <p className="mt-2 text-[14px] text-pencil-gray">You have no super swipes left. Buy some, or pass on this one.</p>
+                  <div className="mt-4 flex flex-col gap-2">
+                    <Button onClick={() => { setExhausted(null); setBuyOpen('superSwipes') }}><HeartPlus {...ICON} size={16} /> Buy super swipes</Button>
+                    <Button variant="secondary" onClick={() => { setExhausted(null); if (top) swipe('left') }}>Pass on this one</Button>
+                    <button type="button" onClick={() => setExhausted(null)} className="py-2 text-[13px] font-bold text-pencil-gray uppercase">Back</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="label">Swipes are over</p>
+                  <h2 className="mt-1 text-[29px] leading-none">No swipes left today.</h2>
+                  <p className="mt-2 text-[14px] text-pencil-gray">You get 5 free swipes every day. Use a super swipe or buy more now.</p>
+                  <div className="mt-4 flex flex-col gap-2">
+                    {profile.superSwipes > 0 && top && (
+                      <Button onClick={() => { setExhausted(null); void superSwipe(top) }}><HeartPlus {...ICON} size={16} /> Use a super swipe ({profile.superSwipes})</Button>
+                    )}
+                    <Button variant={profile.superSwipes > 0 ? 'secondary' : 'primary'} onClick={() => { setExhausted(null); setBuyOpen('swipes') }}>Buy swipes</Button>
+                    {isWeb() && !profile.appBonusGranted && (
+                      <a href={APK_URL} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-xl border-2 border-faded-gray px-4 py-3 text-[13px] font-bold text-charcoal uppercase">
+                        <Download {...ICON} size={16} /> Get the app · 2 free super swipes
+                      </a>
+                    )}
+                    <button type="button" onClick={() => setExhausted(null)} className="py-2 text-[13px] font-bold text-pencil-gray uppercase">Keep browsing left</button>
+                  </div>
+                </>
+              )}
             </div>
           </motion.div>
         )}

@@ -30,7 +30,7 @@ export function VendorShell() {
         {pending > 0 && <span className="absolute -right-2 -bottom-2 rounded-lg bg-super px-1.5 text-[11px] font-bold text-white">{pending}</span>}
       </NavLink>
       <button type="button" onClick={switchToShopper} className="notch notch-tr notch-btn" aria-label="Switch to shopping" title="Switch to shopping">
-        <ArrowLeftRight size={24} strokeWidth={2.5} absoluteStrokeWidth />
+        <ArrowLeftRight size={30} strokeWidth={2.5} absoluteStrokeWidth />
       </button>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col pt-[calc(var(--safe-top)+64px)] pb-[calc(6rem+var(--safe-bottom))]">
@@ -38,13 +38,13 @@ export function VendorShell() {
       </main>
 
       <NavLink to="/vendor/shop" className={({ isActive }) => cx('notch notch-bl notch-btn', isActive && 'is-active')} aria-label="Shop management">
-        <Store size={24} strokeWidth={2.25} absoluteStrokeWidth />
+        <Store size={30} strokeWidth={2.25} absoluteStrokeWidth />
       </NavLink>
       <NavLink to="/vendor/new" className={({ isActive }) => cx('fab-add', isActive && 'is-active')} aria-label="Add product">
         <Plus size={32} strokeWidth={3} absoluteStrokeWidth />
       </NavLink>
       <NavLink to="/vendor/me" className={({ isActive }) => cx('notch notch-br notch-btn', isActive && 'is-active')} aria-label="Seller profile">
-        <User size={24} strokeWidth={2.25} absoluteStrokeWidth />
+        <User size={30} strokeWidth={2.25} absoluteStrokeWidth />
       </NavLink>
     </div>
   )
