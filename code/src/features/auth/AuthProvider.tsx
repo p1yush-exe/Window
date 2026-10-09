@@ -7,7 +7,7 @@ import {
   type User,
 } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
-import { createProfile, getProfile, listenProfile } from '@/lib/db'
+import { createProfile, ensureProfileDefaults, getProfile, listenProfile } from '@/lib/db'
 import { signInWithGoogle as googlePopup } from '@/lib/googleSignIn'
 import { getShopperPrefs } from '@/lib/prefs'
 import type { Role, UserProfile } from '@/lib/types'
@@ -72,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user) return
     setProfileReady(false)
+    void ensureProfileDefaults(user.uid).catch(() => undefined)
     const unsub = listenProfile(
       user.uid,
       (p) => {

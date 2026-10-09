@@ -10,13 +10,26 @@ export interface LatLng {
 /** Patiala, used as the map's starting view before the user picks a spot. */
 export const DEFAULT_CENTER: LatLng = { lat: 30.3398, lng: 76.3869 }
 
+const LOCATION_OFF = 'Location is switched off on this phone. Turn it on in quick settings and try again, or search for your area instead.'
+
 export async function getCurrentPosition(): Promise<LatLng> {
   if (Capacitor.isNativePlatform()) {
     const { Geolocation } = await import('@capacitor/geolocation')
-    const perm = await Geolocation.requestPermissions()
-    if (perm.location === 'denied') throw new Error('Location permission denied')
-    const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 15000 })
-    return { lat: pos.coords.latitude, lng: pos.coords.longitude }
+    const perm = await Geolocation.requestPermissions({ permissions: ['location', 'coarseLocation'] }).catch(() => ({ location: 'prompt', coarseLocation: 'prompt' }))
+    if (perm.location === 'denied' && perm.coarseLocation === 'denied') throw new Error('Location permission denied. Allow it in Settings → Apps → Window, or search for your area.')
+    try {
+      const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 })
+      return { lat: pos.coords.latitude, lng: pos.coords.longitude }
+    } catch (e) {
+      // GPS may be slow or off: try the coarse network position before giving up.
+      try {
+        const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 })
+        return { lat: pos.coords.latitude, lng: pos.coords.longitude }
+      } catch {
+        const msg = e instanceof Error ? e.message : String(e)
+        throw new Error(/not enabled|disabled|unavailable/i.test(msg) ? LOCATION_OFF : 'Could not get your location. Search for your area instead.')
+      }
+    }
   }
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) return reject(new Error('Geolocation is not available in this browser'))

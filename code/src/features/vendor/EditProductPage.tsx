@@ -51,8 +51,8 @@ export function EditProductPage() {
 
   return (
     <div className="px-4">
-      <PageHeader eyebrow={product.productCode} title="Edit product" right={<Link to="/vendor/home" className="font-mono text-[12px] text-muted uppercase underline">Cancel</Link>} />
-      <img src={product.imageUrls[0]} alt="" className="mb-4 aspect-[3/4] w-32 border border-ink object-cover" />
+      <PageHeader eyebrow={product.productCode} title="Edit product" right={<Link to="/vendor/home" className="font-mono text-[12px] text-pencil-gray uppercase underline">Cancel</Link>} />
+      <img src={product.imageUrls[0]} alt="" className="mb-4 aspect-[3/4] w-32 border border-charcoal object-cover" />
       <ProductForm shops={shops} initial={{ ...product }} submitLabel="Save changes" busy={busy} onSubmit={save} />
       <ErrorBanner message={error} />
       <Button type="button" variant="danger" className="mt-4 w-full" disabled={busy} onClick={() => void remove()}><Trash2 {...ICON} size={16} /> Delete product</Button>

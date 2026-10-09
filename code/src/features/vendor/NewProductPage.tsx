@@ -66,7 +66,7 @@ export function NewProductPage() {
     return (
       <div className="px-4">
         <PageHeader eyebrow="Add product" title="No uploads left" subtitle="1 token = 10 product uploads" />
-        <p className="text-[15px] text-muted">Buy upload tokens in Shop management to keep listing.</p>
+        <p className="text-[15px] text-pencil-gray">Buy upload tokens in Shop management to keep listing.</p>
         <Link to="/vendor/shop" className="mt-4 inline-block"><Button><Ticket {...ICON} /> Get tokens</Button></Link>
       </div>
     )
@@ -79,8 +79,8 @@ export function NewProductPage() {
     return (
       <div className="px-4">
         <PageHeader eyebrow="Published" title="Product is live" subtitle={`ID ${result.code}`} />
-        {preview && <img src={preview} alt="" className="mb-4 aspect-[3/4] w-full max-w-xs border border-ink object-cover" />}
-        <p className="font-mono text-[12px] text-muted uppercase">{left - 1} uploads left</p>
+        {preview && <img src={preview} alt="" className="mb-4 aspect-[3/4] w-full max-w-xs border border-charcoal object-cover" />}
+        <p className="font-mono text-[12px] text-pencil-gray uppercase">{left - 1} uploads left</p>
         <div className="mt-4 flex gap-2">
           <Button onClick={() => { setStage('capture'); setPhoto(null); setRaw(null); setResult(null) }}><Camera {...ICON} /> Add another</Button>
           <Link to={`/product/${result.id}`}><Button variant="secondary"><Check {...ICON} /> View</Button></Link>
@@ -91,8 +91,8 @@ export function NewProductPage() {
 
   return (
     <div className="px-4">
-      <PageHeader eyebrow={params.get('welcome') ? 'Welcome · first listing' : 'Add product'} title="Product details" subtitle={`${left} uploads left`} right={<button type="button" onClick={() => setStage('capture')} className="font-mono text-[12px] text-muted uppercase underline">Retake</button>} />
-      {preview && <img src={preview} alt="" className="mb-4 aspect-[3/4] w-40 border border-ink object-cover" />}
+      <PageHeader eyebrow={params.get('welcome') ? 'Welcome · first listing' : 'Add product'} title="Product details" subtitle={`${left} uploads left`} right={<button type="button" onClick={() => setStage('capture')} className="font-mono text-[12px] text-pencil-gray uppercase underline">Retake</button>} />
+      {preview && <img src={preview} alt="" className="mb-4 aspect-[3/4] w-40 border border-charcoal object-cover" />}
       <ProductForm shops={shops} submitLabel="Publish product" busy={busy} onSubmit={publish} />
       <ErrorBanner message={error} />
     </div>

@@ -56,13 +56,13 @@ export function ShopManagePage() {
   return (
     <div className="px-4">
       <PageHeader eyebrow="Shop management" title={shop?.name ?? 'Your shops'} subtitle={`${vendor.tokens} tokens · ${uploadsLeft(vendor)} uploads left`} right={<Link to="/vendor/shop/new"><Button size="sm" variant="secondary"><Plus {...ICON_SM} /> Shop</Button></Link>} />
-      {toast && <div className="mb-3 border border-accent px-3 py-2 font-mono text-[12px] text-ink">{toast}</div>}
+      {toast && <div className="mb-3 border border-eager-green px-3 py-2 font-mono text-[12px] text-charcoal">{toast}</div>}
       <ErrorBanner message={error} />
 
       {shops.length > 1 && (
         <div className="mb-4 flex gap-2 overflow-x-auto no-scrollbar">
           {shops.map((s) => (
-            <button key={s.id} type="button" onClick={() => { setSelected(s.id); setAutoMsg(null) }} className={cx('shrink-0 rounded px-3 py-1.5 font-mono text-[12px] uppercase ring-1', shop?.id === s.id ? 'bg-ink text-canvas ring-ink' : 'text-ink ring-line')}>
+            <button key={s.id} type="button" onClick={() => { setSelected(s.id); setAutoMsg(null) }} className={cx('shrink-0 rounded px-3 py-1.5 font-mono text-[12px] uppercase ring-1', shop?.id === s.id ? 'bg-eager-green text-white ring-ink' : 'text-charcoal ring-line')}>
               {s.name}
             </button>
           ))}
@@ -71,16 +71,16 @@ export function ShopManagePage() {
 
       {/* Upload tokens */}
       <section className="mb-5">
-        <h2 className="mb-2 flex items-center gap-2 text-[22px] tracking-[-0.03em]"><Ticket {...ICON} /> Upload tokens</h2>
-        <p className="mb-3 text-[14px] text-muted">One token lets you list 10 products. Tap a bundle to top up.</p>
+        <h2 className="mb-2 flex items-center gap-2 text-[22px] "><Ticket {...ICON} /> Upload tokens</h2>
+        <p className="mb-3 text-[14px] text-pencil-gray">One token lets you list 10 products. Tap a bundle to top up.</p>
         <ul className="grid grid-cols-2 gap-3">
           {TOKEN_BUNDLES.map((b, i) => (
-            <motion.li key={b.qty} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} whileTap={{ scale: 0.97 }} className={cx('token-shine relative overflow-hidden rounded border border-accent bg-canvas', i === 1 && 'token-glow')}>
+            <motion.li key={b.qty} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} whileTap={{ scale: 0.97 }} className={cx('token-shine relative overflow-hidden rounded border border-eager-green bg-white', i === 1 && 'token-glow')}>
               <button type="button" onClick={() => void buyTokens(b)} disabled={busy === `t${b.qty}`} className="block w-full p-3 text-left">
-                <p className="font-mono text-[11px] text-muted uppercase">{i === 1 ? 'Most popular' : i === 3 ? 'Best value' : 'Bundle'}</p>
-                <p className="mt-1 text-[29px] leading-none text-ink">{b.qty} <span className="font-mono text-[12px] text-muted uppercase">tokens</span></p>
+                <p className="font-mono text-[11px] text-pencil-gray uppercase">{i === 1 ? 'Most popular' : i === 3 ? 'Best value' : 'Bundle'}</p>
+                <p className="mt-1 text-[29px] leading-none text-charcoal">{b.qty} <span className="font-mono text-[12px] text-pencil-gray uppercase">tokens</span></p>
                 <p className="mt-1"><Price bundle={b} /></p>
-                <p className="mt-2 font-mono text-[11px] text-accent-text uppercase">{busy === `t${b.qty}` ? 'Adding…' : `Tap to buy · ${b.qty * 10} uploads`}</p>
+                <p className="mt-2 font-mono text-[11px] text-spark-blue uppercase">{busy === `t${b.qty}` ? 'Adding…' : `Tap to buy · ${b.qty * 10} uploads`}</p>
               </button>
             </motion.li>
           ))}
@@ -90,34 +90,34 @@ export function ShopManagePage() {
       {shop && (
         <>
           {/* Shop details */}
-          <section className="mb-5 border border-line p-4">
+          <section className="mb-5 border-2 border-faded-gray p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="label">Shop</p>
-                <p className="text-[18px] text-ink">{shop.name}</p>
-                <p className="font-mono text-[11px] text-muted uppercase">{shop.tags.join(' · ') || 'no tags'} · {shop.location?.area ?? shop.location?.address?.split(',')[0] ?? 'no location'}</p>
+                <p className="text-[18px] text-charcoal">{shop.name}</p>
+                <p className="font-mono text-[11px] text-pencil-gray uppercase">{shop.tags.join(' · ') || 'no tags'} · {shop.location?.area ?? shop.location?.address?.split(',')[0] ?? 'no location'}</p>
               </div>
               <Link to={`/vendor/shop/${shop.id}`}><Button size="sm" variant="secondary"><Pencil {...ICON_SM} /> Edit</Button></Link>
             </div>
-            <Link to={`/shop/${shop.id}`} className="mt-2 inline-flex items-center gap-1 font-mono text-[12px] text-accent-text uppercase underline"><Store {...ICON_SM} /> View as shopper</Link>
+            <Link to={`/shop/${shop.id}`} className="mt-2 inline-flex items-center gap-1 font-mono text-[12px] text-spark-blue uppercase underline"><Store {...ICON_SM} /> View as shopper</Link>
           </section>
 
           {/* Auto message */}
-          <section className="mb-5 border border-line p-4">
+          <section className="mb-5 border-2 border-faded-gray p-4">
             <h2 className="mb-1 text-[18px]">Auto message</h2>
-            <p className="mb-3 text-[13px] text-muted">Sent as the first message in every new chat for this shop.</p>
+            <p className="mb-3 text-[13px] text-pencil-gray">Sent as the first message in every new chat for this shop.</p>
             <Textarea name="autoMessage" rows={3} maxLength={300} value={autoMsg ?? shop.autoMessage} onChange={(e) => setAutoMsg(e.target.value)} placeholder="Thanks for the like! Ask me about sizes or delivery." />
             <Button size="sm" className="mt-3" loading={busy === 'msg'} onClick={() => void saveAutoMessage(shop)}><Check {...ICON_SM} /> Save</Button>
           </section>
 
           {/* Auto matcher */}
-          <section className="mb-5 border border-line p-4">
-            <h2 className="mb-1 flex items-center gap-2 text-[18px]"><Zap {...ICON} className="text-accent-text" /> Auto-matcher</h2>
-            <p className="mb-3 text-[13px] text-muted">Accepts every right swipe on this shop's products automatically, so chats open instantly.</p>
+          <section className="mb-5 border-2 border-faded-gray p-4">
+            <h2 className="mb-1 flex items-center gap-2 text-[18px]"><Zap {...ICON} className="text-spark-blue" /> Auto-matcher</h2>
+            <p className="mb-3 text-[13px] text-pencil-gray">Accepts every right swipe on this shop's products automatically, so chats open instantly.</p>
             {autoMatchActive(shop) ? (
-              <p className="font-mono text-[12px] text-accent-text uppercase">On until {shop.autoMatchUntil!.toDate().toLocaleString()}</p>
+              <p className="font-mono text-[12px] text-spark-blue uppercase">On until {shop.autoMatchUntil!.toDate().toLocaleString()}</p>
             ) : (
-              <p className="font-mono text-[12px] text-muted uppercase">Off</p>
+              <p className="font-mono text-[12px] text-pencil-gray uppercase">Off</p>
             )}
             <Button size="sm" className="mt-3" loading={busy === 'am'} onClick={() => void buyAutoMatch(shop)}>
               {autoMatchActive(shop) ? 'Extend 1 day' : 'Turn on for 1 day'} · ₹{AUTO_MATCH_PRICE_PER_DAY}
@@ -126,20 +126,20 @@ export function ShopManagePage() {
 
           {/* Decorations */}
           <section className="mb-5">
-            <h2 className="mb-1 flex items-center gap-2 text-[22px] tracking-[-0.03em]"><Gem {...ICON} /> Decorations</h2>
-            <p className="mb-3 text-[14px] text-muted">Change how your products look in the feed.</p>
+            <h2 className="mb-1 flex items-center gap-2 text-[22px] "><Gem {...ICON} /> Decorations</h2>
+            <p className="mb-3 text-[14px] text-pencil-gray">Change how your products look in the feed.</p>
             <ul className="space-y-2">
               {DECORATIONS.map((d) => {
                 const owned = shop.decorations?.includes(d.id)
                 const equipped = (d.frame && shop.theme?.frame === d.frame) || (d.badge && shop.theme?.badge === d.badge)
                 return (
-                  <li key={d.id} className="flex items-center gap-3 border border-line p-3">
-                    <div className={cx('h-12 w-9 shrink-0 bg-surface', d.frame === 'lime' && 'border-2 border-accent', d.frame === 'bone' && 'border-[3px] border-ink', d.frame === 'double' && 'border-4 border-double border-ink', d.frame === 'dashed' && 'border-2 border-dashed border-ink', !d.frame && 'border border-line')}>
-                      {d.badge && <span className="block bg-accent px-1 font-mono text-[7px] text-on-accent uppercase">{d.badge}</span>}
+                  <li key={d.id} className="flex items-center gap-3 border-2 border-faded-gray p-3">
+                    <div className={cx('h-12 w-9 shrink-0 bg-[#f7f7f7]', d.frame === 'lime' && 'border-2 border-eager-green', d.frame === 'bone' && 'border-[3px] border-charcoal', d.frame === 'double' && 'border-4 border-double border-charcoal', d.frame === 'dashed' && 'border-2 border-dashed border-charcoal', !d.frame && 'border-2 border-faded-gray')}>
+                      {d.badge && <span className="block bg-eager-green px-1 font-mono text-[7px] text-white uppercase">{d.badge}</span>}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[14px] text-ink">{d.name}</p>
-                      <p className="text-[12px] text-muted">{d.blurb}</p>
+                      <p className="text-[14px] text-charcoal">{d.name}</p>
+                      <p className="text-[12px] text-pencil-gray">{d.blurb}</p>
                     </div>
                     {owned ? (
                       <Button size="sm" variant={equipped ? 'primary' : 'secondary'} loading={busy === `eq${d.id}`} onClick={() => void equip(shop, d.id)}>{equipped ? 'Applied' : 'Apply'}</Button>
@@ -153,7 +153,7 @@ export function ShopManagePage() {
           </section>
         </>
       )}
-      <p className="mb-2 font-mono text-[11px] text-muted uppercase">Prototype: payments are simulated.</p>
+      <p className="mb-2 font-mono text-[11px] text-pencil-gray uppercase">Prototype: payments are simulated.</p>
     </div>
   )
 }

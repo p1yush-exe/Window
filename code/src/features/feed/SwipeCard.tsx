@@ -46,11 +46,11 @@ export function SwipeCard({ product, isTop, index, onSwipe, onDrag, frame = 'non
   const scale = 1 - index * 0.04
   const y = index * 12
   const frameCls: Record<string, string> = {
-    none: 'border border-ink',
-    lime: 'border-2 border-accent',
-    bone: 'border-[3px] border-ink',
-    double: 'border-4 border-double border-ink',
-    dashed: 'border-2 border-dashed border-ink',
+    none: 'border-2 border-charcoal rounded-2xl',
+    lime: 'border-[3px] border-eager-green rounded-2xl',
+    bone: 'border-4 border-charcoal rounded-2xl',
+    double: 'border-4 border-double border-charcoal rounded-2xl',
+    dashed: 'border-[3px] border-dashed border-charcoal rounded-2xl',
   }
 
   return (
@@ -84,45 +84,45 @@ export function SwipeCard({ product, isTop, index, onSwipe, onDrag, frame = 'non
       >
         <div className="flip-inner relative h-full w-full">
           {/* Front: image with outline, name, short description */}
-          <div className={cx('flip-face absolute inset-0 flex flex-col bg-canvas p-3', frameCls[frame] ?? frameCls.none)}>
-            <div className="relative flex-1 overflow-hidden border border-ink bg-surface">
+          <div className={cx('flip-face absolute inset-0 flex flex-col bg-white p-3', frameCls[frame] ?? frameCls.none)}>
+            <div className="relative flex-1 overflow-hidden rounded-xl border-2 border-charcoal bg-[#f7f7f7]">
               <ProductImage src={product.imageUrls[0]} alt={product.title} className="h-full w-full" />
-              {badge && <span className="absolute top-2 left-2 rounded bg-accent px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] text-on-accent uppercase">{badge}</span>}
+              {badge && <span className="absolute top-2 left-2 rounded bg-eager-green px-[7px] py-[3px] font-mono text-[11px] tracking-[0.053em] text-white uppercase">{badge}</span>}
               {product.superOnly && (
-                <span className="absolute top-2 right-2 flex items-center gap-1 rounded bg-canvas/90 px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] text-ink uppercase">
+                <span className="absolute top-2 right-2 flex items-center gap-1 rounded bg-white/90 px-[7px] py-[3px] font-mono text-[11px] tracking-[0.053em] text-charcoal uppercase">
                   <HeartPlus {...ICON_SM} size={12} /> Super only
                 </span>
               )}
             </div>
             <div className="pt-3">
               <div className="flex items-baseline justify-between gap-2">
-                <h2 className="truncate text-[22px] leading-tight tracking-[-0.03em] text-ink">{product.title}</h2>
-                {Number.isFinite(product.distanceKm) && <span className="shrink-0 font-mono text-[11px] text-muted uppercase">{formatDistance(product.distanceKm)}</span>}
+                <h2 className="truncate text-[22px] leading-tight  text-charcoal">{product.title}</h2>
+                {Number.isFinite(product.distanceKm) && <span className="shrink-0 font-mono text-[11px] text-pencil-gray uppercase">{formatDistance(product.distanceKm)}</span>}
               </div>
-              <p className="mt-1 line-clamp-2 text-[14px] leading-snug text-muted">{product.description || product.shopName}</p>
-              <p className="mt-2 font-mono text-[10px] tracking-[0.06em] text-muted uppercase">Tap to flip · drag to swipe</p>
+              <p className="mt-1 line-clamp-2 text-[14px] leading-snug text-pencil-gray">{product.description || product.shopName}</p>
+              <p className="mt-2 font-mono text-[10px] tracking-[0.053em] text-pencil-gray uppercase">Tap to flip · drag to swipe</p>
             </div>
           </div>
 
           {/* Back: cost, full description, swipe cost */}
-          <div className={cx('flip-face flip-back absolute inset-0 flex flex-col bg-canvas p-4', frameCls[frame] ?? frameCls.none)}>
+          <div className={cx('flip-face flip-back absolute inset-0 flex flex-col bg-white p-4', frameCls[frame] ?? frameCls.none)}>
             <p className="label">{product.productCode || 'Product'}</p>
-            <h2 className="mt-1 text-[24px] leading-tight tracking-[-0.03em] text-ink">{product.title}</h2>
-            <p className="mt-3 font-mono text-[18px] text-ink">{priceRange(product)}</p>
-            <p className="font-mono text-[11px] text-muted uppercase">{product.paymentModes?.length ? product.paymentModes.join(' · ') : 'ask the seller'}</p>
-            <p className="mt-3 flex-1 overflow-y-auto text-[15px] leading-relaxed text-ink">{product.description || 'No description yet.'}</p>
+            <h2 className="mt-1 text-[24px] leading-tight  text-charcoal">{product.title}</h2>
+            <p className="mt-3 font-mono text-[18px] text-charcoal">{priceRange(product)}</p>
+            <p className="font-mono text-[11px] text-pencil-gray uppercase">{product.paymentModes?.length ? product.paymentModes.join(' · ') : 'ask the seller'}</p>
+            <p className="mt-3 flex-1 overflow-y-auto text-[15px] leading-relaxed text-charcoal">{product.description || 'No description yet.'}</p>
             {product.tags?.length > 0 && (
               <p className="mt-2 flex flex-wrap gap-1.5">
                 {product.tags.map((t) => (
-                  <span key={t} className="flex items-center gap-1 rounded border border-line px-[7px] py-[3px] font-mono text-[11px] text-ink uppercase"><Tag {...ICON_SM} size={11} />{t}</span>
+                  <span key={t} className="flex items-center gap-1 rounded border-2 border-faded-gray px-[7px] py-[3px] font-mono text-[11px] text-charcoal uppercase"><Tag {...ICON_SM} size={11} />{t}</span>
                 ))}
               </p>
             )}
-            <div className="mt-3 flex items-center justify-between border-t border-line pt-3">
-              <Link to={`/shop/${product.shopId}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 font-mono text-[12px] text-accent-text uppercase underline">
+            <div className="mt-3 flex items-center justify-between border-t border-faded-gray pt-3">
+              <Link to={`/shop/${product.shopId}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 font-mono text-[12px] text-spark-blue uppercase underline">
                 <Store {...ICON_SM} /> {product.shopName || product.vendorName}
               </Link>
-              <span className={cx('rounded px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] uppercase', product.superOnly ? 'bg-accent text-on-accent' : 'border border-line text-ink')}>
+              <span className={cx('rounded px-[7px] py-[3px] font-mono text-[11px] tracking-[0.053em] uppercase', product.superOnly ? 'bg-eager-green text-white' : 'border-2 border-faded-gray text-charcoal')}>
                 {product.superOnly ? 'Super swipe only' : 'Costs 1 swipe'}
               </span>
             </div>

@@ -3,7 +3,6 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
 import { cx } from '@/components/ui'
 import { ArrowLeftRight, Heart, HeartPlus, ICON, ShoppingBag, User } from '@/components/icons'
-import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { LoginSheet } from '@/features/auth/LoginSheet'
 import { BuySwipesSheet } from '@/features/economy/BuySwipesSheet'
@@ -47,21 +46,21 @@ export function ShopperShell() {
   const supers = profile?.superSwipes ?? 0
   const empty = Boolean(profile) && swipes === 0
   const onFeed = location.pathname === '/feed'
-  const chip = 'flex h-11 items-center gap-2 rounded border px-3 font-mono text-[15px] tracking-[0.04em] backdrop-blur transition hover:border-ink'
+  const chip = 'flex h-11 items-center gap-2 rounded border px-3 font-mono text-[15px] tracking-[0.053em] backdrop-blur transition hover:border-charcoal'
 
   return (
-    <div className="relative flex min-h-dvh flex-col bg-canvas">
+    <div className="relative flex min-h-dvh flex-col bg-white">
       {/* Top bar */}
-      <header className="fixed inset-x-0 top-0 z-30 border-b border-line/60 bg-canvas/85 backdrop-blur">
+      <header className="fixed inset-x-0 top-0 z-30 border-b border-faded-gray/60 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 pt-[calc(var(--safe-top)+10px)] pb-2.5">
           <div className="flex items-center gap-2">
-            <NavLink to="/feed" className="mr-1 hidden font-mono text-[13px] tracking-[0.1em] text-ink uppercase md:block">Window</NavLink>
+            <NavLink to="/feed" className="mr-1 hidden font-mono text-[13px] tracking-[0.053em] text-charcoal uppercase md:block">Window</NavLink>
             <motion.button
               type="button"
               onClick={() => (profile ? setBuyOpen('swipes') : setLoginOpen(true))}
               animate={{ scale: empty && onFeed ? 1.15 : 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-              className={cx(chip, 'origin-left', empty ? 'border-accent bg-accent text-on-accent' : 'border-line bg-canvas text-ink')}
+              className={cx(chip, 'origin-left', empty ? 'border-eager-green bg-eager-green text-white' : 'border-faded-gray bg-white text-charcoal')}
               aria-label={`${swipes} swipes left. Open the swipe shop`}
               title="Swipes · tap to buy more"
             >
@@ -72,21 +71,20 @@ export function ShopperShell() {
             <button
               type="button"
               onClick={() => (profile ? setBuyOpen('superSwipes') : setLoginOpen(true))}
-              className={cx(chip, 'border-line bg-canvas text-ink')}
+              className={cx(chip, 'border-faded-gray bg-white text-charcoal')}
               aria-label={`${supers} super swipes left. Open the swipe shop`}
               title="Super swipes · tap to buy more"
             >
-              <HeartPlus {...ICON} className="text-accent-text" />
+              <HeartPlus {...ICON} className="text-spark-blue" />
               <span>{profile ? supers : '—'}</span>
-              <span className="hidden text-[11px] text-muted md:inline">super</span>
+              <span className="hidden text-[11px] text-pencil-gray md:inline">super</span>
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <ThemeToggle className="flex h-11 items-center gap-2 rounded border border-line px-3 font-mono text-[12px] tracking-[0.06em] text-ink uppercase hover:border-ink" />
             <button
               type="button"
               onClick={switchToSeller}
-              className="flex h-11 items-center gap-2 rounded border border-line px-3 font-mono text-[12px] tracking-[0.06em] text-ink uppercase hover:border-ink"
+              className="flex h-11 items-center gap-2 rounded border-2 border-faded-gray px-3 font-mono text-[12px] tracking-[0.053em] text-charcoal uppercase hover:border-charcoal"
               aria-label="Switch to seller"
             >
               <ArrowLeftRight {...ICON} size={16} /> <span className="hidden sm:inline">Seller</span>
@@ -105,17 +103,17 @@ export function ShopperShell() {
           <NavLink
             to="/bag"
             className={({ isActive }) =>
-              cx('relative flex h-13 items-center gap-2 rounded border px-4 font-mono text-[12px] uppercase backdrop-blur', isActive ? 'border-accent bg-accent text-on-accent' : 'border-line bg-canvas/90 text-ink hover:border-ink')
+              cx('relative flex h-13 items-center gap-2 rounded border px-4 font-mono text-[12px] uppercase backdrop-blur', isActive ? 'border-eager-green bg-eager-green text-white' : 'border-faded-gray bg-white/90 text-charcoal hover:border-charcoal')
             }
             aria-label="Bag"
           >
             <ShoppingBag {...ICON} /> <span className="hidden sm:inline">Bag</span>
-            {unread > 0 && <span className="absolute -top-1.5 -right-1.5 rounded bg-accent px-1.5 font-mono text-[10px] text-on-accent">{unread}</span>}
+            {unread > 0 && <span className="absolute -top-1.5 -right-1.5 rounded bg-eager-green px-1.5 font-mono text-[10px] text-white">{unread}</span>}
           </NavLink>
           <NavLink
             to="/me"
             className={({ isActive }) =>
-              cx('flex h-13 items-center gap-2 rounded border px-4 font-mono text-[12px] uppercase backdrop-blur', isActive ? 'border-accent bg-accent text-on-accent' : 'border-line bg-canvas/90 text-ink hover:border-ink')
+              cx('flex h-13 items-center gap-2 rounded border px-4 font-mono text-[12px] uppercase backdrop-blur', isActive ? 'border-eager-green bg-eager-green text-white' : 'border-faded-gray bg-white/90 text-charcoal hover:border-charcoal')
             }
             aria-label="Profile"
           >

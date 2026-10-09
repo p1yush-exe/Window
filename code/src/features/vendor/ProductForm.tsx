@@ -72,23 +72,23 @@ export function ProductForm({ shops, initial, submitLabel, busy, onSubmit }: Pro
       <Input label="Product name" name="title" required minLength={2} maxLength={120} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Hand-block printed kurta" hint="A product ID is generated when you publish." />
       <div>
         <Textarea label="Short description" name="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Material, sizes, what makes it special" />
-        <p className={cx('mt-1 text-right font-mono text-[11px]', words > MAX_WORDS ? 'text-ink underline' : 'text-muted')}>{words}/{MAX_WORDS} words</p>
+        <p className={cx('mt-1 text-right font-mono text-[11px]', words > MAX_WORDS ? 'text-charcoal underline' : 'text-pencil-gray')}>{words}/{MAX_WORDS} words</p>
       </div>
 
       <div>
         <span className="label mb-1 block">Cost range (INR)</span>
         <div className="flex items-center gap-3">
-          <input inputMode="decimal" placeholder="low" value={lowText} onChange={(e) => setLowText(e.target.value.replace(/[^\d.]/g, ''))} className="h-11 w-full border-0 border-b border-line bg-transparent text-center font-mono text-[16px] text-ink outline-none placeholder:text-muted focus:border-accent" aria-label="Lowest price" />
-          <span className="font-mono text-muted">–</span>
-          <input inputMode="decimal" placeholder="high" value={highText} onChange={(e) => setHighText(e.target.value.replace(/[^\d.]/g, ''))} className="h-11 w-full border-0 border-b border-line bg-transparent text-center font-mono text-[16px] text-ink outline-none placeholder:text-muted focus:border-accent" aria-label="Highest price" />
+          <input inputMode="decimal" placeholder="low" value={lowText} onChange={(e) => setLowText(e.target.value.replace(/[^\d.]/g, ''))} className="h-12 w-full rounded-xl border-2 border-faded-gray bg-white text-center text-[16px] font-bold text-charcoal outline-none placeholder:text-faded-gray focus:border-spark-blue" aria-label="Lowest price" />
+          <span className="font-mono text-pencil-gray">–</span>
+          <input inputMode="decimal" placeholder="high" value={highText} onChange={(e) => setHighText(e.target.value.replace(/[^\d.]/g, ''))} className="h-12 w-full rounded-xl border-2 border-faded-gray bg-white text-center text-[16px] font-bold text-charcoal outline-none placeholder:text-faded-gray focus:border-spark-blue" aria-label="Highest price" />
         </div>
         {rangeReady && (
           <div className="mt-3">
             <RangeSlider min={sliderMin} max={Math.round(sliderMax)} low={low} high={high} step={Math.max(1, Math.round(sliderMax / 200))} onChange={(l, h) => { setLowText(String(l)); setHighText(String(h)) }} />
-            <p className="mt-1 font-mono text-[11px] text-muted uppercase">₹{low.toLocaleString('en-IN')} – ₹{high.toLocaleString('en-IN')} · drag to fine-tune</p>
+            <p className="mt-1 font-mono text-[11px] text-pencil-gray uppercase">₹{low.toLocaleString('en-IN')} – ₹{high.toLocaleString('en-IN')} · drag to fine-tune</p>
           </div>
         )}
-        {!rangeReady && <p className="mt-1 font-mono text-[11px] text-muted uppercase">Leave empty to let buyers ask</p>}
+        {!rangeReady && <p className="mt-1 font-mono text-[11px] text-pencil-gray uppercase">Leave empty to let buyers ask</p>}
       </div>
 
       {shops.length > 1 && (
@@ -103,19 +103,19 @@ export function ProductForm({ shops, initial, submitLabel, busy, onSubmit }: Pro
           {PAYMENT_MODES.map((m) => {
             const on = modes.includes(m)
             return (
-              <button key={m} type="button" onClick={() => setModes((cur) => (on ? cur.filter((x) => x !== m) : [...cur, m]))} className={cx('flex-1 rounded py-2 font-mono text-[12px] uppercase ring-1', on ? 'bg-ink text-canvas ring-ink' : 'text-ink ring-line')}>
+              <button key={m} type="button" onClick={() => setModes((cur) => (on ? cur.filter((x) => x !== m) : [...cur, m]))} className={cx('flex-1 rounded py-2 font-mono text-[12px] uppercase ring-1', on ? 'bg-eager-green text-white ring-ink' : 'text-charcoal ring-line')}>
                 {m}
               </button>
             )
           })}
         </div>
-        <p className="mt-1 font-mono text-[11px] text-muted uppercase">Preset for the prototype · setup comes later</p>
+        <p className="mt-1 font-mono text-[11px] text-pencil-gray uppercase">Preset for the prototype · setup comes later</p>
       </div>
 
-      <label className="flex cursor-pointer items-center gap-3 border border-line p-3">
-        <input type="checkbox" checked={superOnly} onChange={(e) => setSuperOnly(e.target.checked)} className="h-5 w-5 accent-[#ebfc72]" />
-        <span className="flex-1 text-[14px] text-ink">Allow only super swipes</span>
-        <HeartPlus {...ICON_SM} className="text-accent-text" />
+      <label className="flex cursor-pointer items-center gap-3 border-2 border-faded-gray p-3">
+        <input type="checkbox" checked={superOnly} onChange={(e) => setSuperOnly(e.target.checked)} className="h-5 w-5 accent-[#58cc02]" />
+        <span className="flex-1 text-[14px] text-charcoal">Allow only super swipes</span>
+        <HeartPlus {...ICON_SM} className="text-spark-blue" />
       </label>
 
       <ErrorBanner message={error} />

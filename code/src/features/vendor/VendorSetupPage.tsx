@@ -69,8 +69,8 @@ export function VendorSetupPage() {
   if (profile?.hasShop) {
     return (
       <div className="p-6 text-center">
-        <p className="text-[14px] text-muted">You already have a shop.</p>
-        <Link to="/vendor/home" className="mt-3 inline-block font-mono text-[12px] text-accent-text uppercase underline">Go to the seller app</Link>
+        <p className="text-[14px] text-pencil-gray">You already have a shop.</p>
+        <Link to="/vendor/home" className="mt-3 inline-block font-mono text-[12px] text-spark-blue uppercase underline">Go to the seller app</Link>
       </div>
     )
   }
@@ -78,19 +78,19 @@ export function VendorSetupPage() {
   return (
     <div className="mx-auto min-h-dvh w-full max-w-md px-4 py-6 pt-safe">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-[29px] tracking-[-0.03em]">Set up your shop</h1>
-        <Link to={profile ? '/feed' : '/vendor'} className="font-mono text-[12px] text-muted uppercase underline">Cancel</Link>
+        <h1 className="text-[29px] ">Set up your shop</h1>
+        <Link to={profile ? '/feed' : '/vendor'} className="font-mono text-[12px] text-pencil-gray uppercase underline">Cancel</Link>
       </div>
       <ol className="mb-5 flex gap-2">
         {STEPS.map((s, i) => (
-          <li key={s} className={cx('flex-1 rounded py-1 text-center font-mono text-[11px] tracking-[0.04em] uppercase', i < step ? 'bg-accent text-on-accent' : i === step ? 'bg-surface text-accent-text' : 'bg-surface text-muted')}>
+          <li key={s} className={cx('flex-1 rounded py-1 text-center font-mono text-[11px] tracking-[0.053em] uppercase', i < step ? 'bg-eager-green text-white' : i === step ? 'bg-[#f7f7f7] text-spark-blue' : 'bg-[#f7f7f7] text-pencil-gray')}>
             {i + 1}. {s}
           </li>
         ))}
       </ol>
 
       {step === 0 && (
-        <form onSubmit={next} className="space-y-4 border border-line p-4">
+        <form onSubmit={next} className="space-y-4 border-2 border-faded-gray p-4">
           <Input label="Shop name" name="name" required minLength={2} maxLength={80} value={shop.name} onChange={(e) => patch({ name: e.target.value })} placeholder="e.g. Patiala Threads" />
           <TagPicker value={shop.tags} onChange={(tags) => patch({ tags })} label="What do you sell?" hint="Pick up to 3 tags. No food, medical or electronics listings on Window." />
           <Textarea label="Short description (optional)" name="description" rows={2} maxLength={300} value={shop.description} onChange={(e) => patch({ description: e.target.value })} placeholder="What makes your shop special" />
@@ -101,8 +101,8 @@ export function VendorSetupPage() {
       )}
 
       {step === 1 && (
-        <form onSubmit={next} className="space-y-4 border border-line p-4">
-          <p className="text-[14px] text-muted">Where is your store? Shoppers nearby see it.</p>
+        <form onSubmit={next} className="space-y-4 border-2 border-faded-gray p-4">
+          <p className="text-[14px] text-pencil-gray">Where is your store? Shoppers nearby see it.</p>
           <LocationPicker value={shop.location} onChange={(location) => patch({ location })} searchable />
           <ErrorBanner message={error} />
           <div className="flex gap-2">
@@ -113,8 +113,8 @@ export function VendorSetupPage() {
       )}
 
       {step === 2 && (
-        <form onSubmit={next} className="space-y-4 border border-line p-4">
-          <p className="text-[14px] text-muted">A photo of your storefront helps shoppers recognise you.</p>
+        <form onSubmit={next} className="space-y-4 border-2 border-faded-gray p-4">
+          <p className="text-[14px] text-pencil-gray">A photo of your storefront helps shoppers recognise you.</p>
           <PhotoField label="Storefront photo" value={shop.storefrontUrl} onChange={(storefrontUrl) => patch({ storefrontUrl })} aspect="aspect-[4/3]" folder="window/storefronts" />
           <ErrorBanner message={error} />
           <div className="flex gap-2">
@@ -125,7 +125,7 @@ export function VendorSetupPage() {
       )}
 
       {step === 3 && (
-        <form onSubmit={finish} className="space-y-4 border border-line p-4">
+        <form onSubmit={finish} className="space-y-4 border-2 border-faded-gray p-4">
           {!googleUid && !existingUid && (
             <>
               <GoogleButton
@@ -139,10 +139,10 @@ export function VendorSetupPage() {
                   setEmailVerified(Boolean(r.email))
                 }}
               />
-              <div className="flex items-center gap-3 font-mono text-[11px] text-muted uppercase"><span className="h-px flex-1 bg-line" />or fill by hand<span className="h-px flex-1 bg-line" /></div>
+              <div className="flex items-center gap-3 font-mono text-[11px] text-pencil-gray uppercase"><span className="h-px flex-1 bg-faded-gray" />or fill by hand<span className="h-px flex-1 bg-faded-gray" /></div>
             </>
           )}
-          {(googleUid || existingUid) && <p className="font-mono text-[12px] text-accent-text">Using your signed-in account · email verified</p>}
+          {(googleUid || existingUid) && <p className="font-mono text-[12px] text-spark-blue">Using your signed-in account · email verified</p>}
           <Input label="Owner name" name="ownerName" required minLength={2} value={ownerName} onChange={(e) => setOwnerName(e.target.value)} />
           <OtpField label="Owner mobile number" kind="phone" placeholder="98xxxxxxxx" value={ownerPhone} onChange={setOwnerPhone} verified={phoneVerified} onVerified={setPhoneVerified} validate={isValidPhone} />
           {googleUid || existingUid ? (

@@ -37,7 +37,7 @@ The app opens on a chooser: **I'm shopping** or **I'm a seller**. One account ca
 | Backend | Firebase Authentication + Cloud Firestore, all logic in the client under security rules |
 | Images | Cloudinary unsigned uploads, compressed on the device, native camera/gallery picker on Android |
 | Sign-in | Google (web popup, native on Android) or email/password; phone/email OTP simulated with `0000` |
-| Theme | INVERSA design system: dark canvas by default, light variant, toggle in Profile |
+| Theme | Light storybook design: white canvas, Nunito display type, one green, blue links, 12px radius, 2px borders. A storefront intro with sliding doors opens the app. |
 | Hosting | Vercel (web), GitHub Actions artifact (APK) |
 | CI | GitHub Actions: lint, typecheck, unit tests, Firestore rules tests on the emulator, APK build, rules deploy, docs deploy |
 

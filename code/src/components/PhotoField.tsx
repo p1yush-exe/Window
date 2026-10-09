@@ -62,14 +62,14 @@ export function PhotoField({ label, value, onChange, aspect = 'aspect-square', f
       <span className="label block">{label}</span>
       {shown ? (
         <div className="relative">
-          <img src={shown} alt="" className={cx('w-full rounded object-cover ring-1 ring-line', aspect, progress !== null && 'opacity-60')} />
+          <img src={shown} alt="" className={cx('w-full rounded object-cover border-2 border-faded-gray', aspect, progress !== null && 'opacity-60')} />
           {progress !== null && (
-            <div className="absolute inset-x-3 bottom-3 h-1 bg-bone-vellum/30">
-              <div className="h-full bg-accent transition-[width]" style={{ width: `${progress}%` }} />
+            <div className="absolute inset-x-3 bottom-3 h-1 bg-white/40">
+              <div className="h-full bg-eager-green transition-[width]" style={{ width: `${progress}%` }} />
             </div>
           )}
           {progress === null && (
-            <button type="button" onClick={() => onChange(null)} className="absolute top-2 right-2 rounded bg-ink/80 px-3 py-1 font-mono text-[11px] text-canvas uppercase">Remove</button>
+            <button type="button" onClick={() => onChange(null)} className="absolute top-2 right-2 rounded bg-charcoal/80 px-3 py-1 font-mono text-[11px] text-canvas uppercase">Remove</button>
           )}
         </div>
       ) : env.uploadsEnabled ? (
@@ -79,7 +79,7 @@ export function PhotoField({ label, value, onChange, aspect = 'aspect-square', f
             <Button type="button" variant="secondary" className="flex-1" onClick={() => void native('photos')}><Image {...ICON_SM} /> Gallery</Button>
           </div>
         ) : (
-          <label className={cx('flex cursor-pointer flex-col items-center justify-center gap-1 rounded border border-dashed border-line font-mono text-[12px] text-muted uppercase hover:border-ink', aspect)}>
+          <label className={cx('flex cursor-pointer flex-col items-center justify-center gap-1 rounded border border-dashed border-faded-gray font-mono text-[12px] text-pencil-gray uppercase hover:border-charcoal', aspect)}>
             <Camera size={24} strokeWidth={1.75} absoluteStrokeWidth />
             Tap to take or choose a photo
             <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void handle(f) }} />

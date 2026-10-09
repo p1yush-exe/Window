@@ -154,14 +154,31 @@ export async function updateProfile(
 export async function grantDailySwipes(profile: UserProfile): Promise<boolean> {
   const today = todayKey()
   if (profile.lastDailyGrant === today) return false
-  await updateDoc(refs.user(profile.uid), { swipes: increment(DAILY_SWIPES), lastDailyGrant: today })
+  await updateDoc(refs.user(profile.uid), { swipes: profile.swipes + DAILY_SWIPES, lastDailyGrant: today })
+  return true
+}
+
+/** Backfills fields on profiles created before the swipe economy existed. */
+export async function ensureProfileDefaults(uid: string): Promise<boolean> {
+  const snap = await getDoc(refs.user(uid))
+  if (!snap.exists()) return false
+  const d = snap.data() as Record<string, unknown>
+  const patch: Record<string, unknown> = {}
+  if (typeof d.swipes !== 'number') patch.swipes = DAILY_SWIPES
+  if (typeof d.superSwipes !== 'number') patch.superSwipes = 0
+  if (typeof d.appBonusGranted !== 'boolean') patch.appBonusGranted = false
+  if (typeof d.hasShop !== 'boolean') patch.hasShop = d.role === 'vendor'
+  if (!Array.isArray(d.interests)) patch.interests = []
+  if (d.lastDailyGrant === undefined) patch.lastDailyGrant = typeof d.swipes === 'number' ? null : todayKey()
+  if (Object.keys(patch).length === 0) return false
+  await updateDoc(refs.user(uid), patch)
   return true
 }
 
 /** First login inside the Android app gives 2 super swipes. */
 export async function grantAppBonus(profile: UserProfile): Promise<boolean> {
   if (profile.appBonusGranted) return false
-  await updateDoc(refs.user(profile.uid), { superSwipes: increment(APP_BONUS_SUPER), appBonusGranted: true })
+  await updateDoc(refs.user(profile.uid), { superSwipes: profile.superSwipes + APP_BONUS_SUPER, appBonusGranted: true })
   return true
 }
 
@@ -460,7 +477,8 @@ export async function recordLike(buyer: UserProfile, product: Product, type: Lik
     createdAt: serverTimestamp(),
     decidedAt: instant ? serverTimestamp() : null,
   })
-  batch.update(refs.user(buyer.uid), type === 'swipe' ? { swipes: increment(-1) } : { superSwipes: increment(-1) })
+  // Absolute values (not increment) so profiles that predate the balances cannot go negative.
+  batch.update(refs.user(buyer.uid), type === 'swipe' ? { swipes: Math.max(0, buyer.swipes - 1) } : { superSwipes: Math.max(0, buyer.superSwipes - 1) })
   if (instant) batch.set(refs.match(likeId), matchData(buyer, product, type, shop, clientTs))
   await batch.commit()
   return instant ? { kind: 'matched', matchId: likeId } : { kind: 'pending', likeId }

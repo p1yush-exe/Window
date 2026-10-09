@@ -5,6 +5,7 @@ import { OnboardingGate, PublicOnly, RequireProfile, RequireVendor, RoleHome, Sh
 import { LoginPage } from '@/features/auth/AuthPages'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { ShopperSetupPage } from '@/features/entry/ShopperSetupPage'
+import { EntryPage } from '@/features/entry/EntryPage'
 import { FeedPage } from '@/features/feed/FeedPage'
 import { BagPage } from '@/features/bag/BagPage'
 import { ChatPage } from '@/features/chat/ChatPage'
@@ -35,6 +36,7 @@ export function AppRouter() {
         <Route element={<OnboardingGate />}>
           <Route path="/onboarding" element={<OnboardingPage />} />
         </Route>
+        <Route path="/welcome" element={<EntryPage />} />
         <Route path="/shopper/setup" element={<ShopperSetupPage />} />
         <Route path="/vendor" element={<VendorLandingPage />} />
         <Route path="/vendor/setup" element={<VendorSetupPage />} />

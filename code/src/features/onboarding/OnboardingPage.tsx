@@ -33,13 +33,13 @@ export function OnboardingPage() {
     <div className="flex min-h-dvh flex-col justify-center px-6 py-12 pt-safe">
       <form onSubmit={onSubmit} className="mx-auto w-full max-w-sm space-y-5">
         <div>
-          <h1 className="text-[29px] tracking-[-0.03em]">Finish your account</h1>
-          <p className="font-mono text-[12px] text-muted">Signed in as {user.email}</p>
+          <h1 className="text-[29px] ">Finish your account</h1>
+          <p className="font-mono text-[12px] text-pencil-gray">Signed in as {user.email}</p>
         </div>
         <Input label="Your name" name="displayName" required minLength={2} value={name} onChange={(e) => setName(e.target.value)} />
         <ErrorBanner message={error} />
         <Button type="submit" className="w-full" loading={busy}>Start swiping</Button>
-        <button type="button" onClick={() => void signOut()} className="w-full text-center font-mono text-[12px] text-muted uppercase underline">Use a different account</button>
+        <button type="button" onClick={() => void signOut()} className="w-full text-center font-mono text-[12px] text-pencil-gray uppercase underline">Use a different account</button>
       </form>
     </div>
   )

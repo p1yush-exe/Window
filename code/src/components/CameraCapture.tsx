@@ -75,25 +75,25 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black">
       <div className="flex items-center justify-between px-4 pt-[calc(var(--safe-top)+12px)] pb-3">
-        <span className="font-mono text-[12px] tracking-[0.06em] text-bone-vellum uppercase">New product photo</span>
-        <button type="button" onClick={onCancel} className="rounded border border-bone-vellum/40 p-1.5 text-bone-vellum" aria-label="Close"><X {...ICON} size={16} /></button>
+        <span className="font-mono text-[12px] tracking-[0.053em] text-white uppercase">New product photo</span>
+        <button type="button" onClick={onCancel} className="rounded border border-white/60 p-1.5 text-white" aria-label="Close"><X {...ICON} size={16} /></button>
       </div>
       <div className="relative flex flex-1 items-center justify-center overflow-hidden">
         {native ? (
           <div className="px-6 text-center">
-            <Camera size={48} strokeWidth={1.5} absoluteStrokeWidth className="mx-auto text-bone-vellum" />
-            <p className="mt-3 text-[15px] text-bone-vellum/80">Take a photo with the camera or pick one from your gallery.</p>
+            <Camera size={48} strokeWidth={1.5} absoluteStrokeWidth className="mx-auto text-white" />
+            <p className="mt-3 text-[15px] text-white/85">Take a photo with the camera or pick one from your gallery.</p>
           </div>
         ) : (
           <video ref={video} playsInline muted className="h-full w-full object-cover" style={{ transform: facing === 'user' ? 'scaleX(-1)' : undefined }} />
         )}
-        {!native && !ready && !error && <p className="absolute font-mono text-[12px] text-bone-vellum/70 uppercase">Starting camera…</p>}
-        <div className="pointer-events-none absolute inset-6 border border-bone-vellum/40" aria-hidden="true" />
+        {!native && !ready && !error && <p className="absolute font-mono text-[12px] text-white/75 uppercase">Starting camera…</p>}
+        <div className="pointer-events-none absolute inset-6 border border-white/60" aria-hidden="true" />
       </div>
       <div className="space-y-3 px-5 pt-4 pb-[calc(var(--safe-bottom)+20px)]">
         <ErrorBanner message={error} />
         <div className="flex items-center justify-between gap-3">
-          <label className="flex h-12 w-12 cursor-pointer items-center justify-center rounded border border-bone-vellum/40 text-bone-vellum" aria-label="Choose from gallery">
+          <label className="flex h-12 w-12 cursor-pointer items-center justify-center rounded border border-white/60 text-white" aria-label="Choose from gallery">
             <ImageIcon {...ICON} />
             {native ? (
               <button type="button" className="absolute inset-0" onClick={() => void nativePick('photos')} aria-label="Gallery" />
@@ -105,15 +105,15 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
             type="button"
             onClick={() => (native ? void nativePick('camera') : snap())}
             disabled={!native && !ready}
-            className="flex h-18 w-18 items-center justify-center rounded-full border-4 border-bone-vellum bg-accent disabled:opacity-40"
+            className="flex h-18 w-18 items-center justify-center rounded-full border-4 border-bone-vellum bg-eager-green disabled:opacity-40"
             aria-label="Take photo"
           >
-            <Camera size={28} strokeWidth={1.75} absoluteStrokeWidth className="text-on-accent" />
+            <Camera size={28} strokeWidth={1.75} absoluteStrokeWidth className="text-white" />
           </button>
           {native ? (
             <span className="h-12 w-12" />
           ) : (
-            <Button type="button" variant="ghost" className="h-12 w-12 border border-bone-vellum/40 px-0 text-bone-vellum" onClick={() => setFacing((f) => (f === 'user' ? 'environment' : 'user'))} aria-label="Flip camera">
+            <Button type="button" variant="ghost" className="h-12 w-12 border border-white/60 px-0 text-white" onClick={() => setFacing((f) => (f === 'user' ? 'environment' : 'user'))} aria-label="Flip camera">
               <RefreshCw {...ICON} />
             </Button>
           )}

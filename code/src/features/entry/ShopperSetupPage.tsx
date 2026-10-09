@@ -41,25 +41,30 @@ export function ShopperSetupPage() {
     <div className="mx-auto min-h-dvh w-full max-w-md px-4 py-6 pt-safe">
       <div className="mb-4 flex items-center justify-between">
         <p className="label">Shopping · step {step + 1} of 2</p>
-        <Link to={initial.location ? '/feed' : '/'} className="font-mono text-[12px] text-muted underline">Cancel</Link>
+        <Link to={initial.location ? '/feed' : '/'} className="font-mono text-[12px] text-pencil-gray underline">Cancel</Link>
       </div>
 
       {step === 0 && (
         <div className="space-y-5">
-          <h1 className="text-[40px] leading-[0.95] tracking-[-0.03em] text-ink">Where are you shopping?</h1>
-          <p className="text-[16px] leading-relaxed text-muted">Window only shows sellers around you. Use GPS or search for your area.</p>
+          <h1 className="text-[40px] leading-[1.05]">Where are you shopping?</h1>
+          <p className="text-[16px] leading-relaxed text-pencil-gray">Window only shows sellers around you. Use GPS or search for your area.</p>
           <LocationPicker value={location} onChange={setLocation} searchable compact />
           <ErrorBanner message={error} />
           <Button className="w-full" size="lg" disabled={!location} onClick={() => { setError(null); setStep(1) }}>
             Next: interests
           </Button>
+          {!profile && (
+            <p className="text-center text-[14px] font-bold text-pencil-gray">
+              Selling something? <Link to="/vendor" className="text-spark-blue underline">Open a shop</Link>
+            </p>
+          )}
         </div>
       )}
 
       {step === 1 && (
         <div className="space-y-5">
-          <h1 className="text-[40px] leading-[0.95] tracking-[-0.03em] text-ink">What are you into?</h1>
-          <p className="text-[16px] leading-relaxed text-muted">Pick up to {MAX_STORE_TAGS}. Matching products come first; everything nearby still shows.</p>
+          <h1 className="text-[40px] leading-[1.05]">What are you into?</h1>
+          <p className="text-[16px] leading-relaxed text-pencil-gray">Pick up to {MAX_STORE_TAGS}. Matching products come first; everything nearby still shows.</p>
           <div className="flex flex-wrap gap-2">
             {STORE_TAGS.map((t) => {
               const on = interests.includes(t)
@@ -71,8 +76,8 @@ export function ShopperSetupPage() {
                   onClick={() => toggle(t)}
                   disabled={full}
                   className={cx(
-                    'rounded px-3 py-2 font-mono text-[12px] tracking-[0.04em] uppercase ring-1 transition',
-                    on ? 'bg-accent text-on-accent ring-accent' : 'bg-transparent text-ink ring-line hover:ring-ink',
+                    'rounded px-3 py-2 font-mono text-[12px] tracking-[0.053em] uppercase ring-1 transition',
+                    on ? 'bg-eager-green text-white ring-eager-green' : 'bg-transparent text-charcoal ring-line hover:ring-spark-blue',
                     full && 'opacity-40',
                   )}
                 >

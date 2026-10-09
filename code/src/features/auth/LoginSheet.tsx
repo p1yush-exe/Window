@@ -47,13 +47,13 @@ export function LoginSheet({ open, onClose, onDone, title = 'Log in to like this
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md rounded-t-3xl bg-canvas p-5 pb-[calc(1.25rem+var(--safe-bottom))] md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:rounded-3xl"
+            className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md rounded-t-3xl bg-white p-5 pb-[calc(1.25rem+var(--safe-bottom))] md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:rounded-3xl"
             role="dialog"
             aria-modal="true"
           >
-            <div className="mx-auto mb-3 h-1 w-10 rounded bg-surface-2 md:hidden" />
+            <div className="mx-auto mb-3 h-1 w-10 rounded bg-[#ececec] md:hidden" />
             <h2 className="text-xl font-normal">{title}</h2>
-            <p className="mt-1 text-sm text-muted">{body}</p>
+            <p className="mt-1 text-sm text-pencil-gray">{body}</p>
             <div className="mt-4">
               <GoogleButton
                 role="buyer"
@@ -63,10 +63,10 @@ export function LoginSheet({ open, onClose, onDone, title = 'Log in to like this
                 }}
               />
             </div>
-            <div className="my-3 flex items-center gap-3 font-mono text-[11px] text-muted uppercase"><span className="h-px flex-1 bg-line" />or email<span className="h-px flex-1 bg-line" /></div>
-            <div className="flex rounded-xl bg-surface p-1 text-sm font-semibold">
+            <div className="my-3 flex items-center gap-3 font-mono text-[11px] text-pencil-gray uppercase"><span className="h-px flex-1 bg-faded-gray" />or email<span className="h-px flex-1 bg-faded-gray" /></div>
+            <div className="flex rounded-xl bg-[#f7f7f7] p-1 text-sm font-semibold">
               {(['signup', 'login'] as const).map((t) => (
-                <button key={t} type="button" onClick={() => setTab(t)} className={`flex-1 rounded-lg py-2 ${tab === t ? 'bg-canvas' : 'text-muted'}`}>
+                <button key={t} type="button" onClick={() => setTab(t)} className={`flex-1 rounded-lg py-2 ${tab === t ? 'bg-white' : 'text-pencil-gray'}`}>
                   {t === 'signup' ? 'New here' : 'I have an account'}
                 </button>
               ))}
@@ -79,7 +79,7 @@ export function LoginSheet({ open, onClose, onDone, title = 'Log in to like this
               <Button type="submit" className="w-full" loading={busy}>
                 {tab === 'signup' ? 'Create account & like' : 'Log in & like'}
               </Button>
-              <button type="button" onClick={onClose} className="w-full text-center text-sm text-muted">
+              <button type="button" onClick={onClose} className="w-full text-center text-sm text-pencil-gray">
                 Not now
               </button>
             </form>

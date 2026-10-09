@@ -67,7 +67,7 @@ export function OtpField({ label, kind, value, onChange, verified, onVerified, v
           />
         </div>
         {verified ? (
-          <span className="mb-2 inline-flex h-7 items-center gap-1 rounded bg-accent px-2.5 font-mono text-[11px] text-on-accent uppercase"><Check {...ICON_SM} size={12} /> Verified</span>
+          <span className="mb-2 inline-flex h-7 items-center gap-1 rounded bg-eager-green px-2.5 font-mono text-[11px] text-white uppercase"><Check {...ICON_SM} size={12} /> Verified</span>
         ) : (
           <Button type="button" variant="secondary" size="md" onClick={() => void send()} loading={busy && !sent}>
             {sent ? 'Resend' : 'Send OTP'}
@@ -75,7 +75,7 @@ export function OtpField({ label, kind, value, onChange, verified, onVerified, v
         )}
       </div>
       {sent && !verified && (
-        <div className={cx('flex items-end gap-2 rounded-xl bg-surface p-2 ring-1 ring-line')}>
+        <div className={cx('flex items-end gap-2 rounded-xl bg-[#f7f7f7] p-2 border-2 border-faded-gray')}>
           <div className="flex-1">
             <Input
               label={`Code sent to ${value}`}

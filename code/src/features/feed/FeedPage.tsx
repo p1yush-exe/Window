@@ -133,8 +133,8 @@ export function FeedPage() {
   return (
     <div className="relative flex flex-1 flex-col">
       {/* Side overlays driven by drag progress */}
-      <div className="pointer-events-none fixed inset-y-0 left-0 z-20 w-[26vw] bg-[#e11d48]" style={{ opacity: Math.max(0, -drag) * 0.55 }} />
-      <div className="pointer-events-none fixed inset-y-0 right-0 z-20 w-[30vw] bg-[#16a34a]" style={{ opacity: Math.max(0, drag) * 0.55 }} />
+      <div className="pointer-events-none fixed inset-y-0 left-0 z-20 w-[26vw] bg-[#ff4b4b]" style={{ opacity: Math.max(0, -drag) * 0.55 }} />
+      <div className="pointer-events-none fixed inset-y-0 right-0 z-20 w-[30vw] bg-[#58cc02]" style={{ opacity: Math.max(0, drag) * 0.55 }} />
       <LightSweep trigger={sweep} />
       {/* Ambient backdrop: the current product photo, blurred and full-bleed */}
       {top?.imageUrls[0] && (
@@ -142,18 +142,18 @@ export function FeedPage() {
       )}
 
       <div className="mx-auto mt-3 flex w-full max-w-sm items-center justify-center gap-1.5 px-4 md:max-w-md">
-        <button type="button" onClick={() => navigate('/shopper/setup')} className="flex items-center gap-1 rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
+        <button type="button" onClick={() => navigate('/shopper/setup')} className="flex items-center gap-1 rounded border-2 border-faded-gray px-2 py-0.5 font-mono text-[11px] tracking-[0.053em] text-charcoal uppercase hover:border-charcoal">
           <MapPin {...ICON} size={12} /> {center ? areaLabel(center) : 'Set area'}
         </button>
         <div className="relative">
-          <button type="button" onClick={() => setRadiusOpen((o) => !o)} className="rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
+          <button type="button" onClick={() => setRadiusOpen((o) => !o)} className="rounded border-2 border-faded-gray px-2 py-0.5 font-mono text-[11px] tracking-[0.053em] text-charcoal uppercase hover:border-charcoal">
             {feed.effectiveRadius ? `≤ ${feed.effectiveRadius} km` : prefs.radiusKm ? `≤ ${prefs.radiusKm} km` : 'Auto'}
           </button>
           {radiusOpen && (
-            <ul className="absolute left-0 z-30 mt-1 w-36 border border-line bg-canvas font-mono text-[12px]">
-              <li><button type="button" onClick={() => chooseRadius(null)} className="block w-full px-3 py-2 text-left hover:bg-surface">Auto (widen)</button></li>
+            <ul className="absolute left-0 z-30 mt-1 w-36 border-2 border-faded-gray bg-white font-mono text-[12px]">
+              <li><button type="button" onClick={() => chooseRadius(null)} className="block w-full px-3 py-2 text-left hover:bg-[#f7f7f7]">Auto (widen)</button></li>
               {RADIUS_STEPS_KM.map((km) => (
-                <li key={km}><button type="button" onClick={() => chooseRadius(km)} className="block w-full px-3 py-2 text-left hover:bg-surface">Within {km} km</button></li>
+                <li key={km}><button type="button" onClick={() => chooseRadius(km)} className="block w-full px-3 py-2 text-left hover:bg-[#f7f7f7]">Within {km} km</button></li>
               ))}
             </ul>
           )}
@@ -169,7 +169,7 @@ export function FeedPage() {
             ))}
           </AnimatePresence>
           {!top && (
-            <div className="absolute inset-0 flex items-center border border-dashed border-line">
+            <div className="absolute inset-0 flex items-center border border-dashed border-faded-gray">
               <EmptyState
                 icon={<Map size={28} strokeWidth={1.75} absoluteStrokeWidth />}
                 title={feed.nearbyCount === 0 && center ? 'Nothing nearby yet' : "You've seen everything nearby"}
@@ -189,8 +189,8 @@ export function FeedPage() {
       {/* Super swipe prompt from the bottom */}
       <AnimatePresence>
         {upgrade && profile && (
-          <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} className="fixed inset-x-4 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto flex max-w-sm items-center justify-between gap-3 border border-line bg-canvas p-3">
-            <p className="text-[15px] text-ink">Upgrade to super swipe?</p>
+          <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} className="fixed inset-x-4 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto flex max-w-sm items-center justify-between gap-3 border-2 border-faded-gray bg-white p-3">
+            <p className="text-[15px] text-charcoal">Upgrade to super swipe?</p>
             <Button size="sm" onClick={() => void superSwipe(upgrade)} disabled={profile.superSwipes <= 0}>
               <HeartPlus {...ICON} size={14} /> Super swipe
             </Button>
@@ -201,17 +201,17 @@ export function FeedPage() {
       {/* Outcome toast */}
       <AnimatePresence>
         {outcome && !upgrade && (
-          <motion.div initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }} className="fixed inset-x-4 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto max-w-sm border border-accent bg-canvas p-3">
+          <motion.div initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }} className="fixed inset-x-4 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto max-w-sm border border-eager-green bg-white p-3">
             {outcome.outcome.kind === 'matched' ? (
               <>
-                <p className="font-mono text-[12px] text-accent-text uppercase">{outcome.type === 'super' ? 'Claimed' : 'Matched'}</p>
-                <p className="text-[14px] text-ink">You can chat with {outcome.product.shopName || outcome.product.vendorName} about {outcome.product.title}.</p>
-                <Link to={`/bag/chat/${outcome.outcome.matchId}`} className="mt-1 inline-block font-mono text-[12px] text-accent-text uppercase underline">Open chat</Link>
+                <p className="font-mono text-[12px] text-spark-blue uppercase">{outcome.type === 'super' ? 'Claimed' : 'Matched'}</p>
+                <p className="text-[14px] text-charcoal">You can chat with {outcome.product.shopName || outcome.product.vendorName} about {outcome.product.title}.</p>
+                <Link to={`/bag/chat/${outcome.outcome.matchId}`} className="mt-1 inline-block font-mono text-[12px] text-spark-blue uppercase underline">Open chat</Link>
               </>
             ) : (
               <>
-                <p className="font-mono text-[12px] text-muted uppercase">Liked · waiting for the seller</p>
-                <p className="text-[14px] text-ink">{outcome.product.shopName || outcome.product.vendorName} will see your like. Super swipes skip the wait.</p>
+                <p className="font-mono text-[12px] text-pencil-gray uppercase">Liked · waiting for the seller</p>
+                <p className="text-[14px] text-charcoal">{outcome.product.shopName || outcome.product.vendorName} will see your like. Super swipes skip the wait.</p>
               </>
             )}
           </motion.div>
@@ -221,22 +221,22 @@ export function FeedPage() {
       {/* Swipes exhausted overlay */}
       <AnimatePresence>
         {exhausted && profile && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 flex items-end justify-center bg-canvas/85 p-5 pb-[calc(6rem+var(--safe-bottom))] backdrop-blur-sm md:items-center">
-            <div className="w-full max-w-sm border border-accent bg-canvas p-5">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 flex items-end justify-center bg-white/90 p-5 pb-[calc(6rem+var(--safe-bottom))] backdrop-blur-sm md:items-center">
+            <div className="w-full max-w-sm border border-eager-green bg-white p-5">
               <p className="label">Swipes are over</p>
-              <h2 className="mt-1 text-[29px] leading-none tracking-[-0.03em]">{profile.swipes === 0 ? 'No swipes left today.' : 'Not enough for this one.'}</h2>
-              <p className="mt-2 text-[14px] text-muted">You get 5 free swipes every day. Use a super swipe or buy more now.</p>
+              <h2 className="mt-1 text-[29px] leading-none ">{profile.swipes === 0 ? 'No swipes left today.' : 'Not enough for this one.'}</h2>
+              <p className="mt-2 text-[14px] text-pencil-gray">You get 5 free swipes every day. Use a super swipe or buy more now.</p>
               <div className="mt-4 flex flex-col gap-2">
                 {profile.superSwipes > 0 && top && (
                   <Button onClick={() => { setExhausted(false); void superSwipe(top) }}><HeartPlus {...ICON} size={14} /> Use a super swipe ({profile.superSwipes})</Button>
                 )}
                 <Button variant={profile.superSwipes > 0 ? 'secondary' : 'primary'} onClick={() => { setExhausted(false); setBuyOpen('swipes') }}>Buy swipes</Button>
                 {isWeb() && !profile.appBonusGranted && (
-                  <a href={APK_URL} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded border border-line px-4 py-3 font-mono text-[13px] text-ink uppercase">
+                  <a href={APK_URL} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded border-2 border-faded-gray px-4 py-3 font-mono text-[13px] text-charcoal uppercase">
                     <Download {...ICON} size={16} /> Get the app · 2 free super swipes
                   </a>
                 )}
-                <button type="button" onClick={() => setExhausted(false)} className="py-2 font-mono text-[12px] text-muted uppercase">Keep browsing left</button>
+                <button type="button" onClick={() => setExhausted(false)} className="py-2 font-mono text-[12px] text-pencil-gray uppercase">Keep browsing left</button>
               </div>
             </div>
           </motion.div>

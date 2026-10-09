@@ -9,7 +9,7 @@ import type { StoreLocation } from '@/lib/types'
 // Leaflet's default marker icons do not resolve under Vite; use an inline SVG pin.
 const pin = L.divIcon({
   className: '',
-  html: '<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;background:#ebfc72;border:3px solid #fff;box-:0 2px 6px rgba(0,0,0,.35);transform:rotate(-45deg);margin:-28px 0 0 -14px"></div>',
+  html: '<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;background:#58cc02;border:3px solid #fff;box-:0 2px 6px rgba(0,0,0,.35);transform:rotate(-45deg);margin:-28px 0 0 -14px"></div>',
   iconSize: [28, 28],
   iconAnchor: [14, 28],
 })
@@ -125,15 +125,15 @@ export function LocationPicker({ value, onChange, searchable = true, compact = f
                 }
               }}
               placeholder="Search an area, landmark or city"
-              className="h-11 flex-1 border-0 border-b border-line bg-transparent text-[16px] text-ink outline-none placeholder:text-muted focus:border-accent"
+              className="h-12 flex-1 rounded-xl border-2 border-faded-gray bg-white px-4 text-[16px] font-medium text-charcoal outline-none placeholder:text-faded-gray focus:border-spark-blue"
             />
             <Button type="button" variant="secondary" onClick={() => void search()} loading={searching}>Search</Button>
           </div>
           {results.length > 0 && (
-            <ul className="absolute inset-x-0 z-[1000] mt-1 max-h-56 overflow-auto border border-line bg-canvas">
+            <ul className="absolute inset-x-0 z-[1000] mt-1 max-h-56 overflow-auto border-2 border-faded-gray bg-white">
               {results.map((r, i) => (
                 <li key={i}>
-                  <button type="button" onClick={() => pick(r)} className="block w-full px-3 py-2 text-left text-[14px] text-ink hover:bg-surface">
+                  <button type="button" onClick={() => pick(r)} className="block w-full px-3 py-2 text-left text-[14px] text-charcoal hover:bg-[#f7f7f7]">
                     {r.address}
                   </button>
                 </li>
@@ -142,13 +142,13 @@ export function LocationPicker({ value, onChange, searchable = true, compact = f
           )}
         </div>
       )}
-      <div ref={mapEl} className={cx('w-full overflow-hidden rounded ring-1 ring-line', compact ? 'h-48' : 'h-64')} aria-label="Map" />
+      <div ref={mapEl} className={cx('w-full overflow-hidden rounded border-2 border-faded-gray', compact ? 'h-48' : 'h-64')} aria-label="Map" />
       <div className="flex gap-2">
         <Button type="button" variant="secondary" className="flex-1" onClick={() => void locateMe()} loading={busy}>
           <MapPin {...ICON} size={16} /> Use my GPS location
         </Button>
       </div>
-      <p className="font-mono text-[11px] text-muted">Drag the pin or tap the map to adjust.</p>
+      <p className="font-mono text-[11px] text-pencil-gray">Drag the pin or tap the map to adjust.</p>
       {!compact && (
         <label className="block">
           <span className="mb-1 block">Address</span>
@@ -160,11 +160,11 @@ export function LocationPicker({ value, onChange, searchable = true, compact = f
               if (value) onChange({ ...value, address: e.target.value, area })
             }}
             placeholder="Shop number, street, area"
-            className="w-full border-0 border-b border-line bg-transparent py-2 text-[16px] text-ink outline-none placeholder:text-muted focus:border-accent"
+            className="w-full rounded-xl border-2 border-faded-gray bg-white px-4 py-3 text-[16px] font-medium text-charcoal outline-none placeholder:text-faded-gray focus:border-spark-blue"
           />
         </label>
       )}
-      {compact && address && <p className="text-[14px] text-ink">{address}</p>}
+      {compact && address && <p className="text-[14px] text-charcoal">{address}</p>}
       <ErrorBanner message={error} />
     </div>
   )

@@ -31,15 +31,15 @@ export function ProductPage() {
 
   return (
     <div className="pt-0 pb-6">
-      <div className="relative bg-surface">
-        <ProductImage src={product.imageUrls[active] ?? product.imageUrls[0]} alt={product.title} className="mx-auto aspect-[3/4] w-full max-w-md border-y border-ink" />
-        <button type="button" onClick={() => navigate(-1)} className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded border border-line bg-canvas/90 text-ink" aria-label="Back">
+      <div className="relative bg-[#f7f7f7]">
+        <ProductImage src={product.imageUrls[active] ?? product.imageUrls[0]} alt={product.title} className="mx-auto aspect-[3/4] w-full max-w-md border-y border-charcoal" />
+        <button type="button" onClick={() => navigate(-1)} className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded border-2 border-faded-gray bg-white/90 text-charcoal" aria-label="Back">
           <ChevronLeft {...ICON} />
         </button>
         {product.imageUrls.length > 1 && (
           <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
             {product.imageUrls.map((_, i) => (
-              <button key={i} onClick={() => setActive(i)} className={`h-1.5 ${i === active ? 'w-5 bg-accent' : 'w-1.5 bg-bone-vellum/60'}`} aria-label={`Image ${i + 1}`} />
+              <button key={i} onClick={() => setActive(i)} className={`h-1.5 ${i === active ? 'w-5 bg-eager-green' : 'w-1.5 bg-white/60'}`} aria-label={`Image ${i + 1}`} />
             ))}
           </div>
         )}
@@ -51,11 +51,11 @@ export function ProductPage() {
           {product.tags?.map((t) => <Badge key={t}>{t}</Badge>)}
         </div>
         <p className="label mt-2">{product.productCode}</p>
-        <h1 className="text-[29px] leading-tight tracking-[-0.03em]">{product.title}</h1>
-        <p className="mt-1 font-mono text-[18px] text-ink">{priceRange(product)}</p>
-        <p className="font-mono text-[11px] text-muted uppercase">{product.paymentModes?.join(' · ') || 'ask the seller'}</p>
-        <Link to={`/shop/${product.shopId}`} className="mt-2 inline-block font-mono text-[12px] text-accent-text uppercase underline">{product.shopName || product.vendorName}</Link>
-        {product.description && <p className="mt-3 text-[15px] leading-relaxed whitespace-pre-wrap text-ink">{product.description}</p>}
+        <h1 className="text-[29px] leading-tight ">{product.title}</h1>
+        <p className="mt-1 font-mono text-[18px] text-charcoal">{priceRange(product)}</p>
+        <p className="font-mono text-[11px] text-pencil-gray uppercase">{product.paymentModes?.join(' · ') || 'ask the seller'}</p>
+        <Link to={`/shop/${product.shopId}`} className="mt-2 inline-block font-mono text-[12px] text-spark-blue uppercase underline">{product.shopName || product.vendorName}</Link>
+        {product.description && <p className="mt-3 text-[15px] leading-relaxed whitespace-pre-wrap text-charcoal">{product.description}</p>}
 
         <div className="mt-4 flex gap-2">
           {isOwner ? (
@@ -68,8 +68,8 @@ export function ProductPage() {
         </div>
 
         <div className="mt-6 mb-2 flex items-center justify-between">
-          <h2 className="text-[22px] tracking-[-0.03em]">Reviews</h2>
-          {summary.avg !== null && <span className="flex items-center gap-1 font-mono text-[12px] text-muted"><Stars value={summary.avg} size="sm" /> {summary.avg} ({summary.count})</span>}
+          <h2 className="text-[22px] ">Reviews</h2>
+          {summary.avg !== null && <span className="flex items-center gap-1 font-mono text-[12px] text-pencil-gray"><Stars value={summary.avg} size="sm" /> {summary.avg} ({summary.count})</span>}
         </div>
         <ReviewList reviews={reviews} />
       </div>

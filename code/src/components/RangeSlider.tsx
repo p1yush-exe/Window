@@ -16,8 +16,8 @@ export function RangeSlider({ min, max, low, high, step = 1, onChange }: Props) 
   const hi = ((high - min) / span) * 100
   return (
     <div className="relative h-8">
-      <div className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-line" />
-      <div className="absolute top-1/2 h-0.5 -translate-y-1/2 bg-accent" style={{ left: `${lo}%`, right: `${100 - hi}%` }} />
+      <div className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-faded-gray" />
+      <div className="absolute top-1/2 h-0.5 -translate-y-1/2 bg-eager-green" style={{ left: `${lo}%`, right: `${100 - hi}%` }} />
       {[
         { v: low, set: (v: number) => onChange(Math.min(v, high), high) },
         { v: high, set: (v: number) => onChange(low, Math.max(v, low)) },

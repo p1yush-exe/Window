@@ -55,8 +55,8 @@ export function ShopEditPage() {
 
   return (
     <div className="px-4">
-      <PageHeader eyebrow={shopId ? 'Edit shop' : 'New shop'} title={shop.name || 'Shop details'} right={<Link to="/vendor/shop" className="font-mono text-[12px] text-muted uppercase underline">Cancel</Link>} />
-      <form onSubmit={submit} className="space-y-4 border border-line p-4">
+      <PageHeader eyebrow={shopId ? 'Edit shop' : 'New shop'} title={shop.name || 'Shop details'} right={<Link to="/vendor/shop" className="font-mono text-[12px] text-pencil-gray uppercase underline">Cancel</Link>} />
+      <form onSubmit={submit} className="space-y-4 border-2 border-faded-gray p-4">
         <Input label="Shop name" name="name" required minLength={2} maxLength={80} value={shop.name} onChange={(e) => patch({ name: e.target.value })} />
         <TagPicker value={shop.tags} onChange={(tags) => patch({ tags })} label="Shop tags" />
         <Textarea label="Description" name="description" rows={3} maxLength={300} value={shop.description} onChange={(e) => patch({ description: e.target.value })} />

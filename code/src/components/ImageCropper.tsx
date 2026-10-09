@@ -56,16 +56,16 @@ export function ImageCropper({ blob, aspect = 3 / 4, onDone, onCancel }: Props) 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black">
       <div className="flex items-center justify-between px-4 pt-[calc(var(--safe-top)+12px)] pb-3">
-        <span className="font-mono text-[12px] tracking-[0.06em] text-bone-vellum uppercase">Crop · drag and pinch</span>
-        <button type="button" onClick={onCancel} className="rounded border border-bone-vellum/40 p-1.5 text-bone-vellum" aria-label="Cancel"><X {...ICON} size={16} /></button>
+        <span className="font-mono text-[12px] tracking-[0.053em] text-white uppercase">Crop · drag and pinch</span>
+        <button type="button" onClick={onCancel} className="rounded border border-white/60 p-1.5 text-white" aria-label="Cancel"><X {...ICON} size={16} /></button>
       </div>
       <div className="relative flex-1">
         {src && <Cropper image={src} crop={crop} zoom={zoom} aspect={aspect} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onComplete} showGrid={false} />}
       </div>
       <div className="space-y-3 px-5 pt-4 pb-[calc(var(--safe-bottom)+20px)]">
-        <input type="range" min={1} max={3} step={0.01} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="w-full accent-[#ebfc72]" aria-label="Zoom" />
+        <input type="range" min={1} max={3} step={0.01} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="w-full accent-[#58cc02]" aria-label="Zoom" />
         <div className="flex gap-2">
-          <Button type="button" variant="secondary" className="flex-1 border-bone-vellum/40 text-bone-vellum" onClick={onCancel}>Retake</Button>
+          <Button type="button" variant="secondary" className="flex-1 border-white/60 text-white" onClick={onCancel}>Retake</Button>
           <Button type="button" className="flex-1" loading={busy} onClick={() => void finish()}><Check {...ICON} size={16} /> Use photo</Button>
         </div>
       </div>

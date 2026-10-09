@@ -59,13 +59,13 @@ export function NotificationsPage() {
                 onClick={() => {
                   if (!n.read) void markNotificationRead(profile.uid, n.id)
                 }}
-                className={cx('block rounded-2xl p-3 ring-1 ring-line', n.read ? 'bg-canvas' : 'bg-surface')}
+                className={cx('block rounded-2xl p-3 border-2 border-faded-gray', n.read ? 'bg-white' : 'bg-[#f7f7f7]')}
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className={cx('text-sm', n.read ? 'font-medium' : 'font-bold')}>{n.title}</p>
-                  <span className="shrink-0 text-xs text-muted">{timeAgo(n.createdAt)}</span>
+                  <span className="shrink-0 text-xs text-pencil-gray">{timeAgo(n.createdAt)}</span>
                 </div>
-                <p className="text-sm text-ink">{n.body}</p>
+                <p className="text-sm text-charcoal">{n.body}</p>
               </Link>
             </li>
           ))}

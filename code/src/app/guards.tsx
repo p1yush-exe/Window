@@ -4,7 +4,6 @@ import { Button, EmptyState, FullPageSpinner } from '@/components/ui'
 import { Lock } from '@/components/icons'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { LoginSheet } from '@/features/auth/LoginSheet'
-import { EntryPage } from '@/features/entry/EntryPage'
 import { getMode } from '@/lib/mode'
 import { hasShopperPrefs } from '@/lib/prefs'
 import { isWeb } from '@/lib/platform'
@@ -16,8 +15,9 @@ export function RoleHome() {
   const mode = getMode()
   if (mode === 'vendor' && profile?.hasShop) return <Navigate to="/vendor/home" replace />
   if (mode === 'vendor' && profile && !profile.hasShop) return <Navigate to="/vendor" replace />
-  if (mode === 'shopper' || profile) return <Navigate to={hasShopperPrefs() || profile?.location ? '/feed' : '/shopper/setup'} replace />
-  return <EntryPage />
+  if (profile) return <Navigate to={hasShopperPrefs() || profile.location ? '/feed' : '/shopper/setup'} replace />
+  // First open: straight to the location page (the storefront intro leads here).
+  return <Navigate to={hasShopperPrefs() ? '/feed' : '/shopper/setup'} replace />
 }
 
 export function ShellGate() {
