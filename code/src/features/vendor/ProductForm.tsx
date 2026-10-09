@@ -115,7 +115,7 @@ export function ProductForm({ shops, initial, submitLabel, busy, onSubmit }: Pro
       <label className="flex cursor-pointer items-center gap-3 border-2 border-faded-gray p-3">
         <input type="checkbox" checked={superOnly} onChange={(e) => setSuperOnly(e.target.checked)} className="h-5 w-5 accent-[#58cc02]" />
         <span className="flex-1 text-[14px] text-charcoal">Allow only super swipes</span>
-        <HeartPlus {...ICON_SM} className="text-spark-blue" />
+        <HeartPlus {...ICON_SM} className="text-super" />
       </label>
 
       <ErrorBanner message={error} />

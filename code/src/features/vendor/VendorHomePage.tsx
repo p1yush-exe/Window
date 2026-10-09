@@ -88,7 +88,7 @@ export function VendorHomePage() {
                   <div className="flex items-center gap-2">
                     <Avatar name={l.buyerName} size={24} />
                     <p className="truncate text-[15px] text-charcoal">{l.buyerName}</p>
-                    {l.type === 'super' && <HeartPlus {...ICON_SM} className="text-spark-blue" />}
+                    {l.type === 'super' && <HeartPlus {...ICON_SM} className="text-super" />}
                     <span className="ml-auto shrink-0 font-mono text-[11px] text-pencil-gray">{timeAgo(l.createdAt)}</span>
                   </div>
                   <p className="mt-0.5 truncate font-mono text-[11px] text-pencil-gray uppercase">{l.productTitle} · {shopName(l.shopId)}</p>

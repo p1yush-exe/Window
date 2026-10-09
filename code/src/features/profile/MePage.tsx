@@ -47,7 +47,7 @@ export function MePage() {
           <p className="mt-1 font-mono text-[11px] text-spark-blue uppercase">Buy more</p>
         </button>
         <button type="button" onClick={() => setBuyOpen('superSwipes')} className="border-2 border-faded-gray p-3 text-left">
-          <p className="flex items-center gap-1.5 font-mono text-[11px] text-pencil-gray uppercase"><HeartPlus {...ICON} size={14} className="text-spark-blue" /> Super</p>
+          <p className="flex items-center gap-1.5 font-mono text-[11px] text-pencil-gray uppercase"><HeartPlus {...ICON} size={14} className="text-super" /> Super</p>
           <p className="mt-1 text-[29px] leading-none">{profile.superSwipes}</p>
           <p className="mt-1 font-mono text-[11px] text-spark-blue uppercase">Buy more</p>
         </button>

@@ -57,7 +57,7 @@ export function BuySwipesSheet({ kind: initialKind, onClose }: { kind: 'swipes' 
           <div>
             <p className="label">Swipe shop</p>
             <h2 className="mt-1 flex items-center gap-2 text-[29px] leading-none ">
-              {kind === 'swipes' ? <Heart {...ICON} size={24} /> : <HeartPlus {...ICON} size={24} className="text-spark-blue" />}
+              {kind === 'swipes' ? <Heart {...ICON} size={24} /> : <HeartPlus {...ICON} size={24} className="text-super" />}
               {kind === 'swipes' ? profile.swipes : profile.superSwipes} left
             </h2>
             <p className="mt-2 text-[14px] text-pencil-gray">

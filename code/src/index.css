@@ -35,6 +35,8 @@
   --color-on-accent: #ffffff;
   --color-like: #58cc02;
   --color-nope: #ff4b4b;
+  --color-swipe: #ff5c8a;   /* pink heart: regular swipes */
+  --color-super: #a560f6;   /* purple heart-plus: super swipes */
 
   --radius-xs: 8px;
   --radius-sm: 10px;
@@ -255,6 +257,6 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 .shine-btn::after { content: ''; position: absolute; inset: 0; width: 45%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent); animation: shine 2.2s ease-in-out infinite; pointer-events: none; }
 
 /* Super-swipe prompt: 5 s countdown ring */
-.super-ring { box-shadow: 0 0 0 2px #ececec; }
-.super-ring-progress { stroke-dasharray: 100; stroke-dashoffset: 0; animation: ring-drain 5s linear forwards; }
+.super-ring { box-shadow: 0 0 0 2px #ececec; color: #a560f6; }
+.super-ring-progress { stroke: #a560f6; stroke-dasharray: 100; stroke-dashoffset: 0; animation: ring-drain 5s linear forwards; }
 @keyframes ring-drain { to { stroke-dashoffset: 100; } }

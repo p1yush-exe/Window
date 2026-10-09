@@ -64,11 +64,11 @@ export function ShopperShell() {
           className={cx(chip, 'origin-left', empty ? active : idle)}
           aria-label={`${swipes} swipes left. Open the swipe shop`}
         >
-          <Heart {...ICON} fill={empty ? 'currentColor' : 'none'} className={empty ? '' : 'text-[#fb4f68]'} />
+          <Heart {...ICON} fill={empty ? 'currentColor' : 'none'} className={empty ? '' : 'text-swipe'} />
           {profile ? swipes : '—'}
         </motion.button>
         <button type="button" onClick={() => (profile ? setBuyOpen('superSwipes') : setLoginOpen(true))} className={cx(chip, idle)} aria-label={`${supers} super swipes left. Open the swipe shop`}>
-          <HeartPlus {...ICON} className="text-spark-blue" />
+          <HeartPlus {...ICON} className="text-super" />
           {profile ? supers : '—'}
         </button>
       </div>

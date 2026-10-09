@@ -192,10 +192,10 @@ export function FeedPage() {
         {upgrade && profile && (
           <motion.div key={upgrade.id} initial={{ y: 40, opacity: 0, scale: 0.9 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 40, opacity: 0, scale: 0.9 }} className="pointer-events-none fixed inset-x-0 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 flex flex-col items-center gap-2">
             <p className="rounded-xl border-2 border-faded-gray bg-white px-3 py-1.5 text-[15px] font-bold text-charcoal">Upgrade to super swipe?</p>
-            <button type="button" onClick={() => void superSwipe(upgrade)} disabled={profile.superSwipes <= 0} className="super-ring pointer-events-auto relative flex h-20 w-20 items-center justify-center rounded-full bg-white text-spark-blue disabled:opacity-50" aria-label="Super swipe this product">
+            <button type="button" onClick={() => void superSwipe(upgrade)} disabled={profile.superSwipes <= 0} className="super-ring pointer-events-auto relative flex h-20 w-20 items-center justify-center rounded-full bg-white text-super disabled:opacity-50" aria-label="Super swipe this product">
               <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 80 80" aria-hidden="true">
                 <circle cx="40" cy="40" r="36" fill="none" stroke="#ececec" strokeWidth="5" />
-                <circle cx="40" cy="40" r="36" fill="none" stroke="#1cb0f6" strokeWidth="5" strokeLinecap="round" pathLength="100" className="super-ring-progress" />
+                <circle cx="40" cy="40" r="36" fill="none" strokeWidth="5" strokeLinecap="round" pathLength="100" className="super-ring-progress" />
               </svg>
               <HeartPlus size={34} strokeWidth={2.5} absoluteStrokeWidth />
             </button>
