@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { cx } from '@/components/ui'
 import { ArrowLeftRight, Plus, Store, User } from '@/components/icons'
 import { useSession } from '@/features/auth/AuthProvider'
@@ -11,6 +11,10 @@ import { requestCameraPermission } from '@/lib/upload'
 export function VendorShell() {
   const { profile } = useSession()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const onShop = pathname.startsWith('/vendor/shop')
+  const onMe = pathname.startsWith('/vendor/me') || pathname.startsWith('/vendor/alerts')
+  const onNew = pathname.startsWith('/vendor/new')
   const [pending, setPending] = useState(0)
 
   const [unread, setUnread] = useState(0)
@@ -39,13 +43,14 @@ export function VendorShell() {
         <Outlet />
       </main>
 
-      <NavLink to="/vendor/shop" className={({ isActive }) => cx('notch notch-bl notch-btn', isActive && 'is-active')} aria-label="Shop management">
+      {/* Tapping an active notch returns to the seller home */}
+      <NavLink to={onShop ? '/vendor/home' : '/vendor/shop'} className={cx('notch notch-bl notch-btn', onShop && 'is-active')} aria-label={onShop ? 'Back to seller home' : 'Shop management'}>
         <Store size={36} strokeWidth={2.25} absoluteStrokeWidth />
       </NavLink>
-      <NavLink to="/vendor/new" className={({ isActive }) => cx('fab-add', isActive && 'is-active')} aria-label="Add product">
+      <NavLink to={onNew ? '/vendor/home' : '/vendor/new'} className={cx('fab-add', onNew && 'is-active')} aria-label={onNew ? 'Back to seller home' : 'Add product'}>
         <Plus size={32} strokeWidth={3} absoluteStrokeWidth />
       </NavLink>
-      <NavLink to="/vendor/me" className={({ isActive }) => cx('notch notch-br notch-btn', isActive && 'is-active')} aria-label="Seller profile">
+      <NavLink to={onMe ? '/vendor/home' : '/vendor/me'} className={cx('notch notch-br notch-btn', onMe && 'is-active')} aria-label={onMe ? 'Back to seller home' : 'Seller profile'}>
         <User size={36} strokeWidth={2.25} absoluteStrokeWidth />
       </NavLink>
     </div>

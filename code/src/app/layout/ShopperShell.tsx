@@ -47,6 +47,8 @@ export function ShopperShell() {
   const supers = profile?.superSwipes ?? 0
   const empty = Boolean(profile) && swipes === 0
   const onFeed = location.pathname === '/feed'
+  const onBag = location.pathname.startsWith('/bag')
+  const onMe = location.pathname.startsWith('/me')
 
   return (
     <div className="relative flex min-h-dvh flex-col bg-white">
@@ -72,13 +74,13 @@ export function ShopperShell() {
         <Outlet />
       </main>
 
-      {/* Bottom-left notch: liked & chats */}
-      <NavLink to="/bag" className={({ isActive }) => cx('notch notch-bl notch-btn relative', isActive && 'is-active')} aria-label="Liked and chats">
+      {/* Bottom-left notch: liked & chats (tap again to return to the feed) */}
+      <NavLink to={onBag ? '/feed' : '/bag'} className={cx('notch notch-bl notch-btn relative', onBag && 'is-active')} aria-label={onBag ? 'Back to the feed' : 'Liked and chats'}>
         <ShoppingBag size={36} strokeWidth={2.25} absoluteStrokeWidth />
         {unread > 0 && <span className="absolute -top-2 right-2 rounded-lg bg-super px-1.5 text-[11px] font-bold text-white">{unread}</span>}
       </NavLink>
-      {/* Bottom-right notch: profile */}
-      <NavLink to="/me" className={({ isActive }) => cx('notch notch-br notch-btn', isActive && 'is-active')} aria-label="Profile">
+      {/* Bottom-right notch: profile (tap again to return to the feed) */}
+      <NavLink to={onMe ? '/feed' : '/me'} className={cx('notch notch-br notch-btn', onMe && 'is-active')} aria-label={onMe ? 'Back to the feed' : 'Profile'}>
         <User size={36} strokeWidth={2.25} absoluteStrokeWidth />
       </NavLink>
 
