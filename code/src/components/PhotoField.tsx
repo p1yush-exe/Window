@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button, ErrorBanner, Input, cx } from '@/components/ui'
+import { Camera, ICON_SM, Image } from '@/components/icons'
 import { env } from '@/lib/env'
 import { isNative } from '@/lib/native'
 import { pickNativePhotos, uploadPhoto } from '@/lib/upload'
@@ -74,12 +75,12 @@ export function PhotoField({ label, value, onChange, aspect = 'aspect-square', f
       ) : env.uploadsEnabled ? (
         isNative() ? (
           <div className="flex gap-2">
-            <Button type="button" variant="secondary" className="flex-1" onClick={() => void native('camera')}>📷 Camera</Button>
-            <Button type="button" variant="secondary" className="flex-1" onClick={() => void native('photos')}>🖼 Gallery</Button>
+            <Button type="button" variant="secondary" className="flex-1" onClick={() => void native('camera')}><Camera {...ICON_SM} /> Camera</Button>
+            <Button type="button" variant="secondary" className="flex-1" onClick={() => void native('photos')}><Image {...ICON_SM} /> Gallery</Button>
           </div>
         ) : (
           <label className={cx('flex cursor-pointer flex-col items-center justify-center gap-1 rounded border border-dashed border-line font-mono text-[12px] text-muted uppercase hover:border-ink', aspect)}>
-            <span className="text-2xl">📷</span>
+            <Camera size={24} strokeWidth={1.75} absoluteStrokeWidth />
             Tap to take or choose a photo
             <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void handle(f) }} />
           </label>

@@ -1,23 +1,27 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
-import { AppShell } from './layout/AppShell'
-import { OnboardingGate, PublicOnly, RequireProfile, RequireRole, RoleHome, ShellGate } from './guards'
+import { ShopperShell } from './layout/ShopperShell'
+import { VendorShell } from './layout/VendorShell'
+import { OnboardingGate, PublicOnly, RequireProfile, RequireVendor, RoleHome, ShellGate } from './guards'
 import { LoginPage } from '@/features/auth/AuthPages'
+import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
+import { ShopperSetupPage } from '@/features/entry/ShopperSetupPage'
+import { FeedPage } from '@/features/feed/FeedPage'
+import { BagPage } from '@/features/bag/BagPage'
+import { ChatPage } from '@/features/chat/ChatPage'
+import { MePage } from '@/features/profile/MePage'
+import { NotificationsPage } from '@/features/notifications/NotificationsPage'
+import { MetricsPage } from '@/features/metrics/MetricsPage'
+import { ShopPage } from '@/features/shop/ShopPage'
+import { ProductPage } from '@/features/products/ProductPage'
 import { VendorLandingPage } from '@/features/vendor/VendorLandingPage'
 import { VendorSetupPage } from '@/features/vendor/VendorSetupPage'
-import { ShopperSetupPage } from '@/features/entry/ShopperSetupPage'
-import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
-import { FeedPage } from '@/features/feed/FeedPage'
-import { LikedPage } from '@/features/matches/LikedPage'
-import { ChatsPage } from '@/features/chat/ChatsPage'
-import { ChatPage } from '@/features/chat/ChatPage'
-import { DashboardPage } from '@/features/vendor/DashboardPage'
-import { ProductFormPage } from '@/features/vendor/ProductFormPage'
-import { StoreSettingsPage } from '@/features/vendor/StoreSettingsPage'
-import { StorePage } from '@/features/vendor/StorePage'
-import { ProductPage } from '@/features/products/ProductPage'
-import { NotificationsPage } from '@/features/notifications/NotificationsPage'
-import { ProfilePage } from '@/features/profile/ProfilePage'
-import { MetricsPage } from '@/features/metrics/MetricsPage'
+import { VendorDownloadPage } from '@/features/vendor/VendorDownloadPage'
+import { VendorHomePage } from '@/features/vendor/VendorHomePage'
+import { NewProductPage } from '@/features/vendor/NewProductPage'
+import { ShopManagePage } from '@/features/vendor/ShopManagePage'
+import { ShopEditPage } from '@/features/vendor/ShopEditPage'
+import { VendorMePage } from '@/features/vendor/VendorMePage'
+import { EditProductPage } from '@/features/vendor/EditProductPage'
 
 export function AppRouter() {
   return (
@@ -28,33 +32,49 @@ export function AppRouter() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<Navigate to="/" replace />} />
         </Route>
-        <Route path="/shopper/setup" element={<ShopperSetupPage />} />
-        <Route path="/vendor" element={<VendorLandingPage />} />
-        <Route path="/vendor/setup" element={<VendorSetupPage />} />
         <Route element={<OnboardingGate />}>
           <Route path="/onboarding" element={<OnboardingPage />} />
         </Route>
+        <Route path="/shopper/setup" element={<ShopperSetupPage />} />
+        <Route path="/vendor" element={<VendorLandingPage />} />
+        <Route path="/vendor/setup" element={<VendorSetupPage />} />
+        <Route path="/vendor/download" element={<VendorDownloadPage />} />
+
         <Route element={<ShellGate />}>
-          <Route element={<AppShell />}>
+          <Route element={<ShopperShell />}>
             <Route path="/feed" element={<FeedPage />} />
-            <Route element={<RequireProfile />}>
-              <Route path="/liked" element={<LikedPage />} />
-              <Route path="/chats" element={<ChatsPage />} />
-              <Route path="/chats/:matchId" element={<ChatPage />} />
-              <Route path="/notifications" element={<NotificationsPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/metrics" element={<MetricsPage />} />
-            </Route>
-            <Route element={<RequireRole role="vendor" />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/dashboard/new" element={<ProductFormPage />} />
-              <Route path="/dashboard/edit/:productId" element={<ProductFormPage />} />
-              <Route path="/dashboard/store" element={<StoreSettingsPage />} />
-            </Route>
-            <Route path="/store/:vendorId" element={<StorePage />} />
+            <Route path="/shop/:shopId" element={<ShopPage />} />
             <Route path="/product/:productId" element={<ProductPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route element={<RequireProfile />}>
+              <Route path="/bag" element={<BagPage />} />
+              <Route path="/bag/chat/:matchId" element={<ChatPage />} />
+              <Route path="/me" element={<MePage />} />
+              <Route path="/me/alerts" element={<NotificationsPage />} />
+              <Route path="/me/metrics" element={<MetricsPage />} />
+            </Route>
           </Route>
+
+          <Route element={<RequireVendor />}>
+            <Route element={<VendorShell />}>
+              <Route path="/vendor/home" element={<VendorHomePage />} />
+              <Route path="/vendor/new" element={<NewProductPage />} />
+              <Route path="/vendor/product/:productId" element={<EditProductPage />} />
+              <Route path="/vendor/shop" element={<ShopManagePage />} />
+              <Route path="/vendor/shop/new" element={<ShopEditPage />} />
+              <Route path="/vendor/shop/:shopId" element={<ShopEditPage />} />
+              <Route path="/vendor/chat/:matchId" element={<ChatPage />} />
+              <Route path="/vendor/me" element={<VendorMePage />} />
+            </Route>
+          </Route>
+
+          {/* Old paths */}
+          <Route path="/liked" element={<Navigate to="/bag" replace />} />
+          <Route path="/chats" element={<Navigate to="/bag" replace />} />
+          <Route path="/chats/:matchId" element={<Navigate to="/bag" replace />} />
+          <Route path="/profile" element={<Navigate to="/me" replace />} />
+          <Route path="/dashboard/*" element={<Navigate to="/vendor/home" replace />} />
+          <Route path="/notifications" element={<Navigate to="/me/alerts" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -7,6 +7,7 @@ import { formatClock } from '@/lib/format'
 import { telemetry } from '@/lib/telemetry'
 import type { Match, Message } from '@/lib/types'
 import { ReviewPrompt } from '@/features/reviews/ReviewPrompt'
+import { ChevronLeft, ICON } from '@/components/icons'
 
 export function ChatPage() {
   const { matchId = '' } = useParams()
@@ -73,19 +74,20 @@ export function ChatPage() {
     return (
       <div className="p-6">
         <ErrorBanner message="This chat does not exist or you do not have access to it." />
-        <Link to="/chats" className="mt-4 inline-block text-sm text-accent-text underline">Back to chats</Link>
+        <Link to="/bag" className="mt-4 inline-block text-sm text-accent-text underline">Back to bag</Link>
       </div>
     )
 
   const isVendor = profile.uid === match.vendorId
-  const other = isVendor ? match.buyerName : match.vendorName
-  const otherLink = isVendor ? `/product/${match.productId}` : `/store/${match.vendorId}`
+  const other = isVendor ? match.buyerName : match.shopName || match.vendorName
+  const otherLink = isVendor ? `/product/${match.productId}` : `/shop/${match.shopId}`
+  const backLink = isVendor ? '/vendor/home' : '/bag'
 
   return (
-    <div className="flex h-[calc(100dvh-4.25rem-var(--safe-bottom)-var(--safe-top))] flex-col md:h-dvh">
+    <div className="flex h-[calc(100dvh-var(--safe-top))] flex-col pt-[calc(var(--safe-top)+56px)]">
       <header className="flex items-center gap-3 border-b border-line bg-canvas px-3 py-2">
-        <Link to="/chats" className="flex h-9 w-9 items-center justify-center rounded text-xl hover:bg-surface" aria-label="Back">
-          ←
+        <Link to={backLink} className="flex h-9 w-9 items-center justify-center rounded border border-line text-ink hover:bg-surface" aria-label="Back">
+          <ChevronLeft {...ICON} />
         </Link>
         <Link to={otherLink} className="flex min-w-0 flex-1 items-center gap-3">
           <Avatar name={other} size={36} />
@@ -105,6 +107,14 @@ export function ChatPage() {
         {messages.length === 0 && (
           <div className="mx-auto max-w-xs py-10 text-center text-sm text-muted">
             {isVendor ? `${match.buyerName} is interested in ${match.productTitle}. Say hello!` : `Ask ${match.vendorName} about price, sizes or availability.`}
+          </div>
+        )}
+        {match.autoMessage && (
+          <div className="mb-3 flex justify-start">
+            <div className="max-w-[78%] border border-line bg-surface px-3.5 py-2 text-sm text-ink">
+              <p className="mb-1 font-mono text-[10px] text-muted uppercase">Auto message from {match.shopName || match.vendorName}</p>
+              <p className="whitespace-pre-wrap">{match.autoMessage}</p>
+            </div>
           </div>
         )}
         <ul className="space-y-1.5">

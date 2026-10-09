@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { motion, useMotionValue, useTransform, type PanInfo } from 'motion/react'
 import { Link } from 'react-router'
-import { AvailabilityBadge, ProductImage } from '@/components/ui'
+import { ProductImage, cx } from '@/components/ui'
+import { HeartPlus, ICON_SM, Store, Tag } from '@/components/icons'
 import { formatPrice } from '@/lib/format'
 import { formatDistance } from '@/lib/geo'
 import type { RankedProduct } from './rank'
@@ -12,83 +14,120 @@ interface Props {
   isTop: boolean
   index: number
   onSwipe: (direction: SwipeDirection) => void
+  /** Reports horizontal drag progress (-1..1) so the page can draw the side overlays. */
+  onDrag?: (progress: number) => void
+  frame?: 'none' | 'lime' | 'bone' | 'double' | 'dashed'
+  badge?: string | null
 }
 
 const THRESHOLD = 110
 const VELOCITY = 600
 
-export function SwipeCard({ product, isTop, index, onSwipe }: Props) {
+export function priceRange(p: { priceMin: number | null; priceMax: number | null; price: number | null; currency: string }) {
+  if (p.priceMin !== null && p.priceMax !== null && p.priceMax !== p.priceMin) return `${formatPrice(p.priceMin, p.currency)} – ${formatPrice(p.priceMax, p.currency)}`
+  const v = p.priceMin ?? p.price
+  return formatPrice(v, p.currency)
+}
+
+export function SwipeCard({ product, isTop, index, onSwipe, onDrag, frame = 'none', badge }: Props) {
   const x = useMotionValue(0)
-  const rotate = useTransform(x, [-250, 0, 250], [-14, 0, 14])
-  const likeOpacity = useTransform(x, [20, 120], [0, 1])
-  const nopeOpacity = useTransform(x, [-20, -120], [0, 1])
+  const rotate = useTransform(x, [-250, 0, 250], [-10, 0, 10])
+  const [back, setBack] = useState(false)
+  const [moved, setMoved] = useState(false)
 
   function onDragEnd(_: unknown, info: PanInfo) {
+    onDrag?.(0)
     const { offset, velocity } = info
     if (offset.x > THRESHOLD || velocity.x > VELOCITY) onSwipe('right')
     else if (offset.x < -THRESHOLD || velocity.x < -VELOCITY) onSwipe('left')
+    setTimeout(() => setMoved(false), 50)
   }
 
   const scale = 1 - index * 0.04
   const y = index * 12
+  const frameCls: Record<string, string> = {
+    none: 'border border-ink',
+    lime: 'border-2 border-accent',
+    bone: 'border-[3px] border-ink',
+    double: 'border-4 border-double border-ink',
+    dashed: 'border-2 border-dashed border-ink',
+  }
 
   return (
     <motion.div
       className="absolute inset-0 touch-none select-none"
       style={{ x, rotate, zIndex: 10 - index }}
-      draggable={false}
       initial={{ scale, y, opacity: index > 2 ? 0 : 1 }}
       animate={{ scale, y, opacity: index > 2 ? 0 : 1 }}
       variants={{
         exit: (custom: SwipeDirection | undefined) => ({
           x: custom === 'left' ? -700 : 700,
-          rotate: custom === 'left' ? -25 : 25,
+          rotate: custom === 'left' ? -20 : 20,
           opacity: 0,
           transition: { duration: 0.35, ease: 'easeOut' },
         }),
       }}
       exit="exit"
-      drag={isTop ? 'x' : false}
+      drag={isTop && !back ? 'x' : false}
       dragElastic={0.9}
       dragConstraints={{ left: 0, right: 0 }}
+      onDragStart={() => setMoved(true)}
+      onDrag={(_, info) => onDrag?.(Math.max(-1, Math.min(1, info.offset.x / 160)))}
       onDragEnd={onDragEnd}
-      whileDrag={{ cursor: 'grabbing' }}
+      draggable={false}
     >
-      <div className="relative flex h-full w-full flex-col overflow-hidden rounded-3xl bg-canvas ring-1 ring-line">
-        <ProductImage src={product.imageUrls[0]} alt={product.title} className="h-full w-full flex-1 bg-surface" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/40 to-transparent p-5 pt-24 text-bone-vellum">
-          <div className="mb-2 flex flex-wrap items-center gap-1.5">
-            <AvailabilityBadge value={product.availability} />
-            <span className="rounded border border-bone-vellum/40 px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] uppercase">{product.category}</span>
-            {Number.isFinite(product.distanceKm) && (
-              <span className="rounded border border-bone-vellum/40 px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] uppercase">
-                {formatDistance(product.distanceKm)}{product.area ? ` · ${product.area}` : ''}
-              </span>
-            )}
-            {product.matchesInterests && <span className="rounded bg-accent px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] text-on-accent uppercase">For you</span>}
+      <div
+        className={cx('flip h-full w-full', back && 'is-back')}
+        onClick={() => {
+          if (isTop && !moved) setBack((b) => !b)
+        }}
+      >
+        <div className="flip-inner relative h-full w-full">
+          {/* Front: image with outline, name, short description */}
+          <div className={cx('flip-face absolute inset-0 flex flex-col bg-canvas p-3', frameCls[frame] ?? frameCls.none)}>
+            <div className="relative flex-1 overflow-hidden border border-ink bg-surface">
+              <ProductImage src={product.imageUrls[0]} alt={product.title} className="h-full w-full" />
+              {badge && <span className="absolute top-2 left-2 rounded bg-accent px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] text-on-accent uppercase">{badge}</span>}
+              {product.superOnly && (
+                <span className="absolute top-2 right-2 flex items-center gap-1 rounded bg-canvas/90 px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] text-ink uppercase">
+                  <HeartPlus {...ICON_SM} size={12} /> Super only
+                </span>
+              )}
+            </div>
+            <div className="pt-3">
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="truncate text-[22px] leading-tight tracking-[-0.03em] text-ink">{product.title}</h2>
+                {Number.isFinite(product.distanceKm) && <span className="shrink-0 font-mono text-[11px] text-muted uppercase">{formatDistance(product.distanceKm)}</span>}
+              </div>
+              <p className="mt-1 line-clamp-2 text-[14px] leading-snug text-muted">{product.description || product.shopName}</p>
+              <p className="mt-2 font-mono text-[10px] tracking-[0.06em] text-muted uppercase">Tap to flip · drag to swipe</p>
+            </div>
           </div>
-          <h2 className="text-2xl leading-tight font-normal drop-">{product.title}</h2>
-          <p className="mt-0.5 text-sm text-bone-vellum/80">
-            {product.vendorName} · <span className="font-semibold text-bone-vellum">{formatPrice(product.price, product.currency)}</span>
-          </p>
-          {product.description && <p className="mt-2 line-clamp-2 text-sm text-bone-vellum/80">{product.description}</p>}
+
+          {/* Back: cost, full description, swipe cost */}
+          <div className={cx('flip-face flip-back absolute inset-0 flex flex-col bg-canvas p-4', frameCls[frame] ?? frameCls.none)}>
+            <p className="label">{product.productCode || 'Product'}</p>
+            <h2 className="mt-1 text-[24px] leading-tight tracking-[-0.03em] text-ink">{product.title}</h2>
+            <p className="mt-3 font-mono text-[18px] text-ink">{priceRange(product)}</p>
+            <p className="font-mono text-[11px] text-muted uppercase">{product.paymentModes?.length ? product.paymentModes.join(' · ') : 'ask the seller'}</p>
+            <p className="mt-3 flex-1 overflow-y-auto text-[15px] leading-relaxed text-ink">{product.description || 'No description yet.'}</p>
+            {product.tags?.length > 0 && (
+              <p className="mt-2 flex flex-wrap gap-1.5">
+                {product.tags.map((t) => (
+                  <span key={t} className="flex items-center gap-1 rounded border border-line px-[7px] py-[3px] font-mono text-[11px] text-ink uppercase"><Tag {...ICON_SM} size={11} />{t}</span>
+                ))}
+              </p>
+            )}
+            <div className="mt-3 flex items-center justify-between border-t border-line pt-3">
+              <Link to={`/shop/${product.shopId}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 font-mono text-[12px] text-accent-text uppercase underline">
+                <Store {...ICON_SM} /> {product.shopName || product.vendorName}
+              </Link>
+              <span className={cx('rounded px-[7px] py-[3px] font-mono text-[11px] tracking-[0.04em] uppercase', product.superOnly ? 'bg-accent text-on-accent' : 'border border-line text-ink')}>
+                {product.superOnly ? 'Super swipe only' : 'Costs 1 swipe'}
+              </span>
+            </div>
+          </div>
         </div>
-        {isTop && (
-          <Link
-            to={`/product/${product.id}`}
-            className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded bg-canvas/90 text-ink"
-            aria-label="View details"
-            onPointerDown={(e) => e.stopPropagation()}
-          >
-            i
-          </Link>
-        )}
-        <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-6 -rotate-12 rounded-lg border-4 border-like px-3 py-1 text-3xl font-black text-like">
-          LIKE
-        </motion.div>
-        <motion.div style={{ opacity: nopeOpacity }} className="absolute top-8 right-6 rotate-12 rounded-lg border-4 border-nope px-3 py-1 text-3xl font-black text-nope">
-          NOPE
-        </motion.div>
       </div>
     </motion.div>
   )

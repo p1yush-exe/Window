@@ -1,5 +1,6 @@
 import { forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { initials } from '@/lib/format'
+import { Star } from 'lucide-react'
 
 export function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ')
@@ -179,7 +180,7 @@ export function Stars({ value, onChange, size = 'md' }: { value: number; onChang
           className={cx('leading-none', n <= Math.round(value) ? 'text-accent' : 'text-line', onChange && 'cursor-pointer')}
           aria-label={`${n} star${n > 1 ? 's' : ''}`}
         >
-          ★
+          <Star size={size === 'sm' ? 14 : size === 'md' ? 20 : 28} strokeWidth={1.75} absoluteStrokeWidth fill={n <= Math.round(value) ? 'currentColor' : 'none'} />
         </button>
       ))}
     </div>

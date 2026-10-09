@@ -1,16 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Button, EmptyState, ErrorBanner, FullPageSpinner } from '@/components/ui'
+import { Download, HeartPlus, ICON, Map, MapPin } from '@/components/icons'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { LoginSheet } from '@/features/auth/LoginSheet'
+import { BuySwipesSheet } from '@/features/economy/BuySwipesSheet'
 import { haptic } from '@/lib/native'
 import { areaLabel } from '@/lib/geo'
 import { getShopperPrefs, hasShopperPrefs, setShopperPrefs } from '@/lib/prefs'
-import { RADIUS_STEPS_KM, type Product } from '@/lib/types'
+import { APK_URL, isWeb } from '@/lib/platform'
+import { RADIUS_STEPS_KM, type LikeType, type Product } from '@/lib/types'
 import { useFeed } from './useFeed'
 import { SwipeCard, type SwipeDirection } from './SwipeCard'
+import { LightSweep } from './LightSweep'
 
 export function FeedPage() {
   const { profile } = useAuth()
@@ -19,8 +22,17 @@ export function FeedPage() {
   const center = profile?.location ?? prefs.location
   const interests = profile?.interests?.length ? profile.interests : prefs.interests
   const feed = useFeed(profile, { center, interests, radiusKm: prefs.radiusKm })
-  const [pending, setPending] = useState<Product | null>(null)
+  const [lastDirection, setLastDirection] = useState<SwipeDirection>('right')
+  const [pending, setPending] = useState<Product | null>(null) // liked as guest, waiting for login
   const [radiusOpen, setRadiusOpen] = useState(false)
+  const [drag, setDrag] = useState(0)
+  const [upgrade, setUpgrade] = useState<Product | null>(null) // "Upgrade to super swipe?" prompt target
+  const [sweep, setSweep] = useState(0)
+  const [exhausted, setExhausted] = useState(false)
+  const [buyOpen, setBuyOpen] = useState<'swipes' | 'superSwipes' | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const visible = feed.queue.slice(0, 3)
+  const top = visible[0]
 
   useEffect(() => {
     if (!profile && !hasShopperPrefs()) navigate('/shopper/setup', { replace: true })
@@ -31,163 +43,203 @@ export function FeedPage() {
     setPrefs(getShopperPrefs())
     setRadiusOpen(false)
   }
-  const [lastDirection, setLastDirection] = useState<SwipeDirection>('right')
-  const wheel = useRef({ dx: 0, at: 0, locked: false })
-  const visible = feed.queue.slice(0, 3)
-  const top = visible[0]
+
+  async function doLike(product: Product, type: LikeType) {
+    setError(null)
+    try {
+      if (type === 'super') setSweep((n) => n + 1)
+      await feed.like(product, type)
+      setLastDirection('right')
+      void haptic('medium')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not like')
+    }
+  }
 
   function swipe(direction: SwipeDirection) {
     if (!top || pending) return
-    setLastDirection(direction)
-    void haptic(direction === 'right' ? 'medium' : 'light')
-    if (direction === 'right' && !profile) {
-      // First right swipe as a guest: ask to log in, keep the card until they do.
+    setDrag(0)
+    if (direction === 'left') {
+      setLastDirection('left')
+      void haptic('light')
+      feed.pass(top)
+      return
+    }
+    if (!profile) {
       setPending(top)
       return
     }
-    feed.swipe(top, direction)
+    if (top.superOnly) {
+      if (profile.superSwipes > 0) {
+        setUpgrade(top)
+        setError('This product only accepts super swipes.')
+      } else setExhausted(true)
+      return
+    }
+    if (profile.swipes <= 0) {
+      setExhausted(true)
+      return
+    }
+    setUpgrade(top)
+    void doLike(top, 'swipe')
   }
 
-  // Once the guest has logged in, record the swipe they were trying to make.
+  // Once a guest logs in, finish the swipe they were making.
   useEffect(() => {
     if (pending && profile) {
       const product = pending
       setPending(null)
-      setLastDirection('right')
-      feed.swipe(product, 'right', profile)
+      void doLike(product, product.superOnly ? 'super' : 'swipe')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, pending])
+
+  useEffect(() => {
+    if (!upgrade) return
+    const t = setTimeout(() => setUpgrade(null), 4500)
+    return () => clearTimeout(t)
+  }, [upgrade])
+
+  useEffect(() => {
+    if (!feed.lastOutcome) return
+    const t = setTimeout(feed.dismissOutcome, 2600)
+    return () => clearTimeout(t)
+  }, [feed.lastOutcome, feed.dismissOutcome])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       if (e.key === 'ArrowRight') swipe('right')
       if (e.key === 'ArrowLeft') swipe('left')
+      if (e.key === 'ArrowUp' && top && profile) void superSwipe(top)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  // Two-finger horizontal scroll on a touchpad also swipes the top card.
-  function onWheel(e: React.WheelEvent) {
-    if (!top || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return
-    const now = Date.now()
-    const w = wheel.current
-    if (now - w.at > 250) {
-      w.dx = 0
-      w.locked = false
+  async function superSwipe(product: Product) {
+    if (!profile) return setPending(product)
+    if (profile.superSwipes <= 0) {
+      setExhausted(true)
+      return
     }
-    w.at = now
-    if (w.locked) return
-    w.dx += e.deltaX
-    if (Math.abs(w.dx) > 160) {
-      w.locked = true
-      swipe(w.dx > 0 ? 'right' : 'left')
-    }
+    setUpgrade(null)
+    await doLike(product, 'super')
   }
 
-  useEffect(() => {
-    if (!feed.lastMatch) return
-    const t = setTimeout(feed.dismissMatch, 2200)
-    return () => clearTimeout(t)
-  }, [feed.lastMatch, feed.dismissMatch])
-
   if (feed.loading) return <FullPageSpinner />
+  const outcome = feed.lastOutcome
 
   return (
-    <div className="flex flex-1 flex-col px-4 pt-4 md:pt-8">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <h1 className="text-[29px] leading-none tracking-[-0.03em]">Nearby</h1>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-            <button type="button" onClick={() => navigate('/shopper/setup')} className="rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
-              📍 {center ? areaLabel(center) : 'Set area'}
-            </button>
-            <div className="relative">
-              <button type="button" onClick={() => setRadiusOpen((o) => !o)} className="rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
-                {feed.effectiveRadius ? `≤ ${feed.effectiveRadius} km` : prefs.radiusKm ? `≤ ${prefs.radiusKm} km` : 'Auto'} ▾
-              </button>
-              {radiusOpen && (
-                <ul className="absolute left-0 z-20 mt-1 w-36 border border-line bg-canvas font-mono text-[12px]">
-                  <li><button type="button" onClick={() => chooseRadius(null)} className="block w-full px-3 py-2 text-left hover:bg-surface">Auto (widen)</button></li>
-                  {RADIUS_STEPS_KM.map((km) => (
-                    <li key={km}><button type="button" onClick={() => chooseRadius(km)} className="block w-full px-3 py-2 text-left hover:bg-surface">Within {km} km</button></li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            {interests.length > 0 && <span className="font-mono text-[11px] text-muted uppercase">{interests.join(' · ')}</span>}
-          </div>
-        </div>
-        {profile ? (
-          <span className="rounded bg-surface px-3 py-1 text-xs font-semibold text-ink">{feed.swipeCount} swipes</span>
-        ) : (
-          <button type="button" onClick={() => setPending(top ?? null)} className="rounded bg-surface px-3 py-1 text-xs font-semibold text-accent-text ring-1 ring-line">
-            Browsing as guest · Log in
-          </button>
-        )}
-      </div>
-      <ErrorBanner message={feed.error} />
+    <div className="relative flex flex-1 flex-col">
+      {/* Side overlays driven by drag progress */}
+      <div className="pointer-events-none fixed inset-y-0 left-0 z-20 w-[26vw] bg-[#e11d48]" style={{ opacity: Math.max(0, -drag) * 0.55 }} />
+      <div className="pointer-events-none fixed inset-y-0 right-0 z-20 w-[30vw] bg-[#16a34a]" style={{ opacity: Math.max(0, drag) * 0.55 }} />
+      <LightSweep trigger={sweep} />
 
-      <div className="relative mx-auto w-full max-w-sm flex-1" style={{ minHeight: 'min(68vh, 620px)' }} onWheel={onWheel}>
-        <AnimatePresence custom={lastDirection}>
-          {visible.map((p, i) => (
-            <SwipeCard key={p.id} product={p} index={i} isTop={i === 0} onSwipe={swipe} />
-          ))}
-        </AnimatePresence>
-        {!top && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-3xl border-2 border-dashed border-line">
-            <EmptyState
-              icon="🗺️"
-              title={feed.exhausted ? (feed.nearbyCount === 0 && center ? 'Nothing nearby yet' : "You've seen everything nearby") : 'Loading…'}
-              body={
-                feed.exhausted
-                  ? feed.nearbyCount === 0 && center
-                    ? `No sellers within ${feed.effectiveRadius ?? prefs.radiusKm ?? 50} km of ${areaLabel(center)}. Widen the radius or change your area.`
-                    : 'Check your Liked tab or come back later for new products.'
-                  : undefined
-              }
-              action={
-                feed.exhausted ? (
+      <div className="mx-auto mt-[calc(var(--safe-top)+64px)] flex w-full max-w-sm items-center justify-center gap-1.5 px-4">
+        <button type="button" onClick={() => navigate('/shopper/setup')} className="flex items-center gap-1 rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
+          <MapPin {...ICON} size={12} /> {center ? areaLabel(center) : 'Set area'}
+        </button>
+        <div className="relative">
+          <button type="button" onClick={() => setRadiusOpen((o) => !o)} className="rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
+            {feed.effectiveRadius ? `≤ ${feed.effectiveRadius} km` : prefs.radiusKm ? `≤ ${prefs.radiusKm} km` : 'Auto'}
+          </button>
+          {radiusOpen && (
+            <ul className="absolute left-0 z-30 mt-1 w-36 border border-line bg-canvas font-mono text-[12px]">
+              <li><button type="button" onClick={() => chooseRadius(null)} className="block w-full px-3 py-2 text-left hover:bg-surface">Auto (widen)</button></li>
+              {RADIUS_STEPS_KM.map((km) => (
+                <li key={km}><button type="button" onClick={() => chooseRadius(km)} className="block w-full px-3 py-2 text-left hover:bg-surface">Within {km} km</button></li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+      <div className="mx-auto w-full max-w-sm px-4 pt-2"><ErrorBanner message={error ?? feed.error} /></div>
+
+      <div className="relative mx-auto mt-3 w-full max-w-sm flex-1 px-4" style={{ minHeight: 'min(66vh, 600px)' }}>
+        <div className="relative h-full w-full">
+          <AnimatePresence custom={lastDirection}>
+            {visible.map((p, i) => (
+              <SwipeCard key={p.id} product={p} index={i} isTop={i === 0} onSwipe={swipe} onDrag={i === 0 ? setDrag : undefined} />
+            ))}
+          </AnimatePresence>
+          {!top && (
+            <div className="absolute inset-0 flex items-center border border-dashed border-line">
+              <EmptyState
+                icon={<Map size={28} strokeWidth={1.75} absoluteStrokeWidth />}
+                title={feed.nearbyCount === 0 && center ? 'Nothing nearby yet' : "You've seen everything nearby"}
+                body={feed.nearbyCount === 0 && center ? `No sellers within ${feed.effectiveRadius ?? prefs.radiusKm ?? 50} km of ${areaLabel(center)}.` : 'Check your bag or come back later.'}
+                action={
                   <div className="flex gap-2">
                     {prefs.radiusKm && prefs.radiusKm < 50 && <Button onClick={() => chooseRadius(null)}>Widen radius</Button>}
                     <Button variant="secondary" onClick={() => navigate('/shopper/setup')}>Change area</Button>
                   </div>
-                ) : undefined
-              }
-            />
-          </div>
-        )}
+                }
+              />
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="mx-auto mt-4 flex w-full max-w-sm items-center justify-center gap-6 pb-2">
-        <Button variant="nope" size="icon" onClick={() => swipe('left')} disabled={!top} aria-label="Pass">
-          ✕
-        </Button>
-        <Button variant="like" size="icon" onClick={() => swipe('right')} disabled={!top} aria-label="Like">
-          ♥
-        </Button>
-      </div>
-      <p className="hidden pb-2 text-center text-xs text-muted md:block">Drag the card, swipe two fingers on the touchpad, or use ← and → keys</p>
-
+      {/* Super swipe prompt from the bottom */}
       <AnimatePresence>
-        {feed.lastMatch && (
-          <motion.div
-            initial={{ y: 60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 60, opacity: 0 }}
-            className="fixed inset-x-4 bottom-[calc(5rem+var(--safe-bottom))] z-40 mx-auto max-w-sm rounded-2xl bg-ink p-4 text-canvas md:bottom-8"
-          >
-            <p className="text-sm font-semibold">It's a match! 💜</p>
-            <p className="text-xs text-bone-vellum/70">You can now chat with {feed.lastMatch.vendorName} about {feed.lastMatch.title}.</p>
-            <Link to={`/chats/${profile?.uid}_${feed.lastMatch.id}`} className="mt-2 inline-block text-sm font-bold text-accent underline">
-              Open chat →
-            </Link>
+        {upgrade && profile && (
+          <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} className="fixed inset-x-4 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto flex max-w-sm items-center justify-between gap-3 border border-line bg-canvas p-3">
+            <p className="text-[15px] text-ink">Upgrade to super swipe?</p>
+            <Button size="sm" onClick={() => void superSwipe(upgrade)} disabled={profile.superSwipes <= 0}>
+              <HeartPlus {...ICON} size={14} /> Super swipe
+            </Button>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Outcome toast */}
+      <AnimatePresence>
+        {outcome && !upgrade && (
+          <motion.div initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }} className="fixed inset-x-4 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto max-w-sm border border-accent bg-canvas p-3">
+            {outcome.outcome.kind === 'matched' ? (
+              <>
+                <p className="font-mono text-[12px] text-accent-text uppercase">{outcome.type === 'super' ? 'Claimed' : 'Matched'}</p>
+                <p className="text-[14px] text-ink">You can chat with {outcome.product.shopName || outcome.product.vendorName} about {outcome.product.title}.</p>
+                <Link to={`/bag/chat/${outcome.outcome.matchId}`} className="mt-1 inline-block font-mono text-[12px] text-accent-text uppercase underline">Open chat</Link>
+              </>
+            ) : (
+              <>
+                <p className="font-mono text-[12px] text-muted uppercase">Liked · waiting for the seller</p>
+                <p className="text-[14px] text-ink">{outcome.product.shopName || outcome.product.vendorName} will see your like. Super swipes skip the wait.</p>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Swipes exhausted overlay */}
+      <AnimatePresence>
+        {exhausted && profile && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 flex items-end justify-center bg-canvas/85 p-5 pb-[calc(6rem+var(--safe-bottom))] backdrop-blur-sm md:items-center">
+            <div className="w-full max-w-sm border border-accent bg-canvas p-5">
+              <p className="label">Swipes are over</p>
+              <h2 className="mt-1 text-[29px] leading-none tracking-[-0.03em]">{profile.swipes === 0 ? 'No swipes left today.' : 'Not enough for this one.'}</h2>
+              <p className="mt-2 text-[14px] text-muted">You get 5 free swipes every day. Use a super swipe or buy more now.</p>
+              <div className="mt-4 flex flex-col gap-2">
+                {profile.superSwipes > 0 && top && (
+                  <Button onClick={() => { setExhausted(false); void superSwipe(top) }}><HeartPlus {...ICON} size={14} /> Use a super swipe ({profile.superSwipes})</Button>
+                )}
+                <Button variant={profile.superSwipes > 0 ? 'secondary' : 'primary'} onClick={() => { setExhausted(false); setBuyOpen('swipes') }}>Buy swipes</Button>
+                {isWeb() && !profile.appBonusGranted && (
+                  <a href={APK_URL} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded border border-line px-4 py-3 font-mono text-[13px] text-ink uppercase">
+                    <Download {...ICON} size={16} /> Get the app · 2 free super swipes
+                  </a>
+                )}
+                <button type="button" onClick={() => setExhausted(false)} className="py-2 font-mono text-[12px] text-muted uppercase">Keep browsing left</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>{buyOpen && profile && <BuySwipesSheet kind={buyOpen} onClose={() => setBuyOpen(null)} />}</AnimatePresence>
       <LoginSheet open={pending !== null && !profile} onClose={() => setPending(null)} onDone={() => undefined} />
     </div>
   )

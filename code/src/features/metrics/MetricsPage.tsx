@@ -16,7 +16,7 @@ export function MetricsPage() {
   const { profile } = useSession()
   const [tick, setTick] = useState(0)
   const [matches, setMatches] = useState<Match[]>([])
-  useEffect(() => listenMatches(profile.uid, profile.role, setMatches), [profile.uid, profile.role])
+  useEffect(() => listenMatches(profile.uid, 'buyer', setMatches), [profile.uid])
 
   const serverLatencies = matches
     .map((m) => {
@@ -26,7 +26,7 @@ export function MetricsPage() {
     .filter((v): v is number => v !== null && v >= 0 && v < 60_000)
 
   return (
-    <div className="px-4 pt-4 md:pt-8">
+    <div className="px-4 pt-[calc(var(--safe-top)+72px)]">
       <PageHeader
         title="Evaluation metrics"
         subtitle="Measured on this device"

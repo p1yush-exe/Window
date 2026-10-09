@@ -6,6 +6,7 @@ import { listenNotifications, markAllNotificationsRead, markNotificationRead } f
 import { timeAgo } from '@/lib/format'
 import { telemetry } from '@/lib/telemetry'
 import type { AppNotification } from '@/lib/types'
+import { Bell } from '@/components/icons'
 
 export function NotificationsPage() {
   const { profile } = useSession()
@@ -34,7 +35,7 @@ export function NotificationsPage() {
   const unread = items.filter((i) => !i.read)
 
   return (
-    <div className="px-4 pt-4 md:pt-8">
+    <div className="px-4 pt-[calc(var(--safe-top)+72px)]">
       <PageHeader
         title="Alerts"
         subtitle="Stock updates for products you liked"
@@ -48,13 +49,13 @@ export function NotificationsPage() {
       />
       <ErrorBanner message={error} />
       {items.length === 0 ? (
-        <EmptyState icon="🔔" title="No alerts yet" body="When a seller updates stock on something you liked, it shows up here instantly." />
+        <EmptyState icon={<Bell size={28} strokeWidth={1.75} absoluteStrokeWidth />} title="No alerts yet" body="Stock updates and accepted likes show up here instantly." />
       ) : (
         <ul className="space-y-2">
           {items.map((n) => (
             <li key={n.id}>
               <Link
-                to={n.matchId ? `/chats/${n.matchId}` : n.productId ? `/product/${n.productId}` : '#'}
+                to={n.matchId && n.type !== 'like' ? `/bag/chat/${n.matchId}` : n.productId ? `/product/${n.productId}` : '#'}
                 onClick={() => {
                   if (!n.read) void markNotificationRead(profile.uid, n.id)
                 }}

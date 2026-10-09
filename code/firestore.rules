@@ -3,30 +3,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function signedIn() {
-      return request.auth != null;
-    }
-    function isUser(uid) {
-      return signedIn() && request.auth.uid == uid;
-    }
-    function userDoc(uid) {
-      return get(/databases/$(database)/documents/users/$(uid)).data;
-    }
-    function isVendor() {
-      return signedIn() && userDoc(request.auth.uid).role == 'vendor';
-    }
-    function matchDoc(id) {
-      return get(/databases/$(database)/documents/matches/$(id)).data;
-    }
-    function productDoc(id) {
-      return get(/databases/$(database)/documents/products/$(id)).data;
-    }
-    function unchanged(field) {
-      return request.resource.data[field] == resource.data[field];
-    }
-    function validAvailability(v) {
-      return v in ['in_stock', 'low', 'out_of_stock'];
-    }
+    function signedIn() { return request.auth != null; }
+    function isUser(uid) { return signedIn() && request.auth.uid == uid; }
+    function isVendor() { return signedIn() && exists(/databases/$(database)/documents/vendors/$(request.auth.uid)); }
+    function matchDoc(id) { return get(/databases/$(database)/documents/matches/$(id)).data; }
+    function productDoc(id) { return get(/databases/$(database)/documents/products/$(id)).data; }
+    function shopDoc(id) { return get(/databases/$(database)/documents/shops/$(id)).data; }
+    function likeAfter(id) { return getAfter(/databases/$(database)/documents/likes/$(id)).data; }
+    function unchanged(field) { return request.resource.data[field] == resource.data[field]; }
+    function validAvailability(v) { return v in ['in_stock', 'low', 'out_of_stock']; }
+    function nonNegInt(v) { return v is int && v >= 0; }
 
     // ---------- users ----------
     match /users/{uid} {
@@ -34,12 +20,17 @@ service cloud.firestore {
         return (!('interests' in d) || (d.interests is list && d.interests.size() <= 3))
           && (!('location' in d) || d.location == null || (d.location is map && d.location.lat is number && d.location.lng is number));
       }
+      // Older profiles may lack balances; when present they must be non-negative ints.
+      function validBalances(d) {
+        return (!('swipes' in d) || nonNegInt(d.swipes)) && (!('superSwipes' in d) || nonNegInt(d.superSwipes));
+      }
       allow read: if signedIn();
       allow create: if isUser(uid)
         && request.resource.data.role in ['buyer', 'vendor']
         && request.resource.data.displayName is string
-        && validPrefs(request.resource.data);
-      allow update: if isUser(uid) && unchanged('role') && validPrefs(request.resource.data);
+        && validPrefs(request.resource.data)
+        && validBalances(request.resource.data);
+      allow update: if isUser(uid) && unchanged('role') && validPrefs(request.resource.data) && validBalances(request.resource.data);
       allow delete: if false;
 
       match /swipes/{productId} {
@@ -48,25 +39,28 @@ service cloud.firestore {
 
       match /notifications/{nid} {
         allow read, update, delete: if isUser(uid);
-        // The owner may write their own notifications. A vendor may write an
-        // availability notification to a buyer only when a match between them
-        // exists for that product.
+        // Owner, or a vendor writing an availability/match notification to a buyer they have a match or like with.
         allow create: if isUser(uid)
           || (
             signedIn()
-            && request.resource.data.type == 'availability'
+            && request.resource.data.type in ['availability', 'match']
             && request.resource.data.matchId is string
-            && matchDoc(request.resource.data.matchId).vendorId == request.auth.uid
-            && matchDoc(request.resource.data.matchId).buyerUid == uid
+            && (
+              (exists(/databases/$(database)/documents/matches/$(request.resource.data.matchId))
+                && matchDoc(request.resource.data.matchId).vendorId == request.auth.uid
+                && matchDoc(request.resource.data.matchId).buyerUid == uid)
+              || (likeAfter(request.resource.data.matchId).vendorId == request.auth.uid
+                && likeAfter(request.resource.data.matchId).buyerUid == uid)
+            )
           );
       }
     }
 
-    // ---------- vendors (doc id == owner uid) ----------
+    // ---------- vendors: owner profile, doc id == owner uid ----------
     match /vendors/{vendorId} {
       function validVendor(d) {
-        return d.name is string && d.name.size() > 0 && d.name.size() <= 80
-          && d.tags is list && d.tags.size() <= 3;
+        return d.ownerName is string && d.ownerName.size() > 0
+          && nonNegInt(d.tokens) && nonNegInt(d.uploadsRemaining);
       }
       allow read: if true;
       allow create: if isUser(vendorId)
@@ -79,53 +73,105 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---------- shops ----------
+    match /shops/{shopId} {
+      function validShop(d) {
+        return d.name is string && d.name.size() > 0 && d.name.size() <= 80
+          && d.tags is list && d.tags.size() <= 3
+          && d.autoMessage is string && d.autoMessage.size() <= 300;
+      }
+      allow read: if true;
+      allow create: if isVendor()
+        && request.resource.data.ownerUid == request.auth.uid
+        && validShop(request.resource.data);
+      allow update: if signedIn()
+        && resource.data.ownerUid == request.auth.uid
+        && unchanged('ownerUid')
+        && validShop(request.resource.data);
+      allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
     // ---------- products ----------
     match /products/{productId} {
-      allow read: if true;
-      function validGeo(d) {
-        return (d.geohash == null || d.geohash is string)
-          && d.vendorTags is list && d.vendorTags.size() <= 3;
+      function validProduct(d) {
+        return d.title is string && d.title.size() > 0 && d.title.size() <= 120
+          && validAvailability(d.availability)
+          && d.tags is list && d.tags.size() <= 3
+          && d.vendorTags is list && d.vendorTags.size() <= 3
+          && (d.geohash == null || d.geohash is string)
+          && d.superOnly is bool
+          && d.shopId is string;
       }
+      allow read: if true;
       allow create: if isVendor()
         && request.resource.data.vendorId == request.auth.uid
-        && exists(/databases/$(database)/documents/vendors/$(request.auth.uid))
-        && request.resource.data.title is string
-        && request.resource.data.title.size() > 0
-        && validAvailability(request.resource.data.availability)
-        && validGeo(request.resource.data);
+        && shopDoc(request.resource.data.shopId).ownerUid == request.auth.uid
+        && validProduct(request.resource.data);
       allow update: if signedIn()
         && resource.data.vendorId == request.auth.uid
         && unchanged('vendorId')
-        && validAvailability(request.resource.data.availability)
-        && validGeo(request.resource.data);
+        && validProduct(request.resource.data);
       allow delete: if signedIn() && resource.data.vendorId == request.auth.uid;
+    }
+
+    // ---------- likes (doc id == buyerUid_productId) ----------
+    match /likes/{likeId} {
+      function party() {
+        return signedIn() && (resource.data.buyerUid == request.auth.uid || resource.data.vendorId == request.auth.uid);
+      }
+      // Reading a missing doc reveals nothing; let clients probe for their own like id.
+      allow read: if signedIn() && (resource == null || party());
+      allow create: if signedIn()
+        && request.resource.data.buyerUid == request.auth.uid
+        && likeId == request.auth.uid + '_' + request.resource.data.productId
+        && productDoc(request.resource.data.productId).vendorId == request.resource.data.vendorId
+        && request.resource.data.vendorId != request.auth.uid
+        && request.resource.data.type in ['swipe', 'super']
+        && request.resource.data.status in ['pending', 'accepted']
+        // Super swipes and auto-matching shops may start accepted; plain swipes wait for the vendor.
+        && (request.resource.data.status == 'pending'
+            || request.resource.data.type == 'super'
+            || (productDoc(request.resource.data.productId).superOnly == false
+                && shopDoc(request.resource.data.shopId).autoMatchUntil != null
+                && shopDoc(request.resource.data.shopId).autoMatchUntil > request.time))
+        && !(request.resource.data.type == 'swipe' && productDoc(request.resource.data.productId).superOnly == true);
+      // Only the vendor decides; nothing else changes.
+      allow update: if signedIn()
+        && resource.data.vendorId == request.auth.uid
+        && unchanged('buyerUid') && unchanged('vendorId') && unchanged('productId') && unchanged('type')
+        && request.resource.data.status in ['accepted', 'declined'];
+      allow delete: if false;
     }
 
     // ---------- matches (doc id == buyerUid_productId) ----------
     match /matches/{matchId} {
       function participant() {
-        return signedIn()
-          && (resource.data.buyerUid == request.auth.uid
-              || resource.data.vendorId == request.auth.uid);
+        return signedIn() && (resource.data.buyerUid == request.auth.uid || resource.data.vendorId == request.auth.uid);
       }
-      allow read: if participant();
+      function validMatch(d) {
+        return d.buyerUid is string && d.vendorId is string && d.productId is string
+          && matchId == d.buyerUid + '_' + d.productId
+          && productDoc(d.productId).vendorId == d.vendorId
+          && d.buyerUid != d.vendorId;
+      }
+      allow read: if signedIn() && (resource == null || participant());
+      // Buyer creates it together with an accepted like (super swipe / auto-match);
+      // vendor creates it when accepting a pending like.
       allow create: if signedIn()
-        && request.resource.data.buyerUid == request.auth.uid
-        && matchId == request.auth.uid + '_' + request.resource.data.productId
-        && productDoc(request.resource.data.productId).vendorId == request.resource.data.vendorId
-        && request.resource.data.vendorId != request.auth.uid;
+        && validMatch(request.resource.data)
+        && likeAfter(matchId).status == 'accepted'
+        && (
+          (request.resource.data.buyerUid == request.auth.uid)
+          || (request.resource.data.vendorId == request.auth.uid)
+        );
       allow update: if participant()
         && unchanged('buyerUid') && unchanged('vendorId') && unchanged('productId');
       allow delete: if false;
 
       match /messages/{messageId} {
-        function parentMatch() {
-          return matchDoc(matchId);
-        }
+        function parentMatch() { return matchDoc(matchId); }
         function isParticipant() {
-          return signedIn()
-            && (parentMatch().buyerUid == request.auth.uid
-                || parentMatch().vendorId == request.auth.uid);
+          return signedIn() && (parentMatch().buyerUid == request.auth.uid || parentMatch().vendorId == request.auth.uid);
         }
         allow read: if isParticipant();
         allow create: if isParticipant()
@@ -135,6 +181,17 @@ service cloud.firestore {
           && request.resource.data.body.size() <= 2000;
         allow update, delete: if false;
       }
+    }
+
+    // ---------- purchases (simulated payments) ----------
+    match /purchases/{id} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.kind in ['swipes', 'superSwipes', 'tokens', 'autoMatch', 'decoration']
+        && request.resource.data.qty is number && request.resource.data.qty > 0
+        && request.resource.data.amount is number && request.resource.data.amount >= 0;
+      allow update, delete: if false;
     }
 
     // ---------- reviews (doc id == buyerUid_productId) ----------

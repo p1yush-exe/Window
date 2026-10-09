@@ -53,17 +53,36 @@ Firebase Android app, and `android/app/google-services.json` (public config)
 enables native Google Sign-In through `@capacitor-firebase/authentication`.
 On the web the Firebase popup flow is used.
 
+## Likes, matches and the swipe economy
+
+A right swipe writes `users/{uid}/swipes/{productId}`, a `likes/{uid_productId}` document
+(`status: pending`) and decrements `users/{uid}.swipes`, all in one batch. The seller
+accepts from the likes inbox, which flips the like to `accepted` and creates
+`matches/{uid_productId}`; the shop's auto message is copied onto the match so the chat
+opens with it. A super swipe (`type: super`) or a shop whose `autoMatchUntil` is in the
+future creates the match in the same batch as the like. Rules use `getAfter()` on the like
+to allow the match write, and reject plain swipes on `superOnly` products.
+
+Balances live on the user document (`swipes`, `superSwipes`, `lastDailyGrant`,
+`appBonusGranted`); sellers keep `tokens` and `uploadsRemaining` on `vendors/{uid}`.
+Purchases are simulated: a `purchases` record is written and the balance credited in the
+same batch.
+
 ## Data model
 
 ```
 users/{uid}                      role, displayName, avatarUrl
 users/{uid}/swipes/{productId}   direction, clientTs, createdAt
 users/{uid}/notifications/{id}   type, matchId, productId, title, body, read, createdAt, sentAt
-vendors/{uid}                    ownerUid, name, description, tags[≤3], website, storefrontUrl,
-                                 location{lat,lng,address}, ownerName, ownerPhone, ownerEmail,
-                                 phoneVerified, emailVerified, verified (immutable by the owner)
-products/{id}                    vendorId, vendorName, title, description, price|null, currency,
-                                 category, imageUrls[], availability, createdAt, updatedAt
+vendors/{uid}                    ownerUid, ownerName, ownerPhone, ownerEmail, phoneVerified, emailVerified,
+                                 verified, tokens, uploadsRemaining, paymentIds{upi,bank}, primaryShopId
+shops/{shopId}                   ownerUid, name, description, tags[≤3], website, storefrontUrl, location,
+                                 autoMessage, autoMatchUntil, theme{frame,badge}, decorations[]
+likes/{buyerUid_productId}       buyerUid, vendorId, shopId, productId, type swipe|super, status pending|accepted|declined
+purchases/{id}                   uid, kind, qty, amount
+products/{id}                    productCode, vendorId, shopId, shopName, title, description, tags[≤3],
+                                 priceMin|null, priceMax|null, paymentModes[], superOnly, imageUrls[],
+                                 availability, lat, lng, geohash, area, vendorTags[]
 matches/{buyerUid_productId}     buyerUid, vendorId, productId, denormalised names/image,
                                  productAvailability, createdAt, swipeClientTs,
                                  lastMessageAt, lastMessageText, unread{uid: n}

@@ -1,0 +1,124 @@
+import { useEffect, useRef, useState } from 'react'
+import { Button, ErrorBanner } from '@/components/ui'
+import { Camera, ICON, Image as ImageIcon, RefreshCw, X } from '@/components/icons'
+import { isApp } from '@/lib/platform'
+import { pickNativePhotos } from '@/lib/upload'
+
+interface Props {
+  onCapture: (blob: Blob) => void
+  onCancel: () => void
+}
+
+/**
+ * Live camera preview with capture, or pick from the gallery.
+ * On Android the native camera/gallery is used; on the web, getUserMedia.
+ */
+export function CameraCapture({ onCapture, onCancel }: Props) {
+  const video = useRef<HTMLVideoElement>(null)
+  const stream = useRef<MediaStream | null>(null)
+  const [facing, setFacing] = useState<'environment' | 'user'>('environment')
+  const [ready, setReady] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const native = isApp()
+
+  useEffect(() => {
+    if (native) return
+    let cancelled = false
+    setReady(false)
+    navigator.mediaDevices
+      ?.getUserMedia({ video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 1600 } }, audio: false })
+      .then((s) => {
+        if (cancelled) {
+          s.getTracks().forEach((t) => t.stop())
+          return
+        }
+        stream.current = s
+        if (video.current) {
+          video.current.srcObject = s
+          void video.current.play().catch(() => undefined)
+        }
+        setReady(true)
+      })
+      .catch(() => setError('Camera not available. Choose a photo from your gallery instead.'))
+    return () => {
+      cancelled = true
+      stream.current?.getTracks().forEach((t) => t.stop())
+      stream.current = null
+    }
+  }, [facing, native])
+
+  function snap() {
+    const v = video.current
+    if (!v || !v.videoWidth) return
+    const c = document.createElement('canvas')
+    c.width = v.videoWidth
+    c.height = v.videoHeight
+    const ctx = c.getContext('2d')
+    if (!ctx) return
+    if (facing === 'user') {
+      ctx.translate(c.width, 0)
+      ctx.scale(-1, 1)
+    }
+    ctx.drawImage(v, 0, 0)
+    c.toBlob((b) => b && onCapture(b), 'image/jpeg', 0.92)
+  }
+
+  async function nativePick(source: 'camera' | 'photos') {
+    try {
+      const blobs = await pickNativePhotos(1, source)
+      if (blobs?.[0]) onCapture(blobs[0])
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not open the camera')
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-black">
+      <div className="flex items-center justify-between px-4 pt-[calc(var(--safe-top)+12px)] pb-3">
+        <span className="font-mono text-[12px] tracking-[0.06em] text-bone-vellum uppercase">New product photo</span>
+        <button type="button" onClick={onCancel} className="rounded border border-bone-vellum/40 p-1.5 text-bone-vellum" aria-label="Close"><X {...ICON} size={16} /></button>
+      </div>
+      <div className="relative flex flex-1 items-center justify-center overflow-hidden">
+        {native ? (
+          <div className="px-6 text-center">
+            <Camera size={48} strokeWidth={1.5} absoluteStrokeWidth className="mx-auto text-bone-vellum" />
+            <p className="mt-3 text-[15px] text-bone-vellum/80">Take a photo with the camera or pick one from your gallery.</p>
+          </div>
+        ) : (
+          <video ref={video} playsInline muted className="h-full w-full object-cover" style={{ transform: facing === 'user' ? 'scaleX(-1)' : undefined }} />
+        )}
+        {!native && !ready && !error && <p className="absolute font-mono text-[12px] text-bone-vellum/70 uppercase">Starting camera…</p>}
+        <div className="pointer-events-none absolute inset-6 border border-bone-vellum/40" aria-hidden="true" />
+      </div>
+      <div className="space-y-3 px-5 pt-4 pb-[calc(var(--safe-bottom)+20px)]">
+        <ErrorBanner message={error} />
+        <div className="flex items-center justify-between gap-3">
+          <label className="flex h-12 w-12 cursor-pointer items-center justify-center rounded border border-bone-vellum/40 text-bone-vellum" aria-label="Choose from gallery">
+            <ImageIcon {...ICON} />
+            {native ? (
+              <button type="button" className="absolute inset-0" onClick={() => void nativePick('photos')} aria-label="Gallery" />
+            ) : (
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onCapture(f) }} />
+            )}
+          </label>
+          <button
+            type="button"
+            onClick={() => (native ? void nativePick('camera') : snap())}
+            disabled={!native && !ready}
+            className="flex h-18 w-18 items-center justify-center rounded-full border-4 border-bone-vellum bg-accent disabled:opacity-40"
+            aria-label="Take photo"
+          >
+            <Camera size={28} strokeWidth={1.75} absoluteStrokeWidth className="text-on-accent" />
+          </button>
+          {native ? (
+            <span className="h-12 w-12" />
+          ) : (
+            <Button type="button" variant="ghost" className="h-12 w-12 border border-bone-vellum/40 px-0 text-bone-vellum" onClick={() => setFacing((f) => (f === 'user' ? 'environment' : 'user'))} aria-label="Flip camera">
+              <RefreshCw {...ICON} />
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

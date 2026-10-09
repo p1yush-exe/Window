@@ -10,177 +10,344 @@
           "slug": "indigo-kurta",
           "title": "Indigo block-print kurta",
           "description": "Pure cotton, hand block printed. Sizes S to XXL.",
-          "price": 1299,
           "category": "Clothes",
           "query": [
             "blue kurta",
             "kurta cotton",
             "kurta"
-          ]
+          ],
+          "tags": [
+            "kurta",
+            "clothing",
+            "hand-made"
+          ],
+          "priceMin": 1100,
+          "priceMax": 1490,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "phulkari-dupatta",
           "title": "Phulkari dupatta",
           "description": "Traditional Punjabi embroidery on georgette. Ask for colours.",
-          "price": null,
           "category": "Clothes",
           "query": [
             "phulkari",
             "phulkari dupatta"
-          ]
+          ],
+          "tags": [
+            "ethnic",
+            "hand-made",
+            "accessories"
+          ],
+          "priceMin": null,
+          "priceMax": null,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "linen-shirt",
           "title": "Relaxed linen shirt",
           "description": "Breathable summer linen in sand and olive.",
-          "price": 1799,
           "category": "Clothes",
           "query": [
             "linen shirt",
             "shirt linen"
-          ]
+          ],
+          "tags": [
+            "shirt",
+            "clothing"
+          ],
+          "priceMin": 1530,
+          "priceMax": 2070,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "denim-jacket",
           "title": "Vintage wash denim jacket",
           "description": "Oversized fit, brass buttons.",
-          "price": 2499,
           "category": "Clothes",
           "query": [
             "denim jacket"
           ],
-          "availability": "low"
+          "availability": "low",
+          "tags": [
+            "clothing",
+            "vintage"
+          ],
+          "priceMin": 2120,
+          "priceMax": 2870,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "cotton-saree",
           "title": "Mul cotton saree",
           "description": "Lightweight daily-wear saree with running blouse.",
-          "price": 2199,
           "category": "Clothes",
           "query": [
             "cotton saree",
             "saree"
-          ]
+          ],
+          "tags": [
+            "saree",
+            "ethnic"
+          ],
+          "priceMin": 1870,
+          "priceMax": 2530,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "kids-frock",
           "title": "Kids cotton frock",
           "description": "Ages 2 to 8. Soft and machine washable.",
-          "price": 699,
           "category": "Clothes",
           "query": [
             "girl dress",
             "frock",
             "dress child"
-          ]
+          ],
+          "tags": [
+            "kids",
+            "clothing"
+          ],
+          "priceMin": 590,
+          "priceMax": 800,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "wool-shawl",
           "title": "Kullu wool shawl",
           "description": "Warm handloom shawl, winter special.",
-          "price": null,
           "category": "Wardrobe",
           "query": [
             "kullu shawl",
             "wool shawl"
-          ]
+          ],
+          "tags": [
+            "accessories",
+            "hand-made"
+          ],
+          "priceMin": null,
+          "priceMax": null,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "nehru-jacket",
           "title": "Nehru jacket",
           "description": "Jacquard weave for weddings and functions.",
-          "price": 3499,
           "category": "Clothes",
           "query": [
             "nehru jacket",
             "bandhgala"
-          ]
+          ],
+          "tags": [
+            "ethnic",
+            "clothing"
+          ],
+          "priceMin": 2970,
+          "priceMax": 4020,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "chikankari-kurti",
           "title": "Chikankari kurti",
           "description": "Lucknowi hand embroidery on white mul.",
-          "price": 1599,
           "category": "Clothes",
           "query": [
             "chikankari",
             "chikan embroidery"
-          ]
+          ],
+          "tags": [
+            "kurta",
+            "hand-made"
+          ],
+          "priceMin": 1360,
+          "priceMax": 1840,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "palazzo-set",
           "title": "Printed palazzo set",
           "description": "Kurta and palazzo, bagru print.",
-          "price": 1899,
           "category": "Clothes",
           "query": [
             "bagru print",
             "block print textile"
-          ]
+          ],
+          "tags": [
+            "pants",
+            "clothing"
+          ],
+          "priceMin": 1610,
+          "priceMax": 2180,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "hoodie",
           "title": "Fleece hoodie",
           "description": "Campus favourite, heavy fleece.",
-          "price": 999,
           "category": "Clothes",
           "query": [
             "hoodie",
             "hooded sweatshirt"
-          ]
+          ],
+          "tags": [
+            "tshirt",
+            "clothing"
+          ],
+          "priceMin": 850,
+          "priceMax": 1150,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "kids-kurta",
           "title": "Kids kurta pyjama",
           "description": "Festival set for ages 3 to 10.",
-          "price": 899,
           "category": "Clothes",
           "query": [
             "boy kurta",
             "kurta child",
             "children kurta"
-          ]
+          ],
+          "tags": [
+            "kids",
+            "kurta"
+          ],
+          "priceMin": 760,
+          "priceMax": 1030,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "silk-stole",
           "title": "Tussar silk stole",
           "description": "Natural dyed, limited pieces.",
-          "price": 1299,
           "category": "Wardrobe",
           "query": [
             "silk stole",
             "silk shawl",
             "silk dupatta"
           ],
-          "availability": "low"
+          "availability": "low",
+          "tags": [
+            "accessories",
+            "hand-made"
+          ],
+          "priceMin": 1100,
+          "priceMax": 1490,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "cargo-pants",
           "title": "Cargo pants",
           "description": "Six pockets, stretch twill.",
-          "price": 1499,
           "category": "Clothes",
           "query": [
             "cargo pants",
             "cargo trousers"
-          ]
+          ],
+          "tags": [
+            "pants",
+            "clothing"
+          ],
+          "priceMin": 1270,
+          "priceMax": 1720,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "bandhani-dupatta",
           "title": "Bandhani dupatta",
           "description": "Tie-dye from Kutch, many colours.",
-          "price": 799,
           "category": "Clothes",
           "query": [
             "bandhani",
             "bandhej"
-          ]
+          ],
+          "tags": [
+            "ethnic",
+            "accessories"
+          ],
+          "priceMin": 680,
+          "priceMax": 920,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         }
       ],
       "tags": [
-        "Clothes",
-        "Wardrobe",
-        "Handmade"
+        "clothing",
+        "accessories",
+        "hand-made"
       ],
       "website": "https://patialathreads.example.com",
       "location": {
@@ -188,7 +355,8 @@
         "lng": 76.3926,
         "address": "Adalat Bazaar, Patiala, Punjab 147001"
       },
-      "ownerPhone": "9876500011"
+      "ownerPhone": "9876500011",
+      "autoMessage": "Thanks for the like! Ask me about sizes, we stitch to measure."
     },
     {
       "email": "kicks@window.demo",
@@ -200,172 +368,329 @@
           "slug": "white-sneakers",
           "title": "Classic white sneakers",
           "description": "Leather upper, cushioned sole. UK 6 to 11.",
-          "price": 2999,
           "category": "Shoes",
           "query": [
             "white sneakers"
-          ]
+          ],
+          "tags": [
+            "shoes"
+          ],
+          "priceMin": 2550,
+          "priceMax": 3450,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "punjabi-jutti",
           "title": "Hand-embroidered jutti",
           "description": "Traditional Punjabi jutti, zari work.",
-          "price": 1199,
           "category": "Shoes",
           "query": [
             "jutti",
             "juttis",
             "punjabi jutti"
-          ]
+          ],
+          "tags": [
+            "shoes",
+            "ethnic",
+            "hand-made"
+          ],
+          "priceMin": 1020,
+          "priceMax": 1380,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "running-shoes",
           "title": "Lightweight running shoes",
           "description": "Breathable mesh, 240 g.",
-          "price": 3499,
           "category": "Shoes",
           "query": [
             "running shoes"
-          ]
+          ],
+          "tags": [
+            "shoes",
+            "sports"
+          ],
+          "priceMin": 2970,
+          "priceMax": 4020,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "leather-loafers",
           "title": "Tan leather loafers",
           "description": "Full grain leather, Goodyear welt.",
-          "price": 4499,
           "category": "Shoes",
           "query": [
             "loafers shoes",
             "penny loafers",
             "loafer"
           ],
-          "availability": "low"
+          "availability": "low",
+          "tags": [
+            "shoes"
+          ],
+          "priceMin": 3820,
+          "priceMax": 5170,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": true
         },
         {
           "slug": "kolhapuri",
           "title": "Kolhapuri chappals",
           "description": "Vegetable tanned leather, unisex.",
-          "price": 899,
           "category": "Shoes",
           "query": [
             "kolhapuri chappal",
             "kolhapuri"
-          ]
+          ],
+          "tags": [
+            "shoes",
+            "hand-made"
+          ],
+          "priceMin": 760,
+          "priceMax": 1030,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "high-tops",
           "title": "Canvas high-tops",
           "description": "Black and red available.",
-          "price": 1999,
           "category": "Shoes",
           "query": [
             "converse high top",
             "high top sneakers"
-          ]
+          ],
+          "tags": [
+            "shoes"
+          ],
+          "priceMin": 1700,
+          "priceMax": 2300,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "trekking-boots",
           "title": "Trekking boots",
           "description": "Waterproof, ankle support. Ask for sizes.",
-          "price": null,
           "category": "Shoes",
           "query": [
             "hiking boots"
-          ]
+          ],
+          "tags": [
+            "shoes",
+            "sports"
+          ],
+          "priceMin": null,
+          "priceMax": null,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "kids-sneakers",
           "title": "Kids velcro sneakers",
           "description": "Light-up soles, sizes 8C to 3Y.",
-          "price": 1299,
           "category": "Shoes",
           "query": [
             "children sneakers",
             "kids shoes"
-          ]
+          ],
+          "tags": [
+            "shoes",
+            "kids"
+          ],
+          "priceMin": 1100,
+          "priceMax": 1490,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "formal-oxfords",
           "title": "Black oxfords",
           "description": "Office and interview ready.",
-          "price": 2799,
           "category": "Shoes",
           "query": [
             "oxford shoes black",
             "oxford shoe"
-          ]
+          ],
+          "tags": [
+            "shoes"
+          ],
+          "priceMin": 2380,
+          "priceMax": 3220,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "slides",
           "title": "Cushion slides",
           "description": "Cloud-soft EVA slides.",
-          "price": 599,
           "category": "Shoes",
           "query": [
             "slide sandals",
             "slides footwear"
-          ]
+          ],
+          "tags": [
+            "shoes"
+          ],
+          "priceMin": 510,
+          "priceMax": 690,
+          "paymentModes": [
+            "upi",
+            "cash"
+          ],
+          "superOnly": false
         },
         {
           "slug": "heels",
           "title": "Block heels",
           "description": "Comfortable 2.5 inch block heel.",
-          "price": 1899,
           "category": "Shoes",
           "query": [
             "block heels",
             "high heels shoes"
-          ]
+          ],
+          "tags": [
+            "shoes"
+          ],
+          "priceMin": 1610,
+          "priceMax": 2180,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "football-boots",
           "title": "Football boots",
           "description": "Firm ground studs.",
-          "price": 3299,
           "category": "Shoes",
           "query": [
             "football boots"
           ],
-          "availability": "out_of_stock"
+          "availability": "out_of_stock",
+          "tags": [
+            "shoes",
+            "sports"
+          ],
+          "priceMin": 2800,
+          "priceMax": 3790,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "mojari",
           "title": "Rajasthani mojari",
           "description": "Camel leather, hand stitched.",
-          "price": 1499,
           "category": "Shoes",
           "query": [
             "mojari",
             "juttis footwear",
             "jutti shoes"
-          ]
+          ],
+          "tags": [
+            "shoes",
+            "ethnic",
+            "hand-made"
+          ],
+          "priceMin": 1270,
+          "priceMax": 1720,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "chelsea-boots",
           "title": "Suede chelsea boots",
           "description": "Elastic side panels, taupe suede.",
-          "price": 3999,
           "category": "Shoes",
           "query": [
             "chelsea boots"
-          ]
+          ],
+          "tags": [
+            "shoes"
+          ],
+          "priceMin": 3400,
+          "priceMax": 4600,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "flip-flops",
           "title": "Rubber flip-flops",
           "description": "Hostel essential. Many colours.",
-          "price": 299,
           "category": "Shoes",
           "query": [
             "flip flops",
             "flip-flops"
-          ]
+          ],
+          "tags": [
+            "shoes"
+          ],
+          "priceMin": 250,
+          "priceMax": 340,
+          "paymentModes": [
+            "upi",
+            "cash"
+          ],
+          "superOnly": false
         }
       ],
       "tags": [
-        "Shoes",
-        "Sports",
-        "Kids"
+        "shoes",
+        "sports",
+        "kids"
       ],
       "website": null,
       "location": {
@@ -373,7 +698,8 @@
         "lng": 76.3869,
         "address": "Leela Bhawan Market, Patiala, Punjab 147001"
       },
-      "ownerPhone": "9876500022"
+      "ownerPhone": "9876500022",
+      "autoMessage": "Hi! Tell me your UK size and I will check stock today."
     },
     {
       "email": "canvas@window.demo",
@@ -385,176 +711,341 @@
           "slug": "sunset-oil",
           "title": "Sunset over Sheesh Mahal (oil)",
           "description": "24x36 inch oil on canvas, framed.",
-          "price": 12000,
           "category": "Paintings",
           "query": [
             "sunset oil painting",
             "sunset painting"
-          ]
+          ],
+          "tags": [
+            "painting",
+            "art"
+          ],
+          "priceMin": 10200,
+          "priceMax": 13800,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": true
         },
         {
           "slug": "abstract-blue",
           "title": "Abstract in blue",
           "description": "Acrylic, 18x24 inch. Open to offers.",
-          "price": null,
           "category": "Paintings",
           "query": [
             "abstract painting",
             "abstract art painting"
-          ]
+          ],
+          "tags": [
+            "painting",
+            "art"
+          ],
+          "priceMin": null,
+          "priceMax": null,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "madhubani",
           "title": "Madhubani fish print",
           "description": "Giclee print on archival paper, A3.",
-          "price": 1500,
           "category": "Paintings",
           "query": [
             "madhubani painting fish",
             "madhubani painting"
-          ]
+          ],
+          "tags": [
+            "art",
+            "hand-made"
+          ],
+          "priceMin": 1280,
+          "priceMax": 1720,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "terracotta-planter",
           "title": "Terracotta planter set",
           "description": "Set of three hand-thrown planters.",
-          "price": 1299,
           "category": "Decor",
           "query": [
             "terracotta pot",
             "clay pots",
             "flower pots terracotta"
-          ]
+          ],
+          "tags": [
+            "pottery",
+            "decor"
+          ],
+          "priceMin": 1100,
+          "priceMax": 1490,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "brass-diya",
           "title": "Brass diya set",
           "description": "Six diyas, antique finish.",
-          "price": 899,
           "category": "Decor",
           "query": [
             "diya",
             "oil lamp brass",
             "brass lamp"
-          ]
+          ],
+          "tags": [
+            "decor",
+            "interior"
+          ],
+          "priceMin": 760,
+          "priceMax": 1030,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "macrame",
           "title": "Macrame wall hanging",
           "description": "Cotton rope, 60 cm wide.",
-          "price": 1199,
           "category": "Decor",
           "query": [
             "macrame wall hanging",
             "macrame"
-          ]
+          ],
+          "tags": [
+            "decor",
+            "hand-made"
+          ],
+          "priceMin": 1020,
+          "priceMax": 1380,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "ceramic-mugs",
           "title": "Stoneware mugs (pair)",
           "description": "Speckled glaze, dishwasher safe.",
-          "price": 799,
           "category": "Decor",
           "query": [
             "coffee mug ceramic",
             "mug"
           ],
-          "availability": "low"
+          "availability": "low",
+          "tags": [
+            "pottery",
+            "kitchenware"
+          ],
+          "priceMin": 680,
+          "priceMax": 920,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "charcoal-portrait",
           "title": "Custom charcoal portrait",
           "description": "Send a photo, get a portrait in a week.",
-          "price": null,
           "category": "Paintings",
           "query": [
             "charcoal portrait drawing",
             "charcoal drawing portrait"
-          ]
+          ],
+          "tags": [
+            "art",
+            "hand-made"
+          ],
+          "priceMin": null,
+          "priceMax": null,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": true
         },
         {
           "slug": "wooden-tray",
           "title": "Mango wood serving tray",
           "description": "Hand carved edges.",
-          "price": 1099,
           "category": "Decor",
           "query": [
             "tray wooden",
             "wood serving tray",
             "serving tray"
-          ]
+          ],
+          "tags": [
+            "kitchenware",
+            "hand-made"
+          ],
+          "priceMin": 930,
+          "priceMax": 1260,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "jute-rug",
           "title": "Round jute rug",
           "description": "120 cm, natural fibre.",
-          "price": 1899,
           "category": "Decor",
           "query": [
             "jute rug",
             "jute mat"
-          ]
+          ],
+          "tags": [
+            "interior",
+            "decor"
+          ],
+          "priceMin": 1610,
+          "priceMax": 2180,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "watercolor-set",
           "title": "Botanical watercolours (set of 4)",
           "description": "A4 prints, unframed.",
-          "price": 1200,
           "category": "Paintings",
           "query": [
             "botanical watercolor",
             "botanical illustration watercolour"
-          ]
+          ],
+          "tags": [
+            "art",
+            "painting"
+          ],
+          "priceMin": 1020,
+          "priceMax": 1380,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "scented-candles",
           "title": "Soy candles trio",
           "description": "Mogra, sandalwood, lemongrass.",
-          "price": 699,
           "category": "Decor",
           "query": [
             "scented candles",
             "candle jar"
-          ]
+          ],
+          "tags": [
+            "decor",
+            "interior"
+          ],
+          "priceMin": 590,
+          "priceMax": 800,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "mirror",
           "title": "Rattan round mirror",
           "description": "50 cm, boho style.",
-          "price": 2299,
           "category": "Decor",
           "query": [
             "rattan mirror",
             "round wall mirror"
-          ]
+          ],
+          "tags": [
+            "interior",
+            "decor"
+          ],
+          "priceMin": 1950,
+          "priceMax": 2640,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         },
         {
           "slug": "warli-canvas",
           "title": "Warli village scene",
           "description": "Acrylic on canvas, 20x30 inch.",
-          "price": 4500,
           "category": "Paintings",
           "query": [
             "warli painting",
             "warli art"
-          ]
+          ],
+          "tags": [
+            "painting",
+            "art"
+          ],
+          "priceMin": 3820,
+          "priceMax": 5180,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": true
         },
         {
           "slug": "table-lamp",
           "title": "Ceramic table lamp",
           "description": "Warm LED bulb included.",
-          "price": 2499,
           "category": "Decor",
           "query": [
             "table lamp",
             "bedside lamp"
-          ]
+          ],
+          "tags": [
+            "lighting",
+            "interior"
+          ],
+          "priceMin": 2120,
+          "priceMax": 2870,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
         }
       ],
       "tags": [
-        "Paintings",
-        "Decor",
-        "Handmade"
+        "painting",
+        "decor",
+        "hand-made"
       ],
       "website": "https://instagram.com/canvasandclay.example",
       "location": {
@@ -562,187 +1053,18 @@
         "lng": 76.365,
         "address": "Urban Estate Phase 2, Patiala, Punjab 147002"
       },
-      "ownerPhone": "9876500033"
+      "ownerPhone": "9876500033",
+      "autoMessage": "Thank you! Every piece is original; ask for more photos."
     },
     {
-      "email": "fresh@window.demo",
-      "owner": "Gurpreet Singh",
-      "name": "Sangrur Fresh",
-      "description": "Farm to hostel. Fresh produce, dairy and pantry staples delivered around campus.",
-      "products": [
-        {
-          "slug": "alphonso",
-          "title": "Alphonso mangoes (dozen)",
-          "description": "Ratnagiri, naturally ripened.",
-          "price": 899,
-          "category": "Groceries",
-          "query": [
-            "alphonso mango",
-            "mangoes"
-          ],
-          "availability": "low"
-        },
-        {
-          "slug": "basmati",
-          "title": "Aged basmati rice 5 kg",
-          "description": "Extra long grain, 2 years aged.",
-          "price": 749,
-          "category": "Groceries",
-          "query": [
-            "rice bag",
-            "uncooked rice",
-            "white rice grains"
-          ]
-        },
-        {
-          "slug": "paneer",
-          "title": "Fresh paneer 500 g",
-          "description": "Made every morning. Order by 10 am.",
-          "price": 220,
-          "category": "Groceries",
-          "query": [
-            "paneer cheese",
-            "paneer"
-          ]
-        },
-        {
-          "slug": "desi-ghee",
-          "title": "Desi cow ghee 1 L",
-          "description": "Bilona method, glass jar.",
-          "price": 1100,
-          "category": "Groceries",
-          "query": [
-            "ghee jar",
-            "ghee bowl",
-            "ghee"
-          ]
-        },
-        {
-          "slug": "honey",
-          "title": "Raw forest honey 500 g",
-          "description": "Unprocessed, from Himachal.",
-          "price": 450,
-          "category": "Groceries",
-          "query": [
-            "honey jar",
-            "honey"
-          ]
-        },
-        {
-          "slug": "veg-box",
-          "title": "Weekly veg box",
-          "description": "Seasonal mix for two people. Ask what is in this week.",
-          "price": null,
-          "category": "Groceries",
-          "query": [
-            "vegetables market",
-            "vegetables basket",
-            "vegetables"
-          ]
-        },
-        {
-          "slug": "masala-kit",
-          "title": "Punjabi masala kit",
-          "description": "Six jars of freshly ground spices.",
-          "price": 599,
-          "category": "Groceries",
-          "query": [
-            "indian spices",
-            "masala spices"
-          ]
-        },
-        {
-          "slug": "jaggery",
-          "title": "Organic jaggery 1 kg",
-          "description": "Chemical free, from our own farm.",
-          "price": 180,
-          "category": "Groceries",
-          "query": [
-            "jaggery",
-            "gur jaggery"
-          ]
-        },
-        {
-          "slug": "cold-pressed-oil",
-          "title": "Cold-pressed mustard oil 1 L",
-          "description": "Kachi ghani.",
-          "price": 320,
-          "category": "Groceries",
-          "query": [
-            "mustard oil",
-            "mustard oil bottle"
-          ]
-        },
-        {
-          "slug": "eggs",
-          "title": "Free-range eggs (30)",
-          "description": "Brown eggs, collected daily.",
-          "price": 270,
-          "category": "Groceries",
-          "query": [
-            "egg carton",
-            "hen eggs",
-            "chicken egg"
-          ]
-        },
-        {
-          "slug": "makhana",
-          "title": "Roasted makhana 200 g",
-          "description": "Peri peri and classic salt.",
-          "price": 199,
-          "category": "Groceries",
-          "query": [
-            "makhana",
-            "fox nuts"
-          ]
-        },
-        {
-          "slug": "pickle",
-          "title": "Homemade mango pickle",
-          "description": "Grandmother recipe, 500 g jar.",
-          "price": 250,
-          "category": "Groceries",
-          "query": [
-            "mango pickle",
-            "indian pickle achar"
-          ]
-        },
-        {
-          "slug": "green-tea",
-          "title": "Kangra green tea 100 g",
-          "description": "First flush.",
-          "price": 399,
-          "category": "Groceries",
-          "query": [
-            "green tea leaves",
-            "green tea"
-          ]
-        },
-        {
-          "slug": "strawberries",
-          "title": "Strawberries 500 g",
-          "description": "Mahabaleshwar, in season only.",
-          "price": 350,
-          "category": "Groceries",
-          "query": [
-            "strawberries"
-          ],
-          "availability": "out_of_stock"
-        },
-        {
-          "slug": "lassi",
-          "title": "Fresh lassi (6 pack)",
-          "description": "Sweet or salted.",
-          "price": 240,
-          "category": "Groceries",
-          "query": [
-            "lassi",
-            "lassi glass"
-          ]
-        }
-      ],
+      "email": "haveli@window.demo",
+      "owner": "Navneet Bajwa",
+      "name": "Haveli Homeware",
+      "description": "Curtains, bedsheets, lamps and kitchenware for hostel rooms and first homes, made in Punjab.",
       "tags": [
-        "Groceries"
+        "interior",
+        "curtains",
+        "kitchenware"
       ],
       "website": null,
       "location": {
@@ -750,7 +1072,338 @@
         "lng": 76.404,
         "address": "Sanaur Road, Patiala, Punjab 147001"
       },
-      "ownerPhone": "9876500044"
+      "ownerPhone": "9876500044",
+      "products": [
+        {
+          "slug": "linen-curtains",
+          "title": "Linen curtains (pair)",
+          "description": "Soft natural linen, 7 ft drop, rod pocket top.",
+          "category": "Decor",
+          "query": [
+            "linen curtains",
+            "curtains window"
+          ],
+          "tags": [
+            "curtains",
+            "interior"
+          ],
+          "priceMin": 2120,
+          "priceMax": 2870,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "block-print-bedsheet",
+          "title": "Block-print bedsheet set",
+          "description": "King size cotton sheet with two pillow covers, bagru print.",
+          "category": "Decor",
+          "query": [
+            "block print bedsheet",
+            "bedsheet cotton"
+          ],
+          "tags": [
+            "bedsheet",
+            "hand-made"
+          ],
+          "priceMin": 1530,
+          "priceMax": 2070,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "brass-lamp",
+          "title": "Brass floor lamp",
+          "description": "Antique finish, warm bulb included.",
+          "category": "Decor",
+          "query": [
+            "brass floor lamp",
+            "floor lamp"
+          ],
+          "tags": [
+            "lighting",
+            "interior"
+          ],
+          "priceMin": 4250,
+          "priceMax": 5750,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "cane-chair",
+          "title": "Cane armchair",
+          "description": "Hand-woven cane seat, teak frame.",
+          "category": "Decor",
+          "query": [
+            "cane chair",
+            "rattan armchair"
+          ],
+          "tags": [
+            "furniture",
+            "hand-made"
+          ],
+          "priceMin": 5520,
+          "priceMax": 7470,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "copper-bottle",
+          "title": "Copper water bottle",
+          "description": "1 litre, hammered finish.",
+          "category": "Decor",
+          "query": [
+            "copper water bottle",
+            "copper bottle"
+          ],
+          "tags": [
+            "kitchenware"
+          ],
+          "priceMin": 680,
+          "priceMax": 920,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "cotton-dhurrie",
+          "title": "Cotton dhurrie 4x6",
+          "description": "Flat-weave rug, striped, washable.",
+          "category": "Decor",
+          "query": [
+            "dhurrie",
+            "flatweave rug",
+            "kilim rug"
+          ],
+          "tags": [
+            "interior",
+            "hand-made"
+          ],
+          "priceMin": 1870,
+          "priceMax": 2530,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "study-lamp",
+          "title": "Study desk lamp",
+          "description": "Adjustable arm, warm LED.",
+          "category": "Decor",
+          "query": [
+            "desk lamp",
+            "study lamp"
+          ],
+          "tags": [
+            "lighting"
+          ],
+          "priceMin": 1100,
+          "priceMax": 1490,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "cushion-covers",
+          "title": "Embroidered cushion covers (set of 4)",
+          "description": "16x16 inch, phulkari inspired.",
+          "category": "Decor",
+          "query": [
+            "cushion covers embroidered",
+            "cushion cover"
+          ],
+          "tags": [
+            "interior",
+            "hand-made"
+          ],
+          "priceMin": 850,
+          "priceMax": 1150,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "wooden-shelf",
+          "title": "Wall shelf, mango wood",
+          "description": "3 tier floating shelf.",
+          "category": "Decor",
+          "query": [
+            "wooden wall shelf",
+            "wall shelf wood"
+          ],
+          "tags": [
+            "furniture",
+            "interior"
+          ],
+          "priceMin": 1610,
+          "priceMax": 2180,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "steel-tiffin",
+          "title": "Steel tiffin set",
+          "description": "Three tier stainless lunch box.",
+          "category": "Decor",
+          "query": [
+            "tiffin box steel",
+            "tiffin carrier"
+          ],
+          "tags": [
+            "kitchenware"
+          ],
+          "priceMin": 550,
+          "priceMax": 750,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "sheer-curtains",
+          "title": "Sheer white curtains",
+          "description": "Light-filtering voile, 5 ft.",
+          "category": "Decor",
+          "query": [
+            "sheer curtains",
+            "white curtains"
+          ],
+          "tags": [
+            "curtains"
+          ],
+          "priceMin": 1100,
+          "priceMax": 1490,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "bedside-table",
+          "title": "Bedside table",
+          "description": "Solid wood with one drawer.",
+          "category": "Decor",
+          "query": [
+            "bedside table",
+            "nightstand wood"
+          ],
+          "tags": [
+            "furniture"
+          ],
+          "priceMin": 2800,
+          "priceMax": 3790,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "clay-kulhad",
+          "title": "Clay kulhad set (6)",
+          "description": "Unglazed terracotta cups for chai.",
+          "category": "Decor",
+          "query": [
+            "kulhad clay cup",
+            "terracotta cup"
+          ],
+          "tags": [
+            "pottery",
+            "kitchenware",
+            "hand-made"
+          ],
+          "priceMin": 250,
+          "priceMax": 340,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "string-lights",
+          "title": "Warm string lights 10 m",
+          "description": "USB powered fairy lights.",
+          "category": "Decor",
+          "query": [
+            "string lights warm",
+            "fairy lights"
+          ],
+          "tags": [
+            "lighting",
+            "decor"
+          ],
+          "priceMin": 420,
+          "priceMax": 570,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        },
+        {
+          "slug": "mattress-topper",
+          "title": "Cotton mattress topper",
+          "description": "Single bed, quilted.",
+          "category": "Decor",
+          "query": [
+            "mattress pad",
+            "quilted mattress",
+            "mattress bed"
+          ],
+          "tags": [
+            "bedsheet",
+            "interior"
+          ],
+          "priceMin": 1360,
+          "priceMax": 1840,
+          "paymentModes": [
+            "upi",
+            "cash",
+            "netbanking"
+          ],
+          "superOnly": false
+        }
+      ],
+      "autoMessage": "Welcome! Free delivery around Patiala on orders over ₹999."
     }
   ]
 }

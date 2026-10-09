@@ -145,3 +145,42 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 .leaflet-control-zoom a { background: var(--canvas) !important; color: var(--ink) !important; border-color: var(--line) !important; }
 .leaflet-control-attribution { background: color-mix(in srgb, var(--canvas) 80%, transparent) !important; color: var(--muted) !important; }
 .leaflet-control-attribution a { color: var(--accent-text) !important; }
+
+/* Super-swipe light burst: five stacked glows at the right edge, 2 s total. */
+.light-sweep { animation: ls-fade 2s ease-out forwards; }
+.ls-wrap { position: absolute; right: -60px; top: 50%; transform: translateY(-50%) rotate(90deg); width: 100vh; }
+.ls { border-radius: 50%; height: 20px; width: 100%; position: relative; margin: auto; }
+.ls.two { width: 90%; } .ls.three { width: 80%; } .ls.four { width: 70%; } .ls.five { width: 60%; }
+.ls.one { animation: ls-one 2s ease-in-out forwards; }
+.ls.two { animation: ls-two 1.6s ease-in-out forwards; }
+.ls.three { animation: ls-three 1.2s ease-in-out forwards; }
+.ls.four { animation: ls-four 0.8s ease-in-out infinite alternate; }
+.ls.five { animation: ls-five 0.4s ease-in-out infinite alternate; }
+@keyframes ls-fade { 0% { opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes ls-one { from { box-shadow: 0 0 250px 20px #473c78; } to { box-shadow: 0 0 100px 15px #f72a3b; } }
+@keyframes ls-two { from { box-shadow: 0 0 250px 20px #18c499; } to { box-shadow: 0 0 100px 15px #d8f05e; } }
+@keyframes ls-three { from { box-shadow: 0 0 250px 20px #ffdd00; } to { box-shadow: 0 0 100px 15px #3e33ff; } }
+@keyframes ls-four { from { box-shadow: 0 0 250px 20px #781848; } to { box-shadow: 0 0 100px 15px #f2bbe9; } }
+@keyframes ls-five { from { box-shadow: 0 0 250px 20px #42f2a1; } to { box-shadow: 0 0 100px 15px #f4f6ad; } }
+
+/* Flip card */
+.flip { perspective: 1400px; }
+.flip-inner { transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.flip.is-back .flip-inner { transform: rotateY(180deg); }
+.flip-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-back { transform: rotateY(180deg); }
+
+/* Token card glow: a slow lime pulse that invites a tap. */
+@keyframes token-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(235, 252, 114, 0.0), 0 0 24px 0 rgba(235, 252, 114, 0.15); }
+  50% { box-shadow: 0 0 0 6px rgba(235, 252, 114, 0.12), 0 0 48px 4px rgba(235, 252, 114, 0.45); }
+}
+.token-glow { animation: token-pulse 2.4s ease-in-out infinite; }
+@keyframes shine { 0% { transform: translateX(-120%) skewX(-20deg); } 100% { transform: translateX(220%) skewX(-20deg); } }
+.token-shine::after { content: ''; position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(244,243,232,0.35), transparent); animation: shine 2.8s ease-in-out infinite; }
+
+/* Dual range slider thumbs */
+.range-thumb::-webkit-slider-thumb { pointer-events: auto; -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 3.6px; background: var(--accent); border: 2px solid var(--ink); cursor: pointer; }
+.range-thumb::-moz-range-thumb { pointer-events: auto; width: 22px; height: 22px; border-radius: 3.6px; background: var(--accent); border: 2px solid var(--ink); cursor: pointer; }
+.range-thumb::-webkit-slider-runnable-track { background: transparent; }
+.range-thumb::-moz-range-track { background: transparent; }

@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fetchFeedPage, fetchLocalProducts, loadSwipedIds, recordSwipe } from '@/lib/db'
+import { fetchFeedPage, fetchLocalProducts, loadSwipedIds, recordLike, recordPass, type LikeOutcome } from '@/lib/db'
 import type { LatLng } from '@/lib/geo'
-import { FEED_MIN_RESULTS, RADIUS_STEPS_KM, type Product, type UserProfile } from '@/lib/types'
+import { FEED_MIN_RESULTS, RADIUS_STEPS_KM, type LikeType, type Product, type UserProfile } from '@/lib/types'
 import { telemetry } from '@/lib/telemetry'
 import { rankFeed, type RankedProduct } from './rank'
 
 export interface FeedOptions {
   center: LatLng | null
   interests: string[]
-  /** null = adaptive (widen until enough results). */
   radiusKm: number | null
 }
 
@@ -20,7 +19,7 @@ export function useFeed(profile: UserProfile | null, opts: FeedOptions) {
   const [effectiveRadius, setEffectiveRadius] = useState<number | null>(opts.radiusKm)
   const [nearbyCount, setNearbyCount] = useState(0)
   const [swipeCount, setSwipeCount] = useState(0)
-  const [lastMatch, setLastMatch] = useState<Product | null>(null)
+  const [lastOutcome, setLastOutcome] = useState<{ product: Product; outcome: LikeOutcome; type: LikeType } | null>(null)
   const swiped = useRef<Set<string>>(new Set())
   const generation = useRef(0)
 
@@ -45,7 +44,6 @@ export function useFeed(profile: UserProfile | null, opts: FeedOptions) {
           if (items.length >= FEED_MIN_RESULTS) break
         }
       } else {
-        // No area yet: newest products everywhere.
         const page = await fetchFeedPage(null)
         items = page.products.filter(usable).map((p) => ({ ...p, distanceKm: Number.NaN, matchesInterests: false }))
       }
@@ -70,35 +68,34 @@ export function useFeed(profile: UserProfile | null, opts: FeedOptions) {
     if (!loading && queue.length === 0) setExhausted(true)
   }, [queue.length, loading])
 
-  /** Removes the card locally. Records it only when there is a signed-in profile. */
-  const swipe = useCallback(
-    (product: Product, direction: 'left' | 'right', as: UserProfile | null = profile) => {
-      swiped.current.add(product.id)
-      setQueue((q) => q.filter((p) => p.id !== product.id))
-      setSwipeCount((c) => c + 1)
-      if (!as) return
-      if (direction === 'right') setLastMatch(product)
-      const started = performance.now()
-      recordSwipe(as, product, direction)
-        .then(() => {
-          if (direction === 'right') telemetry.record('swipe_to_match_ms', performance.now() - started)
-        })
-        .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not save swipe'))
+  const remove = useCallback((product: Product) => {
+    swiped.current.add(product.id)
+    setQueue((q) => q.filter((p) => p.id !== product.id))
+    setSwipeCount((c) => c + 1)
+  }, [])
+
+  /** Left swipe: free. Guests only dismiss locally. */
+  const pass = useCallback(
+    (product: Product) => {
+      remove(product)
+      if (profile) void recordPass(profile, product).catch(() => undefined)
     },
-    [profile],
+    [profile, remove],
   )
 
-  return {
-    queue,
-    loading,
-    error,
-    exhausted,
-    effectiveRadius,
-    nearbyCount,
-    swipeCount,
-    lastMatch,
-    swipe,
-    reload: load,
-    dismissMatch: () => setLastMatch(null),
-  }
+  /** Right or super swipe for a signed-in shopper. Throws when the balance is empty. */
+  const like = useCallback(
+    async (product: Product, type: LikeType, as: UserProfile | null = profile): Promise<LikeOutcome> => {
+      if (!as) throw new Error('Log in to like products')
+      const started = performance.now()
+      const outcome = await recordLike(as, product, type)
+      remove(product)
+      if (outcome.kind === 'matched') telemetry.record('swipe_to_match_ms', performance.now() - started)
+      setLastOutcome({ product, outcome, type })
+      return outcome
+    },
+    [profile, remove],
+  )
+
+  return { queue, loading, error, exhausted, effectiveRadius, nearbyCount, swipeCount, lastOutcome, pass, like, reload: load, dismissOutcome: () => setLastOutcome(null) }
 }

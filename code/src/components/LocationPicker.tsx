@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { Button, ErrorBanner, cx } from '@/components/ui'
+import { ICON, MapPin } from '@/components/icons'
 import { DEFAULT_CENTER, getCurrentPosition, reverseGeocode, searchPlace, type LatLng } from '@/lib/geo'
 import type { StoreLocation } from '@/lib/types'
 
@@ -144,7 +145,7 @@ export function LocationPicker({ value, onChange, searchable = true, compact = f
       <div ref={mapEl} className={cx('w-full overflow-hidden rounded ring-1 ring-line', compact ? 'h-48' : 'h-64')} aria-label="Map" />
       <div className="flex gap-2">
         <Button type="button" variant="secondary" className="flex-1" onClick={() => void locateMe()} loading={busy}>
-          📍 Use my GPS location
+          <MapPin {...ICON} size={16} /> Use my GPS location
         </Button>
       </div>
       <p className="font-mono text-[11px] text-muted">Drag the pin or tap the map to adjust.</p>

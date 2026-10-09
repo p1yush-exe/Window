@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button, ErrorBanner, Input, cx } from '@/components/ui'
 import { DEMO_OTP, sendOtp, verifyOtp } from '@/lib/otp'
+import { Check, ICON_SM } from '@/components/icons'
 
 interface Props {
   label: string
@@ -66,7 +67,7 @@ export function OtpField({ label, kind, value, onChange, verified, onVerified, v
           />
         </div>
         {verified ? (
-          <span className="mb-2 inline-flex h-7 items-center rounded bg-surface px-2.5 text-xs font-semibold text-ink">Verified ✓</span>
+          <span className="mb-2 inline-flex h-7 items-center gap-1 rounded bg-accent px-2.5 font-mono text-[11px] text-on-accent uppercase"><Check {...ICON_SM} size={12} /> Verified</span>
         ) : (
           <Button type="button" variant="secondary" size="md" onClick={() => void send()} loading={busy && !sent}>
             {sent ? 'Resend' : 'Send OTP'}

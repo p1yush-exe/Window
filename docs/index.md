@@ -21,10 +21,12 @@ Demo accounts (password `window123`): `buyer@window.demo`, `threads@window.demo`
 
 ## What it does
 
-| Role | Features |
+The app opens on a chooser: **I'm shopping** or **I'm a seller**. One account can do both; the top-right switch flips between the two layouts.
+
+| Role | Flow |
 |---|---|
-| Buyer | Sign up, swipe feed (drag, buttons or arrow keys), liked list with live stock, chat per match, stock alerts, reviews, store and product pages |
-| Seller | Store profile, product listing with optional price and photos, availability switch that notifies interested buyers instantly, inbox grouped by product |
+| Shopper | Picks an area and up to 3 interests, then swipes product cards: tap flips a card to its back (cost range, full description, whether it costs a swipe or a super swipe). Dragging left shows a red edge, dragging right a green edge and an "Upgrade to super swipe?" prompt. A right swipe costs 1 swipe and is a *like* the seller must accept; a super swipe claims the product instantly (with a light-burst effect). 5 free swipes a day, 2 free super swipes on first app login; bundles can be bought (simulated). When swipes run out, the counter grows and an overlay offers super swipes, bundles or, on the web, the app. Bottom-left bag holds likes and chats; bottom-right profile holds name, username, contact, email and balances. |
+| Seller | Four-step shop setup (Google can fill owner details). Bottom-centre plus opens the camera (or gallery), compresses and crops the photo, then asks for up to 3 tags, name (an ID like WN-7F3K2Q is generated), a description of at most 150 words, a cost range with a dual slider, the shop (if several), payment modes and a super-swipes-only switch. Bottom-left shop management: shops, per-shop auto message, auto-matcher (99.99 per day), decorations and upload-token bundles (1 token = 10 uploads). Bottom-right profile: credentials, shops, payment ids. Home shows likes waiting for acceptance, products with stock switches, and chats. |
 
 ## Stack
 
