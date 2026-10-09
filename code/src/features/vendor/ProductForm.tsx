@@ -91,11 +91,10 @@ export function ProductForm({ shops, initial, submitLabel, busy, onSubmit }: Pro
         {!rangeReady && <p className="mt-1 font-mono text-[11px] text-pencil-gray uppercase">Leave empty to let buyers ask</p>}
       </div>
 
-      {shops.length > 1 && (
-        <Select label="Shop" name="shopId" value={shopId} onChange={(e) => setShopId(e.target.value)}>
-          {shops.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-        </Select>
-      )}
+      <Select label={shops.length > 1 ? 'Which shop is this from?' : 'Shop'} name="shopId" value={shopId} onChange={(e) => setShopId(e.target.value)}>
+        {shops.length === 0 && <option value="">No shop yet · create one in Shop management</option>}
+        {shops.map((s) => <option key={s.id} value={s.id}>{s.name}{s.location?.area ? ` · ${s.location.area}` : ''}</option>)}
+      </Select>
 
       <div>
         <span className="label mb-1 block">Payment modes</span>
