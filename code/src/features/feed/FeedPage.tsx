@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Link, useNavigate } from 'react-router'
 import { Button, EmptyState, ErrorBanner, FullPageSpinner } from '@/components/ui'
-import { Download, Heart, HeartPlus, ICON, Map, MapPin, X } from '@/components/icons'
+import { Download, HeartPlus, ICON, Map, MapPin } from '@/components/icons'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { LoginSheet } from '@/features/auth/LoginSheet'
 import { BuySwipesSheet } from '@/features/economy/BuySwipesSheet'
@@ -96,7 +96,7 @@ export function FeedPage() {
 
   useEffect(() => {
     if (!upgrade) return
-    const t = setTimeout(() => setUpgrade(null), 4500)
+    const t = setTimeout(() => setUpgrade(null), 5000)
     return () => clearTimeout(t)
   }, [upgrade])
 
@@ -142,7 +142,7 @@ export function FeedPage() {
         <div key={top.id} className="ambient pointer-events-none fixed inset-0 z-0" style={{ backgroundImage: `url(${top.imageUrls[0]})` }} aria-hidden="true" />
       )}
 
-      <div className="mx-auto mt-3 flex w-full max-w-sm items-center justify-center gap-1.5 px-4 md:max-w-md">
+      <div className="mx-auto mt-1 flex w-full max-w-sm items-center justify-center gap-1.5 px-4 md:max-w-md">
         <button type="button" onClick={() => navigate('/shopper/setup')} className="flex items-center gap-1 rounded border-2 border-faded-gray px-2 py-0.5 font-mono text-[11px] tracking-[0.053em] text-charcoal uppercase hover:border-charcoal">
           <MapPin {...ICON} size={12} /> {center ? areaLabel(center) : 'Set area'}
         </button>
@@ -187,27 +187,18 @@ export function FeedPage() {
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="relative z-10 mx-auto mt-4 flex w-full max-w-sm items-center justify-center gap-5 px-4 md:max-w-md">
-        <button type="button" onClick={() => swipe('left')} disabled={!top} className="action-btn text-[#fb4f68]" aria-label="Pass">
-          <X size={30} strokeWidth={3} absoluteStrokeWidth />
-        </button>
-        <button type="button" onClick={() => top && void superSwipe(top)} disabled={!top} className="action-btn action-btn-sm text-spark-blue" aria-label="Super swipe">
-          <HeartPlus size={22} strokeWidth={2.5} absoluteStrokeWidth />
-        </button>
-        <button type="button" onClick={() => swipe('right')} disabled={!top} className="action-btn text-[#4dca93]" aria-label="Like">
-          <Heart size={30} strokeWidth={3} absoluteStrokeWidth fill="currentColor" />
-        </button>
-      </div>
-
-      {/* Super swipe prompt from the bottom */}
+      {/* Super swipe prompt: a circular button with a 5 s countdown, after a right swipe */}
       <AnimatePresence>
         {upgrade && profile && (
-          <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} className="fixed inset-x-4 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto flex max-w-sm items-center justify-between gap-3 border-2 border-faded-gray bg-white p-3">
-            <p className="text-[15px] text-charcoal">Upgrade to super swipe?</p>
-            <Button size="sm" onClick={() => void superSwipe(upgrade)} disabled={profile.superSwipes <= 0}>
-              <HeartPlus {...ICON} size={14} /> Super swipe
-            </Button>
+          <motion.div key={upgrade.id} initial={{ y: 40, opacity: 0, scale: 0.9 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 40, opacity: 0, scale: 0.9 }} className="pointer-events-none fixed inset-x-0 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 flex flex-col items-center gap-2">
+            <p className="rounded-xl border-2 border-faded-gray bg-white px-3 py-1.5 text-[15px] font-bold text-charcoal">Upgrade to super swipe?</p>
+            <button type="button" onClick={() => void superSwipe(upgrade)} disabled={profile.superSwipes <= 0} className="super-ring pointer-events-auto relative flex h-20 w-20 items-center justify-center rounded-full bg-white text-spark-blue disabled:opacity-50" aria-label="Super swipe this product">
+              <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="36" fill="none" stroke="#ececec" strokeWidth="5" />
+                <circle cx="40" cy="40" r="36" fill="none" stroke="#1cb0f6" strokeWidth="5" strokeLinecap="round" pathLength="100" className="super-ring-progress" />
+              </svg>
+              <HeartPlus size={34} strokeWidth={2.5} absoluteStrokeWidth />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

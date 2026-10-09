@@ -66,6 +66,14 @@ export async function uploadPhoto(file: Blob, onProgress?: (p: UploadProgress) =
   return uploadImage(small, onProgress, folder)
 }
 
+/** Asks for camera and gallery permission ahead of time (no-op on the web). */
+export async function requestCameraPermission(): Promise<void> {
+  if (!Capacitor.isNativePlatform()) return
+  const { Camera } = await import('@capacitor/camera')
+  const cur = await Camera.checkPermissions()
+  if (cur.camera !== 'granted' || cur.photos !== 'granted') await Camera.requestPermissions({ permissions: ['camera', 'photos'] })
+}
+
 /**
  * Picks photos: native gallery/camera on Android via Capacitor Camera,
  * otherwise resolves to null so the caller falls back to <input type=file>.
@@ -75,16 +83,23 @@ export async function pickNativePhotos(limit: number, source: 'photos' | 'camera
   const { Camera, CameraResultType, CameraSource } = await import('@capacitor/camera')
   const perm = await Camera.requestPermissions({ permissions: source === 'camera' ? ['camera'] : ['photos'] })
   if ((source === 'camera' && perm.camera === 'denied') || (source === 'photos' && perm.photos === 'denied')) {
-    throw new Error('Permission denied')
+    throw new Error(`${source === 'camera' ? 'Camera' : 'Photo'} permission is off for Window. Allow it in Settings → Apps → Window → Permissions.`)
   }
   if (source === 'camera' || limit === 1) {
-    const photo = await Camera.getPhoto({
+    let photo
+    try {
+      photo = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: source === 'camera' ? CameraSource.Camera : CameraSource.Photos,
       quality: 85,
       width: 1600,
       correctOrientation: true,
     })
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      if (/cancel/i.test(msg)) return []
+      throw new Error(`Could not open the ${source === 'camera' ? 'camera' : 'gallery'}: ${msg}`)
+    }
     if (!photo.webPath) return []
     return [await (await fetch(photo.webPath)).blob()]
   }

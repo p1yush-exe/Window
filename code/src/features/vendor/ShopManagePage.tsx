@@ -77,7 +77,7 @@ export function ShopManagePage() {
           {TOKEN_BUNDLES.map((b, i) => (
             <motion.li key={b.qty} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} whileTap={{ scale: 0.97 }} className={cx('token-shine relative overflow-hidden rounded border border-eager-green bg-white', i === 1 && 'token-glow')}>
               <button type="button" onClick={() => void buyTokens(b)} disabled={busy === `t${b.qty}`} className="block w-full p-3 text-left">
-                <p className="font-mono text-[11px] text-pencil-gray uppercase">{i === 1 ? 'Most popular' : i === 3 ? 'Best value' : 'Bundle'}</p>
+                <p className="font-mono text-[11px] text-pencil-gray uppercase">{i === TOKEN_BUNDLES.length - 1 ? 'Best value' : 'Bundle'}</p>
                 <p className="mt-1 text-[29px] leading-none text-charcoal">{b.qty} <span className="font-mono text-[12px] text-pencil-gray uppercase">tokens</span></p>
                 <p className="mt-1"><Price bundle={b} /></p>
                 <p className="mt-2 font-mono text-[11px] text-spark-blue uppercase">{busy === `t${b.qty}` ? 'Adding…' : `Tap to buy · ${b.qty * 10} uploads`}</p>

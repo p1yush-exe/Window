@@ -69,13 +69,13 @@ export function BuySwipesSheet({ kind: initialKind, onClose }: { kind: 'swipes' 
           </button>
         </div>
         <ul className="mt-4 divide-y divide-faded-gray border-y border-faded-gray">
-          {bundles.map((b) => (
+          {bundles.map((b, i) => (
             <li key={b.qty} className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="font-mono text-[14px] text-charcoal">{b.qty} {kind === 'swipes' ? 'swipes' : 'super swipes'}</p>
+                <p className="font-mono text-[14px] text-charcoal">{b.qty} {kind === 'swipes' ? 'swipes' : 'super swipes'}{i === bundles.length - 1 ? ' · best value' : ''}</p>
                 <Price bundle={b} />
               </div>
-              <Button size="sm" loading={busy === b.qty} onClick={() => void buy(b)}>
+              <Button size="sm" loading={busy === b.qty} onClick={() => void buy(b)} className={i === bundles.length - 1 ? 'shine-btn' : undefined}>
                 Buy
               </Button>
             </li>

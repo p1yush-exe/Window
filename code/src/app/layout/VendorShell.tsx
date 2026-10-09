@@ -5,6 +5,7 @@ import { ArrowLeftRight, ICON, Plus, Store, User } from '@/components/icons'
 import { useSession } from '@/features/auth/AuthProvider'
 import { listenVendorLikes } from '@/lib/db'
 import { setMode } from '@/lib/mode'
+import { requestCameraPermission } from '@/lib/upload'
 
 /** Seller chrome: switch top-right, shop bottom-left, plus bottom-centre, profile bottom-right. */
 export function VendorShell() {
@@ -13,6 +14,9 @@ export function VendorShell() {
   const [pending, setPending] = useState(0)
 
   useEffect(() => listenVendorLikes(profile.uid, (ls) => setPending(ls.filter((l) => l.status === 'pending').length)), [profile.uid])
+  useEffect(() => {
+    void requestCameraPermission().catch(() => undefined)
+  }, [])
 
   function switchToShopper() {
     setMode('shopper')

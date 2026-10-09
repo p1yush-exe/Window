@@ -176,7 +176,7 @@ img, a { -webkit-user-drag: none; user-drag: none; }
   --door-ajar: 2.5;   /* how far (in %) they slide when hovering on the web */
   --door-open: 11.5;  /* how far they slide when opened; should be about the panel width */
   --intro-zoom: 3.4;  /* how far the camera pushes through the doorway at the end */
-  --intro-focus-x: 53%; /* which part of the picture sits at screen centre; bigger = scene moves LEFT */
+  --intro-focus-x: 50%; /* which part of the picture sits at screen centre; bigger = scene moves LEFT */
   --intro-focus-y: 50%;
   --sign-y: 6%;        /* signboard distance from the top (% of screen height) */
   --sign-size: 24vw;   /* signboard letter size */
@@ -249,3 +249,12 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 .action-btn:active { transform: scale(0.94); }
 .action-btn:disabled { opacity: 0.4; transform: none; }
 .action-btn-sm { width: 52px; height: 52px; }
+
+/* Shine on the costliest bundle's buy button */
+.shine-btn { position: relative; overflow: hidden; }
+.shine-btn::after { content: ''; position: absolute; inset: 0; width: 45%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent); animation: shine 2.2s ease-in-out infinite; pointer-events: none; }
+
+/* Super-swipe prompt: 5 s countdown ring */
+.super-ring { box-shadow: 0 0 0 2px #ececec; }
+.super-ring-progress { stroke-dasharray: 100; stroke-dashoffset: 0; animation: ring-drain 5s linear forwards; }
+@keyframes ring-drain { to { stroke-dashoffset: 100; } }

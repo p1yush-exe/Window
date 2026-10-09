@@ -11,8 +11,9 @@ import { setMode } from '@/lib/mode'
 import { isApp } from '@/lib/platform'
 
 /**
- * Shopper chrome. Top bar: swipe + super-swipe counters (side by side, open the swipe shop),
- * theme toggle and the seller switch. Bottom: bag left, profile right.
+ * Shopper chrome lives in the four corners; the middle is for cards.
+ * Top-left: swipe + super-swipe counters (open the swipe shop). Top-right: swap to seller.
+ * Bottom-left: liked & chats (bag). Bottom-right: profile. No top or bottom bars.
  */
 export function ShopperShell() {
   const { profile } = useAuth()
@@ -46,81 +47,56 @@ export function ShopperShell() {
   const supers = profile?.superSwipes ?? 0
   const empty = Boolean(profile) && swipes === 0
   const onFeed = location.pathname === '/feed'
-  const chip = 'flex h-11 items-center gap-2 rounded border px-3 font-mono text-[15px] tracking-[0.053em] backdrop-blur transition hover:border-charcoal'
+  const chip = 'flex h-11 items-center gap-1.5 rounded-xl border-2 px-3 text-[16px] font-bold transition'
+  const corner = 'flex h-12 w-12 items-center justify-center rounded-xl border-2 transition'
+  const idle = 'border-faded-gray bg-white text-charcoal hover:border-spark-blue'
+  const active = 'border-eager-green bg-eager-green text-white'
 
   return (
     <div className="relative flex min-h-dvh flex-col bg-white">
-      {/* Top bar */}
-      <header className="fixed inset-x-0 top-0 z-30 border-b border-faded-gray/60 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 pt-[calc(var(--safe-top)+10px)] pb-2.5">
-          <div className="flex items-center gap-2">
-            <NavLink to="/feed" className="mr-1 hidden font-mono text-[13px] tracking-[0.053em] text-charcoal uppercase md:block">Window</NavLink>
-            <motion.button
-              type="button"
-              onClick={() => (profile ? setBuyOpen('swipes') : setLoginOpen(true))}
-              animate={{ scale: empty && onFeed ? 1.15 : 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-              className={cx(chip, 'origin-left', empty ? 'border-eager-green bg-eager-green text-white' : 'border-faded-gray bg-white text-charcoal')}
-              aria-label={`${swipes} swipes left. Open the swipe shop`}
-              title="Swipes · tap to buy more"
-            >
-              <Heart {...ICON} fill={empty ? 'currentColor' : 'none'} />
-              <span>{profile ? swipes : '—'}</span>
-              <span className="hidden text-[11px] text-current/70 md:inline">swipes</span>
-            </motion.button>
-            <button
-              type="button"
-              onClick={() => (profile ? setBuyOpen('superSwipes') : setLoginOpen(true))}
-              className={cx(chip, 'border-faded-gray bg-white text-charcoal')}
-              aria-label={`${supers} super swipes left. Open the swipe shop`}
-              title="Super swipes · tap to buy more"
-            >
-              <HeartPlus {...ICON} className="text-spark-blue" />
-              <span>{profile ? supers : '—'}</span>
-              <span className="hidden text-[11px] text-pencil-gray md:inline">super</span>
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={switchToSeller}
-              className="flex h-11 items-center gap-2 rounded border-2 border-faded-gray px-3 font-mono text-[12px] tracking-[0.053em] text-charcoal uppercase hover:border-charcoal"
-              aria-label="Switch to seller"
-            >
-              <ArrowLeftRight {...ICON} size={16} /> <span className="hidden sm:inline">Seller</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Top-left: counters */}
+      <div className="fixed top-[calc(var(--safe-top)+12px)] left-4 z-30 flex items-center gap-2">
+        <motion.button
+          type="button"
+          onClick={() => (profile ? setBuyOpen('swipes') : setLoginOpen(true))}
+          animate={{ scale: empty && onFeed ? 1.15 : 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+          className={cx(chip, 'origin-left', empty ? active : idle)}
+          aria-label={`${swipes} swipes left. Open the swipe shop`}
+        >
+          <Heart {...ICON} fill={empty ? 'currentColor' : 'none'} className={empty ? '' : 'text-[#fb4f68]'} />
+          {profile ? swipes : '—'}
+        </motion.button>
+        <button type="button" onClick={() => (profile ? setBuyOpen('superSwipes') : setLoginOpen(true))} className={cx(chip, idle)} aria-label={`${supers} super swipes left. Open the swipe shop`}>
+          <HeartPlus {...ICON} className="text-spark-blue" />
+          {profile ? supers : '—'}
+        </button>
+      </div>
 
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col pt-[calc(var(--safe-top)+74px)] pb-[calc(5rem+var(--safe-bottom))]">
+      {/* Top-right: swap account type (plain button) */}
+      <button
+        type="button"
+        onClick={switchToSeller}
+        className="fixed top-[calc(var(--safe-top)+12px)] right-4 z-30 flex h-11 w-11 items-center justify-center rounded-xl text-charcoal hover:text-spark-blue"
+        aria-label="Switch to seller"
+        title="Switch to seller"
+      >
+        <ArrowLeftRight size={26} strokeWidth={2.5} absoluteStrokeWidth />
+      </button>
+
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col pt-[calc(var(--safe-top)+64px)] pb-[calc(5rem+var(--safe-bottom))]">
         <Outlet />
       </main>
 
-      {/* Bottom bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 pb-[calc(var(--safe-bottom)+14px)]">
-        <div className="mx-auto flex max-w-5xl items-end justify-between px-5">
-          <NavLink
-            to="/bag"
-            className={({ isActive }) =>
-              cx('relative flex h-13 items-center gap-2 rounded border px-4 font-mono text-[12px] uppercase backdrop-blur', isActive ? 'border-eager-green bg-eager-green text-white' : 'border-faded-gray bg-white/90 text-charcoal hover:border-charcoal')
-            }
-            aria-label="Bag"
-          >
-            <ShoppingBag {...ICON} /> <span className="hidden sm:inline">Bag</span>
-            {unread > 0 && <span className="absolute -top-1.5 -right-1.5 rounded bg-eager-green px-1.5 font-mono text-[10px] text-white">{unread}</span>}
-          </NavLink>
-          <NavLink
-            to="/me"
-            className={({ isActive }) =>
-              cx('flex h-13 items-center gap-2 rounded border px-4 font-mono text-[12px] uppercase backdrop-blur', isActive ? 'border-eager-green bg-eager-green text-white' : 'border-faded-gray bg-white/90 text-charcoal hover:border-charcoal')
-            }
-            aria-label="Profile"
-          >
-            <User {...ICON} /> <span className="hidden sm:inline">Profile</span>
-          </NavLink>
-        </div>
-      </nav>
+      {/* Bottom-left: liked & chats */}
+      <NavLink to="/bag" className={({ isActive }) => cx(corner, 'fixed bottom-[calc(var(--safe-bottom)+14px)] left-4 z-30', isActive ? active : idle)} aria-label="Liked and chats">
+        <ShoppingBag {...ICON} />
+        {unread > 0 && <span className="absolute -top-1.5 -right-1.5 rounded-lg bg-eager-green px-1.5 text-[11px] font-bold text-white">{unread}</span>}
+      </NavLink>
+      {/* Bottom-right: profile */}
+      <NavLink to="/me" className={({ isActive }) => cx(corner, 'fixed right-4 bottom-[calc(var(--safe-bottom)+14px)] z-30', isActive ? active : idle)} aria-label="Profile">
+        <User {...ICON} />
+      </NavLink>
 
       <AnimatePresence>{buyOpen && profile && <BuySwipesSheet kind={buyOpen} onClose={() => setBuyOpen(null)} />}</AnimatePresence>
       <LoginSheet open={loginOpen} onClose={() => setLoginOpen(false)} onDone={() => setLoginOpen(false)} title="Log in" body="Create an account or log in to continue." />
