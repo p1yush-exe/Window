@@ -123,8 +123,18 @@ export function FeedPage() {
       setExhausted(true)
       return
     }
+    const wasUpgrade = upgrade?.id === product.id
     setUpgrade(null)
-    await doLike(product, 'super')
+    setError(null)
+    try {
+      setSweep((n) => n + 1)
+      if (wasUpgrade) await feed.upgrade(product)
+      else await feed.like(product, 'super')
+      setLastDirection('right')
+      void haptic('medium')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not super swipe')
+    }
   }
 
   if (feed.loading) return <FullPageSpinner />

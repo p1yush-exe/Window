@@ -67,12 +67,17 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
     c.toBlob((b) => b && onCapture(b), 'image/jpeg', 0.92)
   }
 
+  const [useSystem, setUseSystem] = useState(false)
+
   async function nativePick(source: 'camera' | 'photos') {
     try {
       const blobs = await pickNativePhotos(1, source)
       if (blobs?.[0]) onCapture(blobs[0])
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not open the camera')
+      // The plugin failed (permission or device issue): fall back to the system file chooser,
+      // which can also open the camera, and show what went wrong.
+      setError(`${e instanceof Error ? e.message : 'Could not open the camera'} — using the system picker instead.`)
+      setUseSystem(true)
     }
   }
 
@@ -87,6 +92,12 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
           <div className="px-6 text-center">
             <Camera size={48} strokeWidth={1.5} absoluteStrokeWidth className="mx-auto text-white" />
             <p className="mt-3 text-[15px] text-white/85">Take a photo with the camera or pick one from your gallery.</p>
+            {useSystem && (
+              <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl border-2 border-white/60 px-4 py-3 text-[14px] font-bold text-white uppercase">
+                <Camera size={18} strokeWidth={2} absoluteStrokeWidth /> Open system camera
+                <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onCapture(f) }} />
+              </label>
+            )}
           </div>
         ) : (
           <video ref={video} playsInline muted className="h-full w-full object-cover" style={{ transform: facing === 'user' ? 'scaleX(-1)' : undefined }} />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { AvailabilityBadge, Avatar, Button, EmptyState, ErrorBanner, FullPageSpinner, PageHeader, ProductImage, Select, cx } from '@/components/ui'
+import { AvailabilityBadge, Avatar, Button, EmptyState, ErrorBanner, FullPageSpinner, ProductImage, Select, cx } from '@/components/ui'
 import { Check, HeartPlus, ICON_SM, Inbox, MessageCircle, Package, ThumbsDown } from '@/components/icons'
 import { useSession } from '@/features/auth/AuthProvider'
 import { priceRange } from '@/features/feed/SwipeCard'
@@ -60,12 +60,14 @@ export function VendorHomePage() {
 
   return (
     <div className="px-4">
-      <PageHeader
-        eyebrow={shops.length === 1 ? shops[0]!.name : `${shops.length} shops`}
-        title="Seller home"
-        subtitle={vendor ? `${uploadsLeft(vendor)} uploads left · ${vendor.tokens} tokens` : undefined}
-        right={<Link to="/vendor/new"><Button size="sm">Add product</Button></Link>}
-      />
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="label">{shops.length === 1 ? shops[0]!.name : `${shops.length} shops`}</p>
+          <h1 className="truncate text-[28px] leading-tight md:text-[36px]">{vendor?.ownerName ?? profile.displayName}</h1>
+          {vendor && <p className="mt-0.5 text-[13px] font-bold text-pencil-gray">{uploadsLeft(vendor)} uploads left · {vendor.tokens} tokens</p>}
+        </div>
+        <Link to="/vendor/new" className="shrink-0"><Button size="sm" className="h-9 px-2.5 text-[12px] tracking-[0.03em]">+ Add</Button></Link>
+      </div>
       <div className="mb-4 flex border-2 border-faded-gray font-mono text-[12px] uppercase">
         {(['likes', 'products', 'chats'] as Tab[]).map((t) => (
           <button key={t} type="button" onClick={() => setTab(t)} className={cx('flex-1 py-2', tab === t ? 'bg-eager-green text-white' : 'text-charcoal')}>

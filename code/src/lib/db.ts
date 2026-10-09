@@ -484,6 +484,27 @@ export async function recordLike(buyer: UserProfile, product: Product, type: Lik
   return instant ? { kind: 'matched', matchId: likeId } : { kind: 'pending', likeId }
 }
 
+/**
+ * Buyer turns a pending like into a super swipe: the match opens now, the super swipe is
+ * spent and the regular swipe that was used is refunded.
+ */
+export async function upgradeLikeToSuper(buyer: UserProfile, product: Product): Promise<LikeOutcome> {
+  if (buyer.superSwipes <= 0) throw new Error('No super swipes left.')
+  const likeId = likeIdFor(buyer.uid, product.id)
+  const existing = await getDoc(refs.like(likeId))
+  if (!existing.exists()) return recordLike(buyer, product, 'super')
+  const like = existing.data() as Like
+  if (like.status === 'accepted') return { kind: 'matched', matchId: likeId }
+  if (like.status !== 'pending' || like.type !== 'swipe') throw new Error('This like can no longer be upgraded.')
+  const shop = product.shopId ? await getShop(product.shopId) : null
+  const batch = writeBatch(db)
+  batch.update(refs.like(likeId), { type: 'super', status: 'accepted', decidedAt: serverTimestamp() })
+  batch.set(refs.match(likeId), matchData(buyer, product, 'super', shop, Date.now()))
+  batch.update(refs.user(buyer.uid), { superSwipes: Math.max(0, buyer.superSwipes - 1), swipes: buyer.swipes + 1 })
+  await batch.commit()
+  return { kind: 'matched', matchId: likeId }
+}
+
 /** Vendor accepts a pending like: the match (and chat) is created. */
 export async function acceptLike(like: Like, vendor: Vendor): Promise<string> {
   const [product, shop, buyer] = await Promise.all([getProduct(like.productId), getShop(like.shopId), getProfile(like.buyerUid)])

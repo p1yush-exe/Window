@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fetchFeedPage, fetchLocalProducts, loadSwipedIds, recordLike, recordPass, type LikeOutcome } from '@/lib/db'
+import { fetchFeedPage, fetchLocalProducts, loadSwipedIds, recordLike, recordPass, upgradeLikeToSuper, type LikeOutcome } from '@/lib/db'
 import type { LatLng } from '@/lib/geo'
 import { FEED_MIN_RESULTS, RADIUS_STEPS_KM, type LikeType, type Product, type UserProfile } from '@/lib/types'
 import { telemetry } from '@/lib/telemetry'
@@ -97,5 +97,16 @@ export function useFeed(profile: UserProfile | null, opts: FeedOptions) {
     [profile, remove],
   )
 
-  return { queue, loading, error, exhausted, effectiveRadius, nearbyCount, swipeCount, lastOutcome, pass, like, reload: load, dismissOutcome: () => setLastOutcome(null) }
+  /** Super swipe on a product that was just liked (pending): opens the match now. */
+  const upgrade = useCallback(
+    async (product: Product): Promise<LikeOutcome> => {
+      if (!profile) throw new Error('Log in to super swipe')
+      const outcome = await upgradeLikeToSuper(profile, product)
+      setLastOutcome({ product, outcome, type: 'super' })
+      return outcome
+    },
+    [profile],
+  )
+
+  return { queue, loading, error, exhausted, effectiveRadius, nearbyCount, swipeCount, lastOutcome, pass, like, upgrade, reload: load, dismissOutcome: () => setLastOutcome(null) }
 }

@@ -11,9 +11,9 @@ import { setMode } from '@/lib/mode'
 import { isApp } from '@/lib/platform'
 
 /**
- * Shopper chrome lives in the four corners; the middle is for cards.
+ * Shopper chrome lives in four corner notches; the middle is for cards.
  * Top-left: swipe + super-swipe counters (open the swipe shop). Top-right: swap to seller.
- * Bottom-left: liked & chats (bag). Bottom-right: profile. No top or bottom bars.
+ * Bottom-left: liked & chats. Bottom-right: profile.
  */
 export function ShopperShell() {
   const { profile } = useAuth()
@@ -47,55 +47,39 @@ export function ShopperShell() {
   const supers = profile?.superSwipes ?? 0
   const empty = Boolean(profile) && swipes === 0
   const onFeed = location.pathname === '/feed'
-  const chip = 'flex h-11 items-center gap-1.5 rounded-xl border-2 px-3 text-[16px] font-bold transition'
-  const corner = 'flex h-12 w-12 items-center justify-center rounded-xl border-2 transition'
-  const idle = 'border-faded-gray bg-white text-charcoal hover:border-spark-blue'
-  const active = 'border-eager-green bg-eager-green text-white'
 
   return (
     <div className="relative flex min-h-dvh flex-col bg-white">
-      {/* Top-left: counters */}
-      <div className="fixed top-[calc(var(--safe-top)+12px)] left-4 z-30 flex items-center gap-2">
-        <motion.button
-          type="button"
-          onClick={() => (profile ? setBuyOpen('swipes') : setLoginOpen(true))}
-          animate={{ scale: empty && onFeed ? 1.15 : 1 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-          className={cx(chip, 'origin-left', empty ? active : idle)}
-          aria-label={`${swipes} swipes left. Open the swipe shop`}
-        >
-          <Heart {...ICON} fill={empty ? 'currentColor' : 'none'} className={empty ? '' : 'text-swipe'} />
+      {/* Top-left notch: counters */}
+      <motion.div className={cx('notch notch-tl origin-top-left', empty && onFeed && 'is-active')} animate={{ scale: empty && onFeed ? 1.12 : 1 }} transition={{ type: 'spring', stiffness: 300, damping: 18 }}>
+        <button type="button" onClick={() => (profile ? setBuyOpen('swipes') : setLoginOpen(true))} className="notch-btn" aria-label={`${swipes} swipes left. Open the swipe shop`}>
+          <Heart {...ICON} size={22} fill="currentColor" className={empty && onFeed ? 'text-white' : 'text-swipe'} />
           {profile ? swipes : '—'}
-        </motion.button>
-        <button type="button" onClick={() => (profile ? setBuyOpen('superSwipes') : setLoginOpen(true))} className={cx(chip, idle)} aria-label={`${supers} super swipes left. Open the swipe shop`}>
-          <HeartPlus {...ICON} className="text-super" />
+        </button>
+        <span className="notch-sep" />
+        <button type="button" onClick={() => (profile ? setBuyOpen('superSwipes') : setLoginOpen(true))} className="notch-btn" aria-label={`${supers} super swipes left. Open the swipe shop`}>
+          <HeartPlus {...ICON} size={22} fill="currentColor" className={empty && onFeed ? 'text-white' : 'text-super'} />
           {profile ? supers : '—'}
         </button>
-      </div>
+      </motion.div>
 
-      {/* Top-right: swap account type (plain button) */}
-      <button
-        type="button"
-        onClick={switchToSeller}
-        className="fixed top-[calc(var(--safe-top)+12px)] right-4 z-30 flex h-11 w-11 items-center justify-center rounded-xl text-charcoal hover:text-spark-blue"
-        aria-label="Switch to seller"
-        title="Switch to seller"
-      >
-        <ArrowLeftRight size={26} strokeWidth={2.5} absoluteStrokeWidth />
+      {/* Top-right notch: swap account type */}
+      <button type="button" onClick={switchToSeller} className="notch notch-tr notch-btn" aria-label="Switch to seller" title="Switch to seller">
+        <ArrowLeftRight size={24} strokeWidth={2.5} absoluteStrokeWidth />
       </button>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col pt-[calc(var(--safe-top)+64px)] pb-[calc(5rem+var(--safe-bottom))]">
         <Outlet />
       </main>
 
-      {/* Bottom-left: liked & chats */}
-      <NavLink to="/bag" className={({ isActive }) => cx(corner, 'fixed bottom-[calc(var(--safe-bottom)+14px)] left-4 z-30', isActive ? active : idle)} aria-label="Liked and chats">
-        <ShoppingBag {...ICON} />
-        {unread > 0 && <span className="absolute -top-1.5 -right-1.5 rounded-lg bg-eager-green px-1.5 text-[11px] font-bold text-white">{unread}</span>}
+      {/* Bottom-left notch: liked & chats */}
+      <NavLink to="/bag" className={({ isActive }) => cx('notch notch-bl notch-btn relative', isActive && 'is-active')} aria-label="Liked and chats">
+        <ShoppingBag size={24} strokeWidth={2.25} absoluteStrokeWidth />
+        {unread > 0 && <span className="absolute -top-2 right-2 rounded-lg bg-super px-1.5 text-[11px] font-bold text-white">{unread}</span>}
       </NavLink>
-      {/* Bottom-right: profile */}
-      <NavLink to="/me" className={({ isActive }) => cx(corner, 'fixed right-4 bottom-[calc(var(--safe-bottom)+14px)] z-30', isActive ? active : idle)} aria-label="Profile">
-        <User {...ICON} />
+      {/* Bottom-right notch: profile */}
+      <NavLink to="/me" className={({ isActive }) => cx('notch notch-br notch-btn', isActive && 'is-active')} aria-label="Profile">
+        <User size={24} strokeWidth={2.25} absoluteStrokeWidth />
       </NavLink>
 
       <AnimatePresence>{buyOpen && profile && <BuySwipesSheet kind={buyOpen} onClose={() => setBuyOpen(null)} />}</AnimatePresence>

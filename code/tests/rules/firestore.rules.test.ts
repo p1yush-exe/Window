@@ -132,9 +132,15 @@ describe('likes and matches', () => {
     batch.set(doc(db, 'matches', LIKE), matchData())
     await assertSucceeds(batch.commit())
   })
-  it('buyer cannot flip their own like to accepted', async () => {
+  it('buyer cannot flip their own plain like to accepted, but may upgrade it to a super swipe with a match', async () => {
     await env.withSecurityRulesDisabled(async (ctx) => setDoc(doc(ctx.firestore(), 'likes', LIKE), likeData('swipe', 'pending')))
     await assertFails(updateDoc(doc(as(BUYER), 'likes', LIKE), { status: 'accepted' }))
+    await assertFails(updateDoc(doc(as(OTHER), 'likes', LIKE), { type: 'super', status: 'accepted' }))
+    const db = as(BUYER)
+    const batch = writeBatch(db)
+    batch.update(doc(db, 'likes', LIKE), { type: 'super', status: 'accepted', decidedAt: serverTimestamp() })
+    batch.set(doc(db, 'matches', LIKE), { ...matchData(), likeType: 'super' })
+    await assertSucceeds(batch.commit())
   })
   it('only participants read matches and likes', async () => {
     await seedAccepted()

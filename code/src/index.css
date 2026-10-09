@@ -178,7 +178,7 @@ img, a { -webkit-user-drag: none; user-drag: none; }
   --door-ajar: 2.5;   /* how far (in %) they slide when hovering on the web */
   --door-open: 11.5;  /* how far they slide when opened; should be about the panel width */
   --intro-zoom: 3.4;  /* how far the camera pushes through the doorway at the end */
-  --intro-focus-x: 50%; /* which part of the picture sits at screen centre; bigger = scene moves LEFT */
+  --intro-focus-x: 51.5%; /* which part of the picture sits at screen centre; bigger = scene moves LEFT */
   --intro-focus-y: 50%;
   --sign-y: 6%;        /* signboard distance from the top (% of screen height) */
   --sign-size: 24vw;   /* signboard letter size */
@@ -265,3 +265,15 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 :root { --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1); }
 .progress-rail { height: 10px; border: 2px solid #4b4b4b; border-radius: 9999px; background: #fff; overflow: hidden; }
 .progress-fill { height: 100%; background: #58cc02; border-radius: 9999px; transition: width 0.55s var(--ease-expo-out); }
+
+/* Corner notches: white tabs that grow out of the screen corners and hold the controls */
+.notch { position: fixed; z-index: 30; display: flex; align-items: center; gap: 10px; background: #fff; border: 2px solid #4b4b4b; }
+.notch-tl { top: 0; left: 0; border-top: 0; border-left: 0; border-radius: 0 0 22px 0; padding: calc(var(--safe-top) + 10px) 16px 10px 14px; }
+.notch-tr { top: 0; right: 0; border-top: 0; border-right: 0; border-radius: 0 0 0 22px; padding: calc(var(--safe-top) + 10px) 14px 10px 16px; }
+.notch-bl { bottom: 0; left: 0; border-bottom: 0; border-left: 0; border-radius: 0 22px 0 0; padding: 10px 16px calc(var(--safe-bottom) + 10px) 14px; }
+.notch-br { bottom: 0; right: 0; border-bottom: 0; border-right: 0; border-radius: 22px 0 0 0; padding: 10px 14px calc(var(--safe-bottom) + 10px) 16px; }
+.notch-bc { bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: 0; border-radius: 22px 22px 0 0; padding: 10px 18px calc(var(--safe-bottom) + 10px); }
+.notch.is-active { background: #58cc02; border-color: #58cc02; color: #fff; }
+.notch-btn { display: flex; align-items: center; gap: 6px; color: #4b4b4b; font-weight: 800; font-size: 16px; }
+.notch.is-active .notch-btn { color: #fff; }
+.notch-sep { width: 2px; height: 22px; background: #ececec; border-radius: 2px; }

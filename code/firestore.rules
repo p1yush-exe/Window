@@ -135,11 +135,19 @@ service cloud.firestore {
                 && shopDoc(request.resource.data.shopId).autoMatchUntil != null
                 && shopDoc(request.resource.data.shopId).autoMatchUntil > request.time))
         && !(request.resource.data.type == 'swipe' && productDoc(request.resource.data.productId).superOnly == true);
-      // Only the vendor decides; nothing else changes.
+      // The vendor decides; or the buyer upgrades their own pending like to a super swipe (instant match).
       allow update: if signedIn()
-        && resource.data.vendorId == request.auth.uid
-        && unchanged('buyerUid') && unchanged('vendorId') && unchanged('productId') && unchanged('type')
-        && request.resource.data.status in ['accepted', 'declined'];
+        && unchanged('buyerUid') && unchanged('vendorId') && unchanged('productId')
+        && (
+          (resource.data.vendorId == request.auth.uid
+            && unchanged('type')
+            && request.resource.data.status in ['accepted', 'declined'])
+          || (resource.data.buyerUid == request.auth.uid
+            && resource.data.status == 'pending'
+            && resource.data.type == 'swipe'
+            && request.resource.data.type == 'super'
+            && request.resource.data.status == 'accepted')
+        );
       allow delete: if false;
     }
 
