@@ -82,6 +82,7 @@ export function MePage() {
         <Link to="/me/metrics" className="flex items-center gap-3 p-4 text-[14px] text-pencil-gray"><span className="flex-1">Evaluation metrics</span></Link>
         <button type="button" onClick={() => void signOut()} className="flex w-full items-center gap-3 p-4 text-left text-[14px] text-charcoal"><LogOut {...ICON} /> Log out</button>
       </div>
+      <p className="mt-4 text-center text-[12px] font-bold text-faded-gray uppercase">Window v{__APP_VERSION__} · {isApp() ? 'Android' : 'Web'}</p>
 
       <AnimatePresence>{buyOpen && <BuySwipesSheet kind={buyOpen} onClose={() => setBuyOpen(null)} />}</AnimatePresence>
     </div>

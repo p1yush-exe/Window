@@ -32,6 +32,8 @@ export function priceRange(p: { priceMin: number | null; priceMax: number | null
 export function SwipeCard({ product, isTop, index, onSwipe, onDrag, frame = 'none', badge }: Props) {
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-250, 0, 250], [-10, 0, 10])
+  const likeOpacity = useTransform(x, [20, 140], [0, 1])
+  const nopeOpacity = useTransform(x, [-20, -140], [0, 1])
   const [back, setBack] = useState(false)
   const [moved, setMoved] = useState(false)
 
@@ -92,6 +94,12 @@ export function SwipeCard({ product, isTop, index, onSwipe, onDrag, frame = 'non
                 <span className="absolute top-2 right-2 flex items-center gap-1 rounded bg-white/90 px-[7px] py-[3px] font-mono text-[11px] tracking-[0.053em] text-charcoal uppercase">
                   <HeartPlus {...ICON_SM} size={12} /> Super only
                 </span>
+              )}
+              {isTop && (
+                <>
+                  <motion.div style={{ opacity: likeOpacity }} className="stamp stamp-like pointer-events-none absolute top-6 left-5">LIKE</motion.div>
+                  <motion.div style={{ opacity: nopeOpacity }} className="stamp stamp-nope pointer-events-none absolute top-6 right-5">NOPE</motion.div>
+                </>
               )}
             </div>
             <div className="pt-3">

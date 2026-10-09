@@ -7,7 +7,9 @@ const KEY = 'window.introDone'
 export function introPending(): boolean {
   try {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
-    if (new URLSearchParams(window.location.search).has('nointro')) return false
+    const q = new URLSearchParams(window.location.search)
+    if (q.has('intro')) return true // ?intro=1 forces it, handy while tuning the door art
+    if (q.has('nointro')) return false
     return sessionStorage.getItem(KEY) !== '1'
   } catch {
     return false

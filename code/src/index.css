@@ -167,3 +167,35 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 .intro.is-through { animation: intro-fade 1.25s ease-in forwards; }
 .intro.is-through .intro-layer, .intro.is-through .intro-glow { transition: opacity 1s ease; opacity: 0.0; }
 @keyframes intro-fade { 0% { opacity: 1; } 55% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Tinder-style edge light while dragging */
+.edge-light { transition: opacity 0.08s linear; mix-blend-mode: multiply; }
+.edge-light-nope { background: linear-gradient(to left, rgba(251, 79, 104, 0.0) 0%, rgba(251, 79, 104, 0.35) 55%, rgba(251, 79, 104, 0.95) 100%); }
+.edge-light-like { background: linear-gradient(to right, rgba(77, 202, 147, 0.0) 0%, rgba(77, 202, 147, 0.35) 55%, rgba(77, 202, 147, 0.95) 100%); }
+
+/* Stamps on the card */
+.stamp {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 40px;
+  letter-spacing: 0.15em;
+  line-height: 1;
+  padding: 6px 12px 4px 16px;
+  border: 4px solid currentColor;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
+}
+.stamp-like { color: #4dca93; transform: rotate(-14deg); }
+.stamp-nope { color: #fb4f68; transform: rotate(14deg); }
+
+/* Round action buttons under the deck */
+.action-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 9999px;
+  background: #fff; border: 2px solid #ececec;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.action-btn:hover { transform: scale(1.06); border-color: currentColor; }
+.action-btn:active { transform: scale(0.94); }
+.action-btn:disabled { opacity: 0.4; transform: none; }
+.action-btn-sm { width: 52px; height: 52px; }

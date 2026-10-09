@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Link, useNavigate } from 'react-router'
 import { Button, EmptyState, ErrorBanner, FullPageSpinner } from '@/components/ui'
-import { Download, HeartPlus, ICON, Map, MapPin } from '@/components/icons'
+import { Download, Heart, HeartPlus, ICON, Map, MapPin, X } from '@/components/icons'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { LoginSheet } from '@/features/auth/LoginSheet'
 import { BuySwipesSheet } from '@/features/economy/BuySwipesSheet'
@@ -133,8 +133,9 @@ export function FeedPage() {
   return (
     <div className="relative flex flex-1 flex-col">
       {/* Side overlays driven by drag progress */}
-      <div className="pointer-events-none fixed inset-y-0 left-0 z-20 w-[26vw] bg-[#ff4b4b]" style={{ opacity: Math.max(0, -drag) * 0.55 }} />
-      <div className="pointer-events-none fixed inset-y-0 right-0 z-20 w-[30vw] bg-[#58cc02]" style={{ opacity: Math.max(0, drag) * 0.55 }} />
+      {/* Light spilling in from the edges while dragging: red from the left, green from the right */}
+      <div className="edge-light edge-light-nope pointer-events-none fixed inset-y-0 left-0 z-20 w-[26vw]" style={{ opacity: Math.min(1, Math.max(0, -drag) * 1.2) }} />
+      <div className="edge-light edge-light-like pointer-events-none fixed inset-y-0 right-0 z-20 w-[30vw]" style={{ opacity: Math.min(1, Math.max(0, drag) * 1.2) }} />
       <LightSweep trigger={sweep} />
       {/* Ambient backdrop: the current product photo, blurred and full-bleed */}
       {top?.imageUrls[0] && (
@@ -184,6 +185,19 @@ export function FeedPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="relative z-10 mx-auto mt-4 flex w-full max-w-sm items-center justify-center gap-5 px-4 md:max-w-md">
+        <button type="button" onClick={() => swipe('left')} disabled={!top} className="action-btn text-[#fb4f68]" aria-label="Pass">
+          <X size={30} strokeWidth={3} absoluteStrokeWidth />
+        </button>
+        <button type="button" onClick={() => top && void superSwipe(top)} disabled={!top} className="action-btn action-btn-sm text-spark-blue" aria-label="Super swipe">
+          <HeartPlus size={22} strokeWidth={2.5} absoluteStrokeWidth />
+        </button>
+        <button type="button" onClick={() => swipe('right')} disabled={!top} className="action-btn text-[#4dca93]" aria-label="Like">
+          <Heart size={30} strokeWidth={3} absoluteStrokeWidth fill="currentColor" />
+        </button>
       </div>
 
       {/* Super swipe prompt from the bottom */}
