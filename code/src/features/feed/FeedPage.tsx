@@ -2,25 +2,44 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Link } from 'react-router'
 import { Button, EmptyState, ErrorBanner, FullPageSpinner } from '@/components/ui'
-import { useSession } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth/AuthProvider'
+import { LoginSheet } from '@/features/auth/LoginSheet'
 import { haptic } from '@/lib/native'
+import type { Product } from '@/lib/types'
 import { useFeed } from './useFeed'
 import { SwipeCard, type SwipeDirection } from './SwipeCard'
 
 export function FeedPage() {
-  const { profile } = useSession()
+  const { profile } = useAuth()
   const feed = useFeed(profile)
+  const [pending, setPending] = useState<Product | null>(null)
   const [lastDirection, setLastDirection] = useState<SwipeDirection>('right')
   const wheel = useRef({ dx: 0, at: 0, locked: false })
   const visible = feed.queue.slice(0, 3)
   const top = visible[0]
 
   function swipe(direction: SwipeDirection) {
-    if (!top) return
+    if (!top || pending) return
     setLastDirection(direction)
     void haptic(direction === 'right' ? 'medium' : 'light')
+    if (direction === 'right' && !profile) {
+      // First right swipe as a guest: ask to log in, keep the card until they do.
+      setPending(top)
+      return
+    }
     feed.swipe(top, direction)
   }
+
+  // Once the guest has logged in, record the swipe they were trying to make.
+  useEffect(() => {
+    if (pending && profile) {
+      const product = pending
+      setPending(null)
+      setLastDirection('right')
+      feed.swipe(product, 'right', profile)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, pending])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -65,7 +84,13 @@ export function FeedPage() {
           <h1 className="text-2xl font-bold tracking-tight">Discover</h1>
           <p className="text-xs text-neutral-500">Swipe right to connect with the seller</p>
         </div>
-        <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-600">{feed.swipeCount} swipes</span>
+        {profile ? (
+          <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-600">{feed.swipeCount} swipes</span>
+        ) : (
+          <button type="button" onClick={() => setPending(top ?? null)} className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 ring-1 ring-brand-200">
+            Browsing as guest · Log in
+          </button>
+        )}
       </div>
       <ErrorBanner message={feed.error} />
 
@@ -113,12 +138,14 @@ export function FeedPage() {
           >
             <p className="text-sm font-semibold">It's a match! 💜</p>
             <p className="text-xs text-white/70">You can now chat with {feed.lastMatch.vendorName} about {feed.lastMatch.title}.</p>
-            <Link to={`/chats/${profile.uid}_${feed.lastMatch.id}`} className="mt-2 inline-block text-sm font-bold text-brand-300 underline">
+            <Link to={`/chats/${profile?.uid}_${feed.lastMatch.id}`} className="mt-2 inline-block text-sm font-bold text-brand-300 underline">
               Open chat →
             </Link>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <LoginSheet open={pending !== null && !profile} onClose={() => setPending(null)} onDone={() => undefined} />
     </div>
   )
 }

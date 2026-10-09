@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { AvailabilityBadge, Button, EmptyState, FullPageSpinner, ProductImage, Stars } from '@/components/ui'
-import { useSession } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { getMatch, listenProduct, ratingSummary } from '@/lib/db'
 import { formatPrice } from '@/lib/format'
 import { matchIdFor, type Match, type Product } from '@/lib/types'
@@ -9,7 +9,7 @@ import { ReviewList, useReviews } from '@/features/reviews/ReviewList'
 
 export function ProductPage() {
   const { productId = '' } = useParams()
-  const { profile } = useSession()
+  const { profile } = useAuth()
   const navigate = useNavigate()
   const [product, setProduct] = useState<Product | null | undefined>(undefined)
   const [match, setMatch] = useState<Match | null>(null)
@@ -17,15 +17,17 @@ export function ProductPage() {
   const reviews = useReviews({ productId })
 
   useEffect(() => listenProduct(productId, setProduct), [productId])
+  const uid = profile?.uid
+  const role = profile?.role
   useEffect(() => {
-    if (profile.role !== 'buyer') return
-    getMatch(matchIdFor(profile.uid, productId)).then(setMatch).catch(() => setMatch(null))
-  }, [profile.uid, profile.role, productId])
+    if (!uid || role !== 'buyer') return
+    getMatch(matchIdFor(uid, productId)).then(setMatch).catch(() => setMatch(null))
+  }, [uid, role, productId])
 
   if (product === undefined) return <FullPageSpinner />
   if (!product) return <EmptyState icon="🫥" title="Product not found" body="It may have been removed by the seller." />
   const summary = ratingSummary(reviews ?? [])
-  const isOwner = product.vendorId === profile.uid
+  const isOwner = product.vendorId === profile?.uid
 
   return (
     <div className="pb-6">
@@ -63,7 +65,7 @@ export function ProductPage() {
             <Link to={`/chats/${match.id}`} className="flex-1">
               <Button className="w-full">Open chat with seller</Button>
             </Link>
-          ) : profile.role === 'buyer' ? (
+          ) : !profile || profile.role === 'buyer' ? (
             <Link to="/feed" className="flex-1">
               <Button variant="secondary" className="w-full">Like it in the feed to chat</Button>
             </Link>

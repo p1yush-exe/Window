@@ -28,12 +28,38 @@ export interface UserProfile {
   createdAt: Timestamp | null
 }
 
+export const STORE_TAGS = [
+  'Clothes',
+  'Shoes',
+  'Wardrobe',
+  'Paintings',
+  'Decor',
+  'Groceries',
+  'Handmade',
+  'Vintage',
+  'Kids',
+  'Sports',
+  'Beauty',
+  'Electronics',
+] as const
+export type StoreTag = (typeof STORE_TAGS)[number]
+export const MAX_STORE_TAGS = 3
+
 export interface Vendor {
   id: string
   ownerUid: string
   name: string
   description: string
   logoUrl: string | null
+  storefrontUrl: string | null
+  website: string | null
+  tags: string[]
+  location: { lat: number; lng: number; address: string } | null
+  ownerName: string
+  ownerPhone: string
+  ownerEmail: string
+  phoneVerified: boolean
+  emailVerified: boolean
   verified: boolean
   createdAt: Timestamp | null
 }

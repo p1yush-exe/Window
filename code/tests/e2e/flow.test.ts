@@ -65,8 +65,20 @@ function waitFor<T>(subscribe: (cb: (v: T) => void) => () => void, predicate: (v
 beforeAll(async () => {
   vendorUid = (await createUserWithEmailAndPassword(auth, vendorEmail, PASSWORD)).user.uid
   await createProfile(vendorUid, 'vendor', 'E2E Vendor')
-  await createVendor(vendorUid, { name: 'E2E Store', description: 'test' })
+  await createVendor(vendorUid, {
+    name: 'E2E Store',
+    description: 'test',
+    tags: ['Clothes', 'Handmade'],
+    location: { lat: 30.34, lng: 76.39, address: 'Patiala' },
+    ownerName: 'E2E Owner',
+    ownerPhone: '9999999999',
+    ownerEmail: vendorEmail,
+    phoneVerified: true,
+    emailVerified: true,
+  })
   vendor = (await getVendor(vendorUid))!
+  expect(vendor.tags).toEqual(['Clothes', 'Handmade'])
+  expect(vendor.location?.address).toBe('Patiala')
   await signOut(auth)
   buyerUid = (await createUserWithEmailAndPassword(auth, buyerEmail, PASSWORD)).user.uid
   await createProfile(buyerUid, 'buyer', 'E2E Buyer')

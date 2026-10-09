@@ -96,18 +96,34 @@ export async function updateProfile(uid: string, data: Partial<Pick<UserProfile,
 
 // ---------- vendors ----------
 
-export async function createVendor(uid: string, data: { name: string; description: string; logoUrl?: string | null }) {
+export type VendorInput = Omit<Vendor, 'id' | 'ownerUid' | 'verified' | 'createdAt'>
+
+export const emptyVendorInput = (): VendorInput => ({
+  name: '',
+  description: '',
+  logoUrl: null,
+  storefrontUrl: null,
+  website: null,
+  tags: [],
+  location: null,
+  ownerName: '',
+  ownerPhone: '',
+  ownerEmail: '',
+  phoneVerified: false,
+  emailVerified: false,
+})
+
+export async function createVendor(uid: string, data: Partial<VendorInput> & { name: string }) {
   await setDoc(refs.vendor(uid), {
+    ...emptyVendorInput(),
+    ...data,
     ownerUid: uid,
-    name: data.name,
-    description: data.description,
-    logoUrl: data.logoUrl ?? null,
     verified: false,
     createdAt: serverTimestamp(),
   })
 }
 
-export async function updateVendor(uid: string, data: Partial<Pick<Vendor, 'name' | 'description' | 'logoUrl'>>) {
+export async function updateVendor(uid: string, data: Partial<VendorInput>) {
   await updateDoc(refs.vendor(uid), data)
 }
 

@@ -49,6 +49,10 @@ interface SeedVendor {
   owner: string
   name: string
   description: string
+  tags: string[]
+  website: string | null
+  location: { lat: number; lng: number; address: string }
+  ownerPhone: string
   products: SeedProduct[]
 }
 
@@ -79,9 +83,28 @@ async function seedVendor(v: SeedVendor, vendorIndex: number) {
   if (!(await getDoc(doc(db, 'users', uid))).exists()) {
     await setDoc(doc(db, 'users', uid), { role: 'vendor', displayName: v.owner, avatarUrl: null, createdAt: serverTimestamp() })
   }
+  const storefront = (images[v.products[0]!.slug] ?? [])[0] ?? placeholder(v.name)
+  const existingVendor = await getDoc(doc(db, 'vendors', uid))
   await setDoc(
     doc(db, 'vendors', uid),
-    { ownerUid: uid, name: v.name, description: v.description, logoUrl: null, verified: true, createdAt: serverTimestamp() },
+    {
+      ownerUid: uid,
+      name: v.name,
+      description: v.description,
+      logoUrl: null,
+      storefrontUrl: storefront,
+      website: v.website,
+      tags: v.tags,
+      location: v.location,
+      ownerName: v.owner,
+      ownerPhone: v.ownerPhone,
+      ownerEmail: v.email,
+      phoneVerified: true,
+      emailVerified: true,
+      // `verified` is immutable under the rules once the doc exists.
+      verified: existingVendor.exists() ? (existingVendor.data()!.verified ?? false) : false,
+      createdAt: serverTimestamp(),
+    },
     { merge: true },
   )
   const batch = writeBatch(db)

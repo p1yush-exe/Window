@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router'
 import { cx } from '@/components/ui'
-import { useSession } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { useUnreadCounts } from '@/features/notifications/useUnread'
 
 interface Tab {
@@ -11,11 +11,11 @@ interface Tab {
 }
 
 export function AppShell() {
-  const { profile } = useSession()
+  const { profile } = useAuth()
   const { unreadChats, unreadNotifications } = useUnreadCounts()
 
   const tabs: Tab[] =
-    profile.role === 'vendor'
+    profile?.role === 'vendor'
       ? [
           { to: '/dashboard', label: 'Products', icon: '🏪' },
           { to: '/chats', label: 'Chats', icon: '💬', badge: unreadChats },
@@ -57,7 +57,7 @@ export function AppShell() {
           ))}
         </nav>
         <div className="mt-auto px-2 text-xs text-neutral-400">
-          {profile.role === 'vendor' ? 'Seller account' : 'Shopper account'}
+          {profile ? (profile.role === 'vendor' ? 'Seller account' : 'Shopper account') : 'Browsing as guest'}
         </div>
       </aside>
 

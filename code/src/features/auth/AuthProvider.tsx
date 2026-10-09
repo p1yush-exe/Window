@@ -7,15 +7,16 @@ import {
   type User,
 } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
-import { listenProfile } from '@/lib/db'
-import type { UserProfile } from '@/lib/types'
+import { createProfile, listenProfile } from '@/lib/db'
+import type { Role, UserProfile } from '@/lib/types'
 
 interface AuthState {
   user: User | null
   profile: UserProfile | null
   loading: boolean
   error: string | null
-  signUp: (email: string, password: string) => Promise<void>
+  /** Creates the auth account and the profile document in one go. */
+  signUp: (email: string, password: string, role: Role, displayName: string) => Promise<string>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
@@ -80,8 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       loading: !authReady || !profileReady,
       error,
-      async signUp(email, password) {
-        await createUserWithEmailAndPassword(auth, email, password)
+      async signUp(email, password, role, displayName) {
+        const cred = await createUserWithEmailAndPassword(auth, email, password)
+        await createProfile(cred.user.uid, role, displayName)
+        return cred.user.uid
       },
       async signIn(email, password) {
         await signInWithEmailAndPassword(auth, email, password)

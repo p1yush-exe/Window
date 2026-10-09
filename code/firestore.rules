@@ -59,12 +59,18 @@ service cloud.firestore {
 
     // ---------- vendors (doc id == owner uid) ----------
     match /vendors/{vendorId} {
+      function validVendor(d) {
+        return d.name is string && d.name.size() > 0 && d.name.size() <= 80
+          && d.tags is list && d.tags.size() <= 3;
+      }
       allow read: if true;
       allow create: if isUser(vendorId)
         && request.resource.data.ownerUid == vendorId
-        && request.resource.data.name is string
-        && request.resource.data.name.size() > 0;
-      allow update: if isUser(vendorId) && unchanged('ownerUid');
+        && validVendor(request.resource.data)
+        && request.resource.data.verified == false;
+      allow update: if isUser(vendorId)
+        && unchanged('ownerUid') && unchanged('verified')
+        && validVendor(request.resource.data);
       allow delete: if false;
     }
 

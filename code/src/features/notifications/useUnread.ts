@@ -1,22 +1,29 @@
 import { useEffect, useState } from 'react'
 import { listenMatches, listenNotifications } from '@/lib/db'
-import { useSession } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth/AuthProvider'
 
 export function useUnreadCounts() {
-  const { profile } = useSession()
+  const { profile } = useAuth()
   const [unreadChats, setUnreadChats] = useState(0)
   const [unreadNotifications, setUnreadNotifications] = useState(0)
+  const uid = profile?.uid
+  const role = profile?.role
 
   useEffect(() => {
-    const u1 = listenMatches(profile.uid, profile.role, (matches) => {
-      setUnreadChats(matches.filter((m) => (m.unread?.[profile.uid] ?? 0) > 0).length)
+    if (!uid || !role) {
+      setUnreadChats(0)
+      setUnreadNotifications(0)
+      return
+    }
+    const u1 = listenMatches(uid, role, (matches) => {
+      setUnreadChats(matches.filter((m) => (m.unread?.[uid] ?? 0) > 0).length)
     })
-    const u2 = listenNotifications(profile.uid, (n) => setUnreadNotifications(n.filter((x) => !x.read).length))
+    const u2 = listenNotifications(uid, (n) => setUnreadNotifications(n.filter((x) => !x.read).length))
     return () => {
       u1()
       u2()
     }
-  }, [profile.uid, profile.role])
+  }, [uid, role])
 
   return { unreadChats, unreadNotifications }
 }

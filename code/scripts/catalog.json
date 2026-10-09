@@ -176,7 +176,19 @@
             "bandhej"
           ]
         }
-      ]
+      ],
+      "tags": [
+        "Clothes",
+        "Wardrobe",
+        "Handmade"
+      ],
+      "website": "https://patialathreads.example.com",
+      "location": {
+        "lat": 30.3362,
+        "lng": 76.3926,
+        "address": "Adalat Bazaar, Patiala, Punjab 147001"
+      },
+      "ownerPhone": "9876500011"
     },
     {
       "email": "kicks@window.demo",
@@ -349,7 +361,19 @@
             "flip-flops"
           ]
         }
-      ]
+      ],
+      "tags": [
+        "Shoes",
+        "Sports",
+        "Kids"
+      ],
+      "website": null,
+      "location": {
+        "lat": 30.3396,
+        "lng": 76.3869,
+        "address": "Leela Bhawan Market, Patiala, Punjab 147001"
+      },
+      "ownerPhone": "9876500022"
     },
     {
       "email": "canvas@window.demo",
@@ -526,7 +550,19 @@
             "bedside lamp"
           ]
         }
-      ]
+      ],
+      "tags": [
+        "Paintings",
+        "Decor",
+        "Handmade"
+      ],
+      "website": "https://instagram.com/canvasandclay.example",
+      "location": {
+        "lat": 30.3545,
+        "lng": 76.365,
+        "address": "Urban Estate Phase 2, Patiala, Punjab 147002"
+      },
+      "ownerPhone": "9876500033"
     },
     {
       "email": "fresh@window.demo",
@@ -704,7 +740,17 @@
             "lassi glass"
           ]
         }
-      ]
+      ],
+      "tags": [
+        "Groceries"
+      ],
+      "website": null,
+      "location": {
+        "lat": 30.32,
+        "lng": 76.404,
+        "address": "Sanaur Road, Patiala, Punjab 147001"
+      },
+      "ownerPhone": "9876500044"
     }
   ]
 }

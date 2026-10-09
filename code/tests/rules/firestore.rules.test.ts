@@ -35,7 +35,7 @@ beforeEach(async () => {
     await setDoc(doc(db, 'users', BUYER), { role: 'buyer', displayName: 'Buyer', avatarUrl: null })
     await setDoc(doc(db, 'users', VENDOR), { role: 'vendor', displayName: 'Vendor', avatarUrl: null })
     await setDoc(doc(db, 'users', OTHER), { role: 'buyer', displayName: 'Other', avatarUrl: null })
-    await setDoc(doc(db, 'vendors', VENDOR), { ownerUid: VENDOR, name: 'Shop', description: '', logoUrl: null, verified: false })
+    await setDoc(doc(db, 'vendors', VENDOR), { ownerUid: VENDOR, name: 'Shop', description: '', logoUrl: null, tags: ['Shoes'], verified: false })
     await setDoc(doc(db, 'products', PRODUCT), {
       vendorId: VENDOR,
       vendorName: 'Shop',
@@ -92,6 +92,21 @@ describe('users', () => {
     await assertSucceeds(setDoc(doc(as(BUYER), 'users', BUYER, 'swipes', PRODUCT), { direction: 'left', clientTs: 1 }))
     await assertFails(setDoc(doc(as(OTHER), 'users', BUYER, 'swipes', 'x'), { direction: 'left', clientTs: 1 }))
     await assertFails(getDoc(doc(as(OTHER), 'users', BUYER, 'swipes', PRODUCT)))
+  })
+})
+
+describe('vendors', () => {
+  const base = { ownerUid: OTHER, name: 'New Shop', description: '', logoUrl: null, verified: false }
+  it('owner creates their store with at most 3 tags; verified stays false', async () => {
+    await assertFails(setDoc(doc(as(OTHER), 'vendors', OTHER), { ...base, tags: ['a', 'b', 'c', 'd'] }))
+    await assertFails(setDoc(doc(as(OTHER), 'vendors', OTHER), { ...base, tags: ['a'], verified: true }))
+    await assertSucceeds(setDoc(doc(as(OTHER), 'vendors', OTHER), { ...base, tags: ['a', 'b', 'c'] }))
+    await assertFails(updateDoc(doc(as(OTHER), 'vendors', OTHER), { verified: true }))
+    await assertSucceeds(updateDoc(doc(as(OTHER), 'vendors', OTHER), { name: 'Renamed', tags: ['a'] }))
+    await assertFails(setDoc(doc(as(BUYER), 'vendors', OTHER), { ...base, tags: [] }))
+  })
+  it('anyone can read stores', async () => {
+    await assertSucceeds(getDoc(doc(as(null), 'vendors', VENDOR)))
   })
 })
 

@@ -1,7 +1,9 @@
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { AppShell } from './layout/AppShell'
-import { OnboardingGate, PublicOnly, RequireAuth, RequireRole, RoleHome } from './guards'
-import { LoginPage, SignupPage } from '@/features/auth/AuthPages'
+import { OnboardingGate, PublicOnly, RequireProfile, RequireRole, RoleHome, ShellGate } from './guards'
+import { LoginPage } from '@/features/auth/AuthPages'
+import { VendorLandingPage } from '@/features/vendor/VendorLandingPage'
+import { VendorSetupPage } from '@/features/vendor/VendorSetupPage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { FeedPage } from '@/features/feed/FeedPage'
 import { LikedPage } from '@/features/matches/LikedPage'
@@ -20,19 +22,26 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route index element={<RoleHome />} />
         <Route element={<PublicOnly />}>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/signup" element={<Navigate to="/" replace />} />
         </Route>
+        <Route path="/vendor" element={<VendorLandingPage />} />
+        <Route path="/vendor/setup" element={<VendorSetupPage />} />
         <Route element={<OnboardingGate />}>
           <Route path="/onboarding" element={<OnboardingPage />} />
         </Route>
-        <Route element={<RequireAuth />}>
+        <Route element={<ShellGate />}>
           <Route element={<AppShell />}>
-            <Route index element={<RoleHome />} />
-            <Route element={<RequireRole role="buyer" />}>
-              <Route path="/feed" element={<FeedPage />} />
+            <Route path="/feed" element={<FeedPage />} />
+            <Route element={<RequireProfile />}>
               <Route path="/liked" element={<LikedPage />} />
+              <Route path="/chats" element={<ChatsPage />} />
+              <Route path="/chats/:matchId" element={<ChatPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/metrics" element={<MetricsPage />} />
             </Route>
             <Route element={<RequireRole role="vendor" />}>
               <Route path="/dashboard" element={<DashboardPage />} />
@@ -40,14 +49,9 @@ export function AppRouter() {
               <Route path="/dashboard/edit/:productId" element={<ProductFormPage />} />
               <Route path="/dashboard/store" element={<StoreSettingsPage />} />
             </Route>
-            <Route path="/chats" element={<ChatsPage />} />
-            <Route path="/chats/:matchId" element={<ChatPage />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/store/:vendorId" element={<StorePage />} />
             <Route path="/product/:productId" element={<ProductPage />} />
-            <Route path="/metrics" element={<MetricsPage />} />
-            <Route path="*" element={<RoleHome />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Route>
       </Routes>

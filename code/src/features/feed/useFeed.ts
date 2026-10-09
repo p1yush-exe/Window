@@ -6,7 +6,7 @@ import { telemetry } from '@/lib/telemetry'
 
 const LOW_WATER = 5
 
-export function useFeed(profile: UserProfile) {
+export function useFeed(profile: UserProfile | null) {
   const [queue, setQueue] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -29,7 +29,7 @@ export function useFeed(profile: UserProfile) {
         const page = await fetchFeedPage(cursor.current)
         cursor.current = page.cursor
         if (page.done) done.current = true
-        added = added.concat(page.products.filter((p) => !swiped.current.has(p.id) && p.vendorId !== profile.uid))
+        added = added.concat(page.products.filter((p) => !swiped.current.has(p.id) && p.vendorId !== profile?.uid))
       }
       if (added.length) {
         setQueue((q) => {
@@ -43,13 +43,14 @@ export function useFeed(profile: UserProfile) {
     } finally {
       fetching.current = false
     }
-  }, [profile.uid])
+  }, [profile?.uid])
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
-        swiped.current = await loadSwipedIds(profile.uid)
+        // Guests keep dismissed cards in memory only; nothing is recorded.
+        swiped.current = profile ? await loadSwipedIds(profile.uid) : new Set()
         if (!cancelled) await fetchMore()
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Could not load your history')
@@ -60,20 +61,22 @@ export function useFeed(profile: UserProfile) {
     return () => {
       cancelled = true
     }
-  }, [profile.uid, fetchMore])
+  }, [profile?.uid, fetchMore])
 
   useEffect(() => {
     if (!loading && queue.length < LOW_WATER && !done.current) void fetchMore()
   }, [queue.length, loading, fetchMore])
 
+  /** Removes the card locally. Records it only when there is a signed-in profile. */
   const swipe = useCallback(
-    (product: Product, direction: 'left' | 'right') => {
+    (product: Product, direction: 'left' | 'right', as: UserProfile | null = profile) => {
       swiped.current.add(product.id)
       setQueue((q) => q.filter((p) => p.id !== product.id))
       setSwipeCount((c) => c + 1)
+      if (!as) return
       if (direction === 'right') setLastMatch(product)
       const started = performance.now()
-      recordSwipe(profile, product, direction)
+      recordSwipe(as, product, direction)
         .then(() => {
           if (direction === 'right') telemetry.record('swipe_to_match_ms', performance.now() - started)
         })
@@ -81,6 +84,15 @@ export function useFeed(profile: UserProfile) {
     },
     [profile],
   )
+
+  /** Records a right swipe for a card that was liked before logging in. */
+  const completePending = useCallback((product: Product, as: UserProfile) => {
+    setLastMatch(product)
+    const started = performance.now()
+    recordSwipe(as, product, 'right')
+      .then(() => telemetry.record('swipe_to_match_ms', performance.now() - started))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not save swipe'))
+  }, [])
 
   const reset = useCallback(() => {
     cursor.current = null
@@ -90,5 +102,5 @@ export function useFeed(profile: UserProfile) {
     void fetchMore()
   }, [fetchMore])
 
-  return { queue, loading, error, exhausted, swipeCount, lastMatch, swipe, reset, dismissMatch: () => setLastMatch(null) }
+  return { queue, loading, error, exhausted, swipeCount, lastMatch, swipe, completePending, reset, dismissMatch: () => setLastMatch(null) }
 }
