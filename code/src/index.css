@@ -268,12 +268,11 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 
 /* Corner notches: white tabs that grow out of the screen corners and hold the controls */
 .notch { position: fixed; z-index: 30; display: flex; align-items: center; gap: 10px; background: #fff; border: 2px solid #4b4b4b; }
-/* Tabs hang from the top/bottom edges, pulled in from the sides (tune --notch-inset) */
-:root { --notch-inset: 14%; }
-.notch-tl { top: 0; left: var(--notch-inset); border-top: 0; border-radius: 0 0 20px 20px; padding: calc(var(--safe-top) + 6px) 14px 9px; }
-.notch-tr { top: 0; right: var(--notch-inset); border-top: 0; border-radius: 0 0 20px 20px; padding: calc(var(--safe-top) + 6px) 14px 9px; }
-.notch-bl { bottom: 0; left: var(--notch-inset); border-bottom: 0; border-radius: 20px 20px 0 0; padding: 9px 14px calc(var(--safe-bottom) + 6px); }
-.notch-br { bottom: 0; right: var(--notch-inset); border-bottom: 0; border-radius: 20px 20px 0 0; padding: 9px 14px calc(var(--safe-bottom) + 6px); }
+/* Corner tabs: flush with each screen corner, rounded only on the inner corner */
+.notch-tl { top: 0; left: 0; border-top: 0; border-left: 0; border-radius: 0 0 22px 0; padding: calc(var(--safe-top) + 6px) 16px 9px 12px; }
+.notch-tr { top: 0; right: 0; border-top: 0; border-right: 0; border-radius: 0 0 0 22px; padding: calc(var(--safe-top) + 6px) 12px 9px 16px; }
+.notch-bl { bottom: 0; left: 0; border-bottom: 0; border-left: 0; border-radius: 0 22px 0 0; padding: 9px 16px calc(var(--safe-bottom) + 6px) 12px; }
+.notch-br { bottom: 0; right: 0; border-bottom: 0; border-right: 0; border-radius: 22px 0 0 0; padding: 9px 12px calc(var(--safe-bottom) + 6px) 16px; }
 /* Seller "add product": a floating green circle at the bottom centre */
 .fab-add { position: fixed; z-index: 30; left: 50%; bottom: calc(var(--safe-bottom) + 14px); transform: translateX(-50%); width: 64px; height: 64px; border-radius: 9999px; background: #58cc02; border: 3px solid #fff; outline: 2px solid #46a302; display: flex; align-items: center; justify-content: center; color: #fff; }
 .fab-add.is-active { background: #46a302; }
