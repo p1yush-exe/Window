@@ -108,27 +108,29 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
       <div className="space-y-3 px-5 pt-4 pb-[calc(var(--safe-bottom)+20px)]">
         <ErrorBanner message={error} />
         <div className="flex items-center justify-between gap-3">
-          <label className="flex h-12 w-12 cursor-pointer items-center justify-center rounded border border-white/60 text-white" aria-label="Choose from gallery">
-            <ImageIcon {...ICON} />
-            {native ? (
-              <button type="button" className="absolute inset-0" onClick={() => void nativePick('photos')} aria-label="Gallery" />
-            ) : (
+          {native ? (
+            <button type="button" onClick={() => void nativePick('photos')} className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-white/60 text-white" aria-label="Choose from gallery">
+              <ImageIcon {...ICON} />
+            </button>
+          ) : (
+            <label className="relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl border-2 border-white/60 text-white" aria-label="Choose from gallery">
+              <ImageIcon {...ICON} />
               <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onCapture(f) }} />
-            )}
-          </label>
+            </label>
+          )}
           <button
             type="button"
             onClick={() => (native ? void nativePick('camera') : snap())}
             disabled={!native && !ready}
-            className="flex h-18 w-18 items-center justify-center rounded-full border-4 border-bone-vellum bg-eager-green disabled:opacity-40"
+            className="flex h-18 w-18 items-center justify-center rounded-full border-4 border-white bg-eager-green disabled:opacity-40"
             aria-label="Take photo"
           >
-            <Camera size={28} strokeWidth={1.75} absoluteStrokeWidth className="text-white" />
+            <Camera size={28} strokeWidth={2} absoluteStrokeWidth className="text-white" />
           </button>
           {native ? (
             <span className="h-12 w-12" />
           ) : (
-            <Button type="button" variant="ghost" className="h-12 w-12 border border-white/60 px-0 text-white" onClick={() => setFacing((f) => (f === 'user' ? 'environment' : 'user'))} aria-label="Flip camera">
+            <Button type="button" variant="ghost" className="h-12 w-12 border-2 border-white/60 px-0 text-white" onClick={() => setFacing((f) => (f === 'user' ? 'environment' : 'user'))} aria-label="Flip camera">
               <RefreshCw {...ICON} />
             </Button>
           )}

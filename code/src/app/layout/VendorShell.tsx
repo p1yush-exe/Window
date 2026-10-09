@@ -40,8 +40,8 @@ export function VendorShell() {
       <NavLink to="/vendor/shop" className={({ isActive }) => cx('notch notch-bl notch-btn', isActive && 'is-active')} aria-label="Shop management">
         <Store size={24} strokeWidth={2.25} absoluteStrokeWidth />
       </NavLink>
-      <NavLink to="/vendor/new" className={({ isActive }) => cx('notch notch-bc notch-btn', isActive ? 'is-active' : 'bg-eager-green border-eager-green text-white')} aria-label="Add product">
-        <Plus size={30} strokeWidth={3} absoluteStrokeWidth className="text-white" />
+      <NavLink to="/vendor/new" className={({ isActive }) => cx('fab-add', isActive && 'is-active')} aria-label="Add product">
+        <Plus size={32} strokeWidth={3} absoluteStrokeWidth />
       </NavLink>
       <NavLink to="/vendor/me" className={({ isActive }) => cx('notch notch-br notch-btn', isActive && 'is-active')} aria-label="Seller profile">
         <User size={24} strokeWidth={2.25} absoluteStrokeWidth />
