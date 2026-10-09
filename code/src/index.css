@@ -54,6 +54,14 @@
   --shadow-2xl: 0 0 #0000;
 }
 
+/* Gagalin: the storefront signboard (free comic display face by Iordanis Passas). */
+@font-face {
+  font-family: 'Gagalin';
+  src: url('/fonts/Gagalin.woff2') format('woff2'), url('/fonts/Gagalin.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
 /* Bold uppercase label voice wherever the old mono class is used. */
 @utility font-mono {
   font-family: var(--font-mono);
@@ -170,8 +178,9 @@ img, a { -webkit-user-drag: none; user-drag: none; }
   --intro-zoom: 3.4;  /* how far the camera pushes through the doorway at the end */
   --intro-focus-x: 53%; /* which part of the picture sits at screen centre; bigger = scene moves LEFT */
   --intro-focus-y: 50%;
-  --sign-y: 7%;        /* signboard distance from the top (% of screen height) */
-  --sign-size: 15vw;   /* signboard letter size */
+  --sign-y: 6%;        /* signboard distance from the top (% of screen height) */
+  --sign-size: 24vw;   /* signboard letter size */
+  --sign-tracking: -0.02em; /* letter spacing (negative = tighter) */
 }
 .intro { perspective: 1200px; }
 .intro-scene {
@@ -185,8 +194,8 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 .intro-sign {
   position: absolute; top: var(--sign-y); left: 50%;
   transform: translate(calc(-50% + var(--px, 0) * 1%), calc(var(--py, 0) * 1%));
-  font-family: var(--font-display); font-weight: 900; font-size: var(--sign-size); line-height: 1;
-  letter-spacing: 0.06em; color: #1b1b1b; white-space: nowrap;
+  font-family: 'Gagalin', var(--font-display); font-weight: 400; font-size: var(--sign-size); line-height: 1;
+  letter-spacing: var(--sign-tracking); color: #161616; white-space: nowrap;
   text-shadow: 0 2px 0 rgba(255,255,255,0.7), 0 0 14px rgba(255,255,255,0.8);
   transition: transform 0.5s ease-out;
   pointer-events: none;
@@ -199,7 +208,10 @@ img, a { -webkit-user-drag: none; user-drag: none; }
   transform-origin: 50% 50%;
   transform: translate(calc(var(--door-x) + var(--px, 0) * 0.5% - var(--slide, 0) * 1%), calc(var(--door-y) + var(--py, 0) * 0.5%)) scale(var(--door-scale));
 }
-.intro-door-wrap-right .intro-door { transform: translate(calc(var(--door-x) - var(--px, 0) * 0.5% - var(--slide, 0) * 1%), calc(var(--door-y) + var(--py, 0) * 0.5%)) scale(var(--door-scale)); }
+.intro-door-wrap-right .intro-door {
+  background-position: calc(100% - var(--intro-focus-x)) var(--intro-focus-y);
+  transform: translate(calc(var(--door-x) - var(--px, 0) * 0.5% - var(--slide, 0) * 1%), calc(var(--door-y) + var(--py, 0) * 0.5%)) scale(var(--door-scale));
+}
 .intro-glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 16% 30% at var(--intro-focus-x) var(--intro-focus-y), rgba(255, 236, 170, 0.6), transparent 70%); transition: opacity 0.8s ease; }
 .intro.is-through .intro-scene { transition: transform 1.25s cubic-bezier(0.6, 0, 0.4, 1); transform: scale(var(--intro-zoom)) !important; }
 .intro.is-through { animation: intro-fade 1.25s ease-in forwards; }
