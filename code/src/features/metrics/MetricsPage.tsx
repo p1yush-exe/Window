@@ -26,7 +26,7 @@ export function MetricsPage() {
     .filter((v): v is number => v !== null && v >= 0 && v < 60_000)
 
   return (
-    <div className="px-4 pt-[calc(var(--safe-top)+72px)]">
+    <div className="px-4 pt-4">
       <PageHeader
         title="Evaluation metrics"
         subtitle="Measured on this device"

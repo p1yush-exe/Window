@@ -136,8 +136,12 @@ export function FeedPage() {
       <div className="pointer-events-none fixed inset-y-0 left-0 z-20 w-[26vw] bg-[#e11d48]" style={{ opacity: Math.max(0, -drag) * 0.55 }} />
       <div className="pointer-events-none fixed inset-y-0 right-0 z-20 w-[30vw] bg-[#16a34a]" style={{ opacity: Math.max(0, drag) * 0.55 }} />
       <LightSweep trigger={sweep} />
+      {/* Ambient backdrop: the current product photo, blurred and full-bleed */}
+      {top?.imageUrls[0] && (
+        <div key={top.id} className="ambient pointer-events-none fixed inset-0 z-0" style={{ backgroundImage: `url(${top.imageUrls[0]})` }} aria-hidden="true" />
+      )}
 
-      <div className="mx-auto mt-[calc(var(--safe-top)+64px)] flex w-full max-w-sm items-center justify-center gap-1.5 px-4">
+      <div className="mx-auto mt-3 flex w-full max-w-sm items-center justify-center gap-1.5 px-4 md:max-w-md">
         <button type="button" onClick={() => navigate('/shopper/setup')} className="flex items-center gap-1 rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
           <MapPin {...ICON} size={12} /> {center ? areaLabel(center) : 'Set area'}
         </button>
@@ -155,9 +159,9 @@ export function FeedPage() {
           )}
         </div>
       </div>
-      <div className="mx-auto w-full max-w-sm px-4 pt-2"><ErrorBanner message={error ?? feed.error} /></div>
+      <div className="relative z-10 mx-auto w-full max-w-sm px-4 pt-2 md:max-w-md"><ErrorBanner message={error ?? feed.error} /></div>
 
-      <div className="relative mx-auto mt-3 w-full max-w-sm flex-1 px-4" style={{ minHeight: 'min(66vh, 600px)' }}>
+      <div className="relative z-10 mx-auto mt-3 w-full max-w-sm px-4 md:max-w-md" style={{ height: 'min(68vh, 660px)' }}>
         <div className="relative h-full w-full">
           <AnimatePresence custom={lastDirection}>
             {visible.map((p, i) => (

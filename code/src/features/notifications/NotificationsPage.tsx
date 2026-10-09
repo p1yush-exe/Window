@@ -35,7 +35,7 @@ export function NotificationsPage() {
   const unread = items.filter((i) => !i.read)
 
   return (
-    <div className="px-4 pt-[calc(var(--safe-top)+72px)]">
+    <div className="px-4 pt-4">
       <PageHeader
         title="Alerts"
         subtitle="Stock updates for products you liked"

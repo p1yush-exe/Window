@@ -30,7 +30,7 @@ export function ProductPage() {
   const isOwner = product.vendorId === profile?.uid
 
   return (
-    <div className="pt-[calc(var(--safe-top)+56px)] pb-6">
+    <div className="pt-0 pb-6">
       <div className="relative bg-surface">
         <ProductImage src={product.imageUrls[active] ?? product.imageUrls[0]} alt={product.title} className="mx-auto aspect-[3/4] w-full max-w-md border-y border-ink" />
         <button type="button" onClick={() => navigate(-1)} className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded border border-line bg-canvas/90 text-ink" aria-label="Back">

@@ -23,7 +23,7 @@ export function ShopPage() {
   const frameCls: Record<string, string> = { none: 'border border-line', lime: 'border-2 border-accent', bone: 'border-[3px] border-ink', double: 'border-4 border-double border-ink', dashed: 'border-2 border-dashed border-ink' }
 
   return (
-    <div className="pt-[calc(var(--safe-top)+64px)] pb-6">
+    <div className="pt-0 pb-6">
       {shop.storefrontUrl && <img src={shop.storefrontUrl} alt={`${shop.name} storefront`} className="aspect-[16/9] w-full object-cover" />}
       <div className="px-4 pt-4">
         <div className="flex items-center gap-4">

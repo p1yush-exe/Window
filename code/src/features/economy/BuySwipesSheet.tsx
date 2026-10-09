@@ -16,8 +16,9 @@ export function Price({ bundle, className }: { bundle: Bundle; className?: strin
 }
 
 /** Simulated checkout for swipe and super-swipe bundles. */
-export function BuySwipesSheet({ kind, onClose }: { kind: 'swipes' | 'superSwipes'; onClose: () => void }) {
+export function BuySwipesSheet({ kind: initialKind, onClose }: { kind: 'swipes' | 'superSwipes'; onClose: () => void }) {
   const { profile } = useSession()
+  const [kind, setKind] = useState<'swipes' | 'superSwipes'>(initialKind)
   const bundles = kind === 'swipes' ? SWIPE_BUNDLES : SUPER_BUNDLES
   const [busy, setBusy] = useState<number | null>(null)
   const [done, setDone] = useState<string | null>(null)
@@ -48,9 +49,13 @@ export function BuySwipesSheet({ kind, onClose }: { kind: 'swipes' | 'superSwipe
         role="dialog"
         aria-modal="true"
       >
+        <div className="mb-4 flex border border-line font-mono text-[12px] uppercase">
+          <button type="button" onClick={() => setKind('swipes')} className={cx('flex flex-1 items-center justify-center gap-2 py-2', kind === 'swipes' ? 'bg-ink text-canvas' : 'text-ink')}><Heart {...ICON} size={14} /> Swipes</button>
+          <button type="button" onClick={() => setKind('superSwipes')} className={cx('flex flex-1 items-center justify-center gap-2 py-2', kind === 'superSwipes' ? 'bg-ink text-canvas' : 'text-ink')}><HeartPlus {...ICON} size={14} /> Super swipes</button>
+        </div>
         <div className="flex items-start justify-between">
           <div>
-            <p className="label">{kind === 'swipes' ? 'Swipes' : 'Super swipes'}</p>
+            <p className="label">Swipe shop</p>
             <h2 className="mt-1 flex items-center gap-2 text-[29px] leading-none tracking-[-0.03em]">
               {kind === 'swipes' ? <Heart {...ICON} size={24} /> : <HeartPlus {...ICON} size={24} className="text-accent-text" />}
               {kind === 'swipes' ? profile.swipes : profile.superSwipes} left

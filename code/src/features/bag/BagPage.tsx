@@ -29,7 +29,7 @@ export function BagPage() {
   const statusTone: Record<Like['status'], string> = { pending: 'border border-line text-muted', accepted: 'bg-accent text-on-accent', declined: 'border border-line text-muted line-through' }
 
   return (
-    <div className="px-4 pt-[calc(var(--safe-top)+72px)]">
+    <div className="px-4 pt-4">
       <PageHeader eyebrow="Your bag" title={tab === 'likes' ? 'Liked products' : 'Chats'} subtitle={`${likes.length} liked · ${matches.length} matched`} />
       <div className="mb-4 flex border border-line font-mono text-[12px] uppercase">
         <button type="button" onClick={() => setTab('likes')} className={cx('flex-1 py-2', tab === 'likes' ? 'bg-ink text-canvas' : 'text-ink')}>Liked</button>

@@ -38,7 +38,7 @@ export function MePage() {
   }
 
   return (
-    <div className="px-4 pt-[calc(var(--safe-top)+72px)] pb-6">
+    <div className="px-4 pt-4 pb-6">
       <PageHeader eyebrow="Profile" title={profile.displayName} subtitle={`@${profile.username ?? 'user'}`} right={<Avatar name={profile.displayName} url={profile.avatarUrl} size={48} />} />
 
       <section className="grid grid-cols-2 gap-3">
