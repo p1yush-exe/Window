@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { Button, ErrorBanner, cx } from '@/components/ui'
 import { LocationPicker } from '@/components/LocationPicker'
+import { ProgressRail } from '@/components/ProgressRail'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { updateProfile } from '@/lib/db'
 import { getShopperPrefs, setShopperPrefs } from '@/lib/prefs'
@@ -45,8 +46,8 @@ export function ShopperSetupPage() {
 
   return (
     <div className="mx-auto min-h-dvh w-full max-w-md px-4 py-6 pt-safe">
-      <div className="mb-4 flex items-center justify-between">
-        <p className="label">Shopping · step {step + 1} of 2</p>
+      <div className="mb-5 flex items-center gap-4">
+        <ProgressRail value={step} total={2} label="Shopping" className="flex-1" />
         <Link to={initial.location ? '/feed' : '/'} className="font-mono text-[12px] text-pencil-gray underline">Cancel</Link>
       </div>
 

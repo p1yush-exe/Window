@@ -1,11 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { Button, ErrorBanner, Input, Textarea, cx } from '@/components/ui'
+import { Button, ErrorBanner, Input, Textarea } from '@/components/ui'
 import { LocationPicker } from '@/components/LocationPicker'
 import { OtpField } from '@/components/OtpField'
 import { PhotoField } from '@/components/PhotoField'
 import { GoogleButton } from '@/components/GoogleButton'
 import { TagPicker } from '@/components/TagPicker'
+import { ProgressRail } from '@/components/ProgressRail'
 import { friendlyAuthError, useAuth } from '@/features/auth/AuthProvider'
 import { createShop, createVendor, emptyShopInput, updateProfile, updateVendor, type ShopInput } from '@/lib/db'
 import { setMode } from '@/lib/mode'
@@ -81,13 +82,7 @@ export function VendorSetupPage() {
         <h1 className="text-[29px] ">Set up your shop</h1>
         <Link to={profile ? '/feed' : '/vendor'} className="font-mono text-[12px] text-pencil-gray uppercase underline">Cancel</Link>
       </div>
-      <ol className="mb-5 flex gap-2">
-        {STEPS.map((s, i) => (
-          <li key={s} className={cx('flex-1 rounded py-1 text-center font-mono text-[11px] tracking-[0.053em] uppercase', i < step ? 'bg-eager-green text-white' : i === step ? 'bg-[#f7f7f7] text-spark-blue' : 'bg-[#f7f7f7] text-pencil-gray')}>
-            {i + 1}. {s}
-          </li>
-        ))}
-      </ol>
+      <ProgressRail value={step} total={STEPS.length} label={STEPS[step]} className="mb-5" />
 
       {step === 0 && (
         <form onSubmit={next} className="space-y-4 border-2 border-faded-gray p-4">
