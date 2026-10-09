@@ -50,7 +50,7 @@ export function ReviewPrompt({ match }: { match: Match }) {
 
   if (!open) {
     return (
-      <div className="flex items-center justify-between gap-2 border-t border-neutral-200 bg-brand-50 px-3 py-2 text-xs text-brand-900">
+      <div className="flex items-center justify-between gap-2 border-t border-line bg-surface px-3 py-2 text-xs text-accent-text">
         <span>{done || existing ? `You rated this ${rating}/5.` : `How was ${match.vendorName}?`}</span>
         <button type="button" className="font-semibold underline" onClick={() => setOpen(true)}>
           {done || existing ? 'Edit review' : 'Leave a review'}
@@ -60,10 +60,10 @@ export function ReviewPrompt({ match }: { match: Match }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-2 border-t border-neutral-200 bg-white px-3 py-3">
+    <form onSubmit={submit} className="space-y-2 border-t border-line bg-canvas px-3 py-3">
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold">Rate {match.productTitle}</p>
-        <button type="button" className="text-xs text-neutral-500 underline" onClick={() => setOpen(false)}>Close</button>
+        <button type="button" className="text-xs text-muted underline" onClick={() => setOpen(false)}>Close</button>
       </div>
       <Stars value={rating} onChange={setRating} size="lg" />
       <Textarea name="reviewBody" rows={2} maxLength={400} placeholder="What was good or bad?" value={body} onChange={(e) => setBody(e.target.value)} />

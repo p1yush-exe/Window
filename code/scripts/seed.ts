@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url'
 import { initializeApp } from 'firebase/app'
 import { connectAuthEmulator, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { connectFirestoreEmulator, doc, getDoc, getFirestore, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore'
+import { geohashForLocation } from 'geofire-common'
 
 const env = (k: string, fallback = '') => process.env[k] ?? fallback
 
@@ -108,11 +109,20 @@ async function seedVendor(v: SeedVendor, vendorIndex: number) {
     { merge: true },
   )
   const batch = writeBatch(db)
+  const area = v.location.address.split(',')[0]!.trim()
   v.products.forEach((p, i) => {
     const id = `${uid.slice(0, 6)}-${p.slug}`
+    // Scatter products a few hundred metres around the store so distances vary.
+    const lat = v.location.lat + Math.sin(i * 1.7) * 0.003
+    const lng = v.location.lng + Math.cos(i * 1.3) * 0.003
     batch.set(doc(db, 'products', id), {
       vendorId: uid,
       vendorName: v.name,
+      lat,
+      lng,
+      geohash: geohashForLocation([lat, lng]),
+      area,
+      vendorTags: v.tags,
       title: p.title,
       description: p.description,
       price: p.price,
@@ -133,7 +143,14 @@ async function seedVendor(v: SeedVendor, vendorIndex: number) {
 async function seedBuyer() {
   const user = await signInOrCreate('buyer@window.demo')
   if (!(await getDoc(doc(db, 'users', user.uid))).exists()) {
-    await setDoc(doc(db, 'users', user.uid), { role: 'buyer', displayName: 'Demo Shopper', avatarUrl: null, createdAt: serverTimestamp() })
+    await setDoc(doc(db, 'users', user.uid), {
+      role: 'buyer',
+      displayName: 'Demo Shopper',
+      avatarUrl: null,
+      location: { lat: 30.3398, lng: 76.3869, address: 'Thapar Institute, Patiala, Punjab', area: 'Thapar Institute' },
+      interests: ['Clothes', 'Shoes', 'Groceries'],
+      createdAt: serverTimestamp(),
+    })
   }
   console.log('✔ buyer@window.demo')
   await signOut(auth)

@@ -35,6 +35,24 @@ and the vendor document records `phoneVerified` / `emailVerified`. Store
 location uses the browser or Capacitor geolocation API and OpenStreetMap
 tiles via Leaflet, with Nominatim for reverse geocoding; no API key.
 
+## Local feed
+
+Every product carries `lat`, `lng`, a `geohash` and `vendorTags`, copied from
+its seller (`vendorGeoFields` in `src/lib/db.ts`, re-synced when the store is
+edited). The feed asks Firestore for the geohash ranges that cover the shopper's
+radius (`geofire-common`), then filters by exact distance, availability and
+swipes on the device, ranking products that match the shopper's interests
+first and nearest first (`src/features/feed/rank.ts`). With no fixed radius the
+hook widens 10 → 25 → 50 km until it has about 20 products.
+
+## Android signing and Google sign-in
+
+Release APKs are signed in CI with a keystore held in GitHub secrets
+(`ANDROID_KEYSTORE_B64` and passwords). Its SHA-1 is registered on the
+Firebase Android app, and `android/app/google-services.json` (public config)
+enables native Google Sign-In through `@capacitor-firebase/authentication`.
+On the web the Firebase popup flow is used.
+
 ## Data model
 
 ```

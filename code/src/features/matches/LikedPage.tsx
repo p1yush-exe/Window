@@ -29,7 +29,7 @@ export function LikedPage() {
       ) : (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {sorted.map((m) => (
-            <li key={m.id} className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+            <li key={m.id} className="overflow-hidden rounded-2xl bg-canvas ring-1 ring-line">
               <Link to={`/product/${m.productId}`} className="block">
                 <ProductImage src={m.productImage} alt={m.productTitle} className="aspect-[3/4] w-full" />
               </Link>
@@ -38,10 +38,10 @@ export function LikedPage() {
                   <AvailabilityBadge value={m.productAvailability ?? 'in_stock'} />
                 </div>
                 <p className="line-clamp-1 text-sm font-semibold">{m.productTitle}</p>
-                <p className="line-clamp-1 text-xs text-neutral-500">{m.vendorName}</p>
+                <p className="line-clamp-1 text-xs text-muted">{m.vendorName}</p>
                 <Link to={`/chats/${m.id}`} className="mt-2 block">
                   <Button variant="secondary" size="sm" className="w-full">
-                    Chat {m.unread?.[profile.uid] ? <span className="rounded-full bg-brand-600 px-1.5 text-[10px] text-white">{m.unread[profile.uid]}</span> : null}
+                    Chat {m.unread?.[profile.uid] ? <span className="rounded bg-accent px-1.5 font-mono text-[10px] text-on-accent">{m.unread[profile.uid]}</span> : null}
                   </Button>
                 </Link>
               </div>

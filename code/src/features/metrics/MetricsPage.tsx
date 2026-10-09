@@ -43,12 +43,12 @@ export function MetricsPage() {
             <Card key={m.name} className="p-4">
               <div className="flex items-baseline justify-between">
                 <p className="font-semibold">{m.label}</p>
-                <p className={`text-xl font-bold ${med === null ? 'text-neutral-400' : ok ? 'text-green-600' : 'text-rose-600'}`}>
+                <p className={`text-xl font-bold ${med === null ? 'text-muted' : ok ? 'text-accent-text' : 'text-ink'}`}>
                   {med === null ? '—' : `${med} ms`}
                 </p>
               </div>
-              <p className="text-xs text-neutral-500">{m.desc}</p>
-              <p className="mt-1 text-xs text-neutral-400">
+              <p className="text-xs text-muted">{m.desc}</p>
+              <p className="mt-1 text-xs text-muted">
                 target ≤ {m.target} ms · n = {samples.length}
                 {samples.length > 0 && ` · max ${Math.max(...samples)} ms`}
               </p>
@@ -57,9 +57,9 @@ export function MetricsPage() {
         })}
         <Card className="p-4">
           <p className="font-semibold">Server-side swipe → match (all your matches)</p>
-          <p className="text-xs text-neutral-500">Match createdAt (server) minus swipe client timestamp. Includes clock skew.</p>
+          <p className="text-xs text-muted">Match createdAt (server) minus swipe client timestamp. Includes clock skew.</p>
           <p className="mt-1 text-xl font-bold">{median(serverLatencies) === null ? '—' : `${Math.round(median(serverLatencies)!)} ms`}</p>
-          <p className="text-xs text-neutral-400">n = {serverLatencies.length}</p>
+          <p className="text-xs text-muted">n = {serverLatencies.length}</p>
         </Card>
       </div>
     </div>

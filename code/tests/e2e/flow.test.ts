@@ -13,6 +13,7 @@ import {
   createProfile,
   createVendor,
   fetchFeedPage,
+  fetchLocalProducts,
   getMatch,
   getProduct,
   getReview,
@@ -109,6 +110,15 @@ describe('Window end-to-end', () => {
     await as(buyerEmail)
     const page = await fetchFeedPage(null)
     expect(page.products.some((p) => p.id === product.id)).toBe(true)
+    // Product inherited the store's location and tags
+    expect(product.geohash).toBeTruthy()
+    expect(product.vendorTags).toEqual(['Clothes', 'Handmade'])
+    expect(product.area).toBe('Patiala')
+    // Visible from 2 km away, not from 150 km away
+    const near = await fetchLocalProducts({ lat: 30.35, lng: 76.4 }, 10)
+    expect(near.some((p) => p.id === product.id)).toBe(true)
+    const far = await fetchLocalProducts({ lat: 31.6, lng: 74.9 }, 10) // Amritsar
+    expect(far.some((p) => p.id === product.id)).toBe(false)
     expect((await loadSwipedIds(buyerUid)).size).toBe(0)
 
     const t0 = performance.now()

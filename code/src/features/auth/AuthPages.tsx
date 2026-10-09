@@ -1,25 +1,27 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { Button, ErrorBanner, Input } from '@/components/ui'
+import { GoogleButton } from '@/components/GoogleButton'
 import { env } from '@/lib/env'
+import { getMode } from '@/lib/mode'
 import { friendlyAuthError, useAuth } from './AuthProvider'
 
 export function AuthFrame({ title, subtitle, children, footer }: { title: string; subtitle: string; children: React.ReactNode; footer?: React.ReactNode }) {
   return (
-    <div className="flex min-h-dvh flex-col justify-center bg-linear-to-b from-brand-50 to-white px-6 py-12 pt-safe">
+    <div className="flex min-h-dvh flex-col justify-center bg-canvas px-6 py-12 pt-safe">
       <div className="mx-auto w-full max-w-sm">
         <div className="mb-8 text-center">
-          <Link to="/" className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-600 text-3xl text-white shadow-lg shadow-brand-200">◫</Link>
-          <h1 className="text-3xl font-black tracking-tight text-neutral-900">Window</h1>
-          <p className="mt-1 text-sm text-neutral-500">{subtitle}</p>
+          <Link to="/" className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-3xl text-on-accent">◫</Link>
+          <h1 className="text-3xl font-normal tracking-[-0.03em] text-ink">Window</h1>
+          <p className="mt-1 text-sm text-muted">{subtitle}</p>
         </div>
-        <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="rounded-2xl bg-canvas p-6 ring-1 ring-line">
           <h2 className="mb-4 text-lg font-semibold">{title}</h2>
           {children}
         </div>
-        {footer && <p className="mt-6 text-center text-sm text-neutral-500">{footer}</p>}
+        {footer && <p className="mt-6 text-center text-sm text-muted">{footer}</p>}
         {!env.configured && (
-          <p className="mt-4 rounded-xl bg-amber-50 p-3 text-center text-xs text-amber-800 ring-1 ring-amber-200">
+          <p className="mt-4 rounded-xl bg-surface p-3 text-center text-xs text-ink ring-1 ring-line">
             Firebase is not configured. Copy <code>.env.example</code> to <code>.env</code> or run with the emulator.
           </p>
         )}
@@ -57,12 +59,14 @@ export function LoginPage() {
       subtitle="Swipe. Match. Chat. Buy."
       footer={
         <>
-          New seller? <Link className="font-semibold text-brand-600" to="/vendor/setup">Set up your shop</Link>
+          New seller? <Link className="font-semibold text-accent-text" to="/vendor/setup">Set up your shop</Link>
           <br />
-          Shopping? <Link className="font-semibold text-brand-600" to="/feed">Just start swiping</Link>
+          Shopping? <Link className="font-semibold text-accent-text" to="/feed">Just start swiping</Link>
         </>
       }
     >
+      <GoogleButton role={getMode() === 'vendor' ? 'vendor' : 'buyer'} onDone={() => navigate('/', { replace: true })} />
+      <div className="my-3 flex items-center gap-3 font-mono text-[11px] text-muted uppercase"><span className="h-px flex-1 bg-line" />or email<span className="h-px flex-1 bg-line" /></div>
       <form onSubmit={onSubmit} className="space-y-3">
         <Input label="Email" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         <Input label="Password" name="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />

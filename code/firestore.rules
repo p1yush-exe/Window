@@ -30,11 +30,16 @@ service cloud.firestore {
 
     // ---------- users ----------
     match /users/{uid} {
+      function validPrefs(d) {
+        return (!('interests' in d) || (d.interests is list && d.interests.size() <= 3))
+          && (!('location' in d) || d.location == null || (d.location is map && d.location.lat is number && d.location.lng is number));
+      }
       allow read: if signedIn();
       allow create: if isUser(uid)
         && request.resource.data.role in ['buyer', 'vendor']
-        && request.resource.data.displayName is string;
-      allow update: if isUser(uid) && unchanged('role');
+        && request.resource.data.displayName is string
+        && validPrefs(request.resource.data);
+      allow update: if isUser(uid) && unchanged('role') && validPrefs(request.resource.data);
       allow delete: if false;
 
       match /swipes/{productId} {
@@ -77,16 +82,22 @@ service cloud.firestore {
     // ---------- products ----------
     match /products/{productId} {
       allow read: if true;
+      function validGeo(d) {
+        return (d.geohash == null || d.geohash is string)
+          && d.vendorTags is list && d.vendorTags.size() <= 3;
+      }
       allow create: if isVendor()
         && request.resource.data.vendorId == request.auth.uid
         && exists(/databases/$(database)/documents/vendors/$(request.auth.uid))
         && request.resource.data.title is string
         && request.resource.data.title.size() > 0
-        && validAvailability(request.resource.data.availability);
+        && validAvailability(request.resource.data.availability)
+        && validGeo(request.resource.data);
       allow update: if signedIn()
         && resource.data.vendorId == request.auth.uid
         && unchanged('vendorId')
-        && validAvailability(request.resource.data.availability);
+        && validAvailability(request.resource.data.availability)
+        && validGeo(request.resource.data);
       allow delete: if signedIn() && resource.data.vendorId == request.auth.uid;
     }
 

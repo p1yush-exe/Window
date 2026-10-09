@@ -33,7 +33,9 @@ Demo accounts (password `window123`): `buyer@window.demo`, `threads@window.demo`
 | App | Vite + React 19 + TypeScript + Tailwind 4, one mobile-first codebase |
 | Android | Capacitor 8 wrapping the same web build into an APK |
 | Backend | Firebase Authentication + Cloud Firestore, all logic in the client under security rules |
-| Images | Cloudinary unsigned uploads |
+| Images | Cloudinary unsigned uploads, compressed on the device, native camera/gallery picker on Android |
+| Sign-in | Google (web popup, native on Android) or email/password; phone/email OTP simulated with `0000` |
+| Theme | INVERSA design system: dark canvas by default, light variant, toggle in Profile |
 | Hosting | Vercel (web), GitHub Actions artifact (APK) |
 | CI | GitHub Actions: lint, typecheck, unit tests, Firestore rules tests on the emulator, APK build, rules deploy, docs deploy |
 

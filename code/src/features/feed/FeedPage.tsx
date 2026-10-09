@@ -1,18 +1,36 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
 import { Link } from 'react-router'
 import { Button, EmptyState, ErrorBanner, FullPageSpinner } from '@/components/ui'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { LoginSheet } from '@/features/auth/LoginSheet'
 import { haptic } from '@/lib/native'
-import type { Product } from '@/lib/types'
+import { areaLabel } from '@/lib/geo'
+import { getShopperPrefs, hasShopperPrefs, setShopperPrefs } from '@/lib/prefs'
+import { RADIUS_STEPS_KM, type Product } from '@/lib/types'
 import { useFeed } from './useFeed'
 import { SwipeCard, type SwipeDirection } from './SwipeCard'
 
 export function FeedPage() {
   const { profile } = useAuth()
-  const feed = useFeed(profile)
+  const navigate = useNavigate()
+  const [prefs, setPrefs] = useState(() => getShopperPrefs())
+  const center = profile?.location ?? prefs.location
+  const interests = profile?.interests?.length ? profile.interests : prefs.interests
+  const feed = useFeed(profile, { center, interests, radiusKm: prefs.radiusKm })
   const [pending, setPending] = useState<Product | null>(null)
+  const [radiusOpen, setRadiusOpen] = useState(false)
+
+  useEffect(() => {
+    if (!profile && !hasShopperPrefs()) navigate('/shopper/setup', { replace: true })
+  }, [profile, navigate])
+
+  function chooseRadius(km: number | null) {
+    setShopperPrefs({ radiusKm: km })
+    setPrefs(getShopperPrefs())
+    setRadiusOpen(false)
+  }
   const [lastDirection, setLastDirection] = useState<SwipeDirection>('right')
   const wheel = useRef({ dx: 0, at: 0, locked: false })
   const visible = feed.queue.slice(0, 3)
@@ -79,15 +97,33 @@ export function FeedPage() {
 
   return (
     <div className="flex flex-1 flex-col px-4 pt-4 md:pt-8">
-      <div className="mb-3 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Discover</h1>
-          <p className="text-xs text-neutral-500">Swipe right to connect with the seller</p>
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <h1 className="text-[29px] leading-none tracking-[-0.03em]">Nearby</h1>
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            <button type="button" onClick={() => navigate('/shopper/setup')} className="rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
+              📍 {center ? areaLabel(center) : 'Set area'}
+            </button>
+            <div className="relative">
+              <button type="button" onClick={() => setRadiusOpen((o) => !o)} className="rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-ink uppercase hover:border-ink">
+                {feed.effectiveRadius ? `≤ ${feed.effectiveRadius} km` : prefs.radiusKm ? `≤ ${prefs.radiusKm} km` : 'Auto'} ▾
+              </button>
+              {radiusOpen && (
+                <ul className="absolute left-0 z-20 mt-1 w-36 border border-line bg-canvas font-mono text-[12px]">
+                  <li><button type="button" onClick={() => chooseRadius(null)} className="block w-full px-3 py-2 text-left hover:bg-surface">Auto (widen)</button></li>
+                  {RADIUS_STEPS_KM.map((km) => (
+                    <li key={km}><button type="button" onClick={() => chooseRadius(km)} className="block w-full px-3 py-2 text-left hover:bg-surface">Within {km} km</button></li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {interests.length > 0 && <span className="font-mono text-[11px] text-muted uppercase">{interests.join(' · ')}</span>}
+          </div>
         </div>
         {profile ? (
-          <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-600">{feed.swipeCount} swipes</span>
+          <span className="rounded bg-surface px-3 py-1 text-xs font-semibold text-ink">{feed.swipeCount} swipes</span>
         ) : (
-          <button type="button" onClick={() => setPending(top ?? null)} className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 ring-1 ring-brand-200">
+          <button type="button" onClick={() => setPending(top ?? null)} className="rounded bg-surface px-3 py-1 text-xs font-semibold text-accent-text ring-1 ring-line">
             Browsing as guest · Log in
           </button>
         )}
@@ -101,16 +137,23 @@ export function FeedPage() {
           ))}
         </AnimatePresence>
         {!top && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-3xl border-2 border-dashed border-neutral-200">
+          <div className="absolute inset-0 flex items-center justify-center rounded-3xl border-2 border-dashed border-line">
             <EmptyState
-              icon="🎉"
-              title={feed.exhausted ? "You've seen everything" : 'Loading more…'}
-              body={feed.exhausted ? 'Check your Liked tab or come back later for new products.' : undefined}
+              icon="🗺️"
+              title={feed.exhausted ? (feed.nearbyCount === 0 && center ? 'Nothing nearby yet' : "You've seen everything nearby") : 'Loading…'}
+              body={
+                feed.exhausted
+                  ? feed.nearbyCount === 0 && center
+                    ? `No sellers within ${feed.effectiveRadius ?? prefs.radiusKm ?? 50} km of ${areaLabel(center)}. Widen the radius or change your area.`
+                    : 'Check your Liked tab or come back later for new products.'
+                  : undefined
+              }
               action={
                 feed.exhausted ? (
-                  <Link to="/liked">
-                    <Button variant="secondary">See liked products</Button>
-                  </Link>
+                  <div className="flex gap-2">
+                    {prefs.radiusKm && prefs.radiusKm < 50 && <Button onClick={() => chooseRadius(null)}>Widen radius</Button>}
+                    <Button variant="secondary" onClick={() => navigate('/shopper/setup')}>Change area</Button>
+                  </div>
                 ) : undefined
               }
             />
@@ -126,7 +169,7 @@ export function FeedPage() {
           ♥
         </Button>
       </div>
-      <p className="hidden pb-2 text-center text-xs text-neutral-400 md:block">Drag the card, swipe two fingers on the touchpad, or use ← and → keys</p>
+      <p className="hidden pb-2 text-center text-xs text-muted md:block">Drag the card, swipe two fingers on the touchpad, or use ← and → keys</p>
 
       <AnimatePresence>
         {feed.lastMatch && (
@@ -134,11 +177,11 @@ export function FeedPage() {
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 60, opacity: 0 }}
-            className="fixed inset-x-4 bottom-[calc(5rem+var(--safe-bottom))] z-40 mx-auto max-w-sm rounded-2xl bg-neutral-900 p-4 text-white shadow-2xl md:bottom-8"
+            className="fixed inset-x-4 bottom-[calc(5rem+var(--safe-bottom))] z-40 mx-auto max-w-sm rounded-2xl bg-ink p-4 text-canvas md:bottom-8"
           >
             <p className="text-sm font-semibold">It's a match! 💜</p>
-            <p className="text-xs text-white/70">You can now chat with {feed.lastMatch.vendorName} about {feed.lastMatch.title}.</p>
-            <Link to={`/chats/${profile?.uid}_${feed.lastMatch.id}`} className="mt-2 inline-block text-sm font-bold text-brand-300 underline">
+            <p className="text-xs text-bone-vellum/70">You can now chat with {feed.lastMatch.vendorName} about {feed.lastMatch.title}.</p>
+            <Link to={`/chats/${profile?.uid}_${feed.lastMatch.id}`} className="mt-2 inline-block text-sm font-bold text-accent underline">
               Open chat →
             </Link>
           </motion.div>

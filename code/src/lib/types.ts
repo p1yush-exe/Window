@@ -20,11 +20,22 @@ export const CATEGORIES = [
 ] as const
 export type Category = (typeof CATEGORIES)[number]
 
+export interface StoreLocation {
+  lat: number
+  lng: number
+  address: string
+  /** Short neighbourhood or city label shown on cards, e.g. "Adalat Bazaar". */
+  area?: string
+}
+
 export interface UserProfile {
   uid: string
   role: Role
   displayName: string
   avatarUrl: string | null
+  /** Shopper's browsing location and interests (copied from device prefs at sign-up). */
+  location?: StoreLocation | null
+  interests?: string[]
   createdAt: Timestamp | null
 }
 
@@ -54,7 +65,7 @@ export interface Vendor {
   storefrontUrl: string | null
   website: string | null
   tags: string[]
-  location: { lat: number; lng: number; address: string } | null
+  location: StoreLocation | null
   ownerName: string
   ownerPhone: string
   ownerEmail: string
@@ -75,9 +86,18 @@ export interface Product {
   category: Category
   imageUrls: string[]
   availability: Availability
+  /** Copied from the vendor's store location so the feed can query by area. */
+  lat: number | null
+  lng: number | null
+  geohash: string | null
+  area: string | null
+  vendorTags: string[]
   createdAt: Timestamp | null
   updatedAt: Timestamp | null
 }
+
+export const RADIUS_STEPS_KM = [10, 25, 50] as const
+export const FEED_MIN_RESULTS = 20
 
 export interface Match {
   id: string

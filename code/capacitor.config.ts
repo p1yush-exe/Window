@@ -11,7 +11,11 @@ const config: CapacitorConfig = {
     allowMixedContent: false,
   },
   plugins: {
-    StatusBar: { style: 'LIGHT', backgroundColor: '#ffffff' },
+    StatusBar: { style: 'DEFAULT', backgroundColor: '#13140e' },
+    FirebaseAuthentication: {
+      skipNativeAuth: true,
+      providers: ['google.com'],
+    },
   },
 }
 

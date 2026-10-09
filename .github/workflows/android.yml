@@ -13,7 +13,7 @@ defaults:
 
 jobs:
   apk:
-    name: build debug APK
+    name: build signed release APK
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -48,11 +48,18 @@ jobs:
           VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
           VITE_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.VITE_CLOUDINARY_UPLOAD_PRESET }}
       - run: pnpm exec cap sync android
-      - name: Assemble debug APK
+      - name: Restore release keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > android/app/window-release.jks
+      - name: Assemble signed release APK
         working-directory: code/android
-        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+        env:
+          KEYSTORE_FILE: window-release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon
       - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk window-${{ github.ref_name }}-${{ github.sha }}.apk
+        run: cp android/app/build/outputs/apk/release/app-release.apk window-${{ github.ref_name }}-${{ github.sha }}.apk
       - uses: actions/upload-artifact@v4
         with:
           name: window-debug-apk

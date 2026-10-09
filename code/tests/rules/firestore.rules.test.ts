@@ -46,6 +46,8 @@ beforeEach(async () => {
       category: 'Clothes',
       imageUrls: [],
       availability: 'in_stock',
+      geohash: 'ttq8',
+      vendorTags: ['Shoes'],
     })
   })
 })
@@ -84,6 +86,11 @@ describe('users', () => {
     await assertFails(setDoc(doc(as('new1'), 'users', 'new2'), { role: 'buyer', displayName: 'N' }))
     await assertFails(setDoc(doc(as('new3'), 'users', 'new3'), { role: 'admin', displayName: 'N' }))
   })
+  it('shoppers may save up to 3 interests and a location', async () => {
+    await assertSucceeds(updateDoc(doc(as(BUYER), 'users', BUYER), { interests: ['a', 'b'], location: { lat: 30.3, lng: 76.4, address: 'x' } }))
+    await assertFails(updateDoc(doc(as(BUYER), 'users', BUYER), { interests: ['a', 'b', 'c', 'd'] }))
+    await assertFails(updateDoc(doc(as(BUYER), 'users', BUYER), { location: { lat: 'north' } }))
+  })
   it('role is immutable', async () => {
     await assertFails(updateDoc(doc(as(BUYER), 'users', BUYER), { role: 'vendor' }))
     await assertSucceeds(updateDoc(doc(as(BUYER), 'users', BUYER), { displayName: 'Renamed' }))
@@ -115,11 +122,12 @@ describe('products', () => {
     await assertSucceeds(getDoc(doc(as(null), 'products', PRODUCT)))
   })
   it('only a vendor with a store can create products for themselves', async () => {
-    await assertSucceeds(
-      setDoc(doc(as(VENDOR), 'products', 'p2'), { vendorId: VENDOR, title: 'Shoes', availability: 'in_stock' }),
-    )
-    await assertFails(setDoc(doc(as(BUYER), 'products', 'p3'), { vendorId: BUYER, title: 'Nope', availability: 'in_stock' }))
-    await assertFails(setDoc(doc(as(VENDOR), 'products', 'p4'), { vendorId: OTHER, title: 'Nope', availability: 'in_stock' }))
+    const ok = { vendorId: VENDOR, title: 'Shoes', availability: 'in_stock', geohash: 'ttq8', vendorTags: ['Shoes'] }
+    await assertSucceeds(setDoc(doc(as(VENDOR), 'products', 'p2'), ok))
+    await assertSucceeds(setDoc(doc(as(VENDOR), 'products', 'p2b'), { ...ok, geohash: null }))
+    await assertFails(setDoc(doc(as(VENDOR), 'products', 'p2c'), { ...ok, vendorTags: ['a', 'b', 'c', 'd'] }))
+    await assertFails(setDoc(doc(as(BUYER), 'products', 'p3'), { ...ok, vendorId: BUYER }))
+    await assertFails(setDoc(doc(as(VENDOR), 'products', 'p4'), { ...ok, vendorId: OTHER }))
   })
   it('only the owner can update and availability must be valid', async () => {
     await assertSucceeds(updateDoc(doc(as(VENDOR), 'products', PRODUCT), { availability: 'low' }))

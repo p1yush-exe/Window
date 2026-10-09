@@ -47,6 +47,11 @@ pnpm build
 
 ## 5. Android APK
 
+Release builds are signed with the keystore stored in the GitHub secrets
+`ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` and
+`ANDROID_KEY_PASSWORD`. Keep a copy of the keystore and password somewhere safe:
+the same key must sign every future update.
+
 The `android` workflow builds a debug APK on every push to `main` and
 attaches it to the GitHub Actions run (and to the release on a `v*` tag).
 

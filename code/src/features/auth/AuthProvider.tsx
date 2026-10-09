@@ -7,7 +7,9 @@ import {
   type User,
 } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
-import { createProfile, listenProfile } from '@/lib/db'
+import { createProfile, getProfile, listenProfile } from '@/lib/db'
+import { signInWithGoogle as googlePopup } from '@/lib/googleSignIn'
+import { getShopperPrefs } from '@/lib/prefs'
 import type { Role, UserProfile } from '@/lib/types'
 
 interface AuthState {
@@ -18,6 +20,11 @@ interface AuthState {
   /** Creates the auth account and the profile document in one go. */
   signUp: (email: string, password: string, role: Role, displayName: string) => Promise<string>
   signIn: (email: string, password: string) => Promise<void>
+  /**
+   * Google one-tap. Creates the profile with the given role when the account is new.
+   * Resolves with the signed-in user's info so wizards can prefill name and email.
+   */
+  signInWithGoogle: (role: Role) => Promise<{ uid: string; email: string | null; displayName: string | null; isNew: boolean; existingRole: Role | null }>
   signOut: () => Promise<void>
 }
 
@@ -34,6 +41,10 @@ export function friendlyAuthError(e: unknown): string {
     'auth/weak-password': 'Password must be at least 6 characters.',
     'auth/network-request-failed': 'Network error. Check your connection.',
     'auth/too-many-requests': 'Too many attempts. Try again in a minute.',
+    'auth/popup-closed-by-user': 'The Google window was closed before finishing.',
+    'auth/cancelled-popup-request': 'The Google window was closed before finishing.',
+    'auth/unauthorized-domain': 'This site is not authorised for Google sign-in yet.',
+    'auth/account-exists-with-different-credential': 'That email already has a password login. Use email and password.',
   }
   return map[code] ?? (e instanceof Error ? e.message : 'Something went wrong.')
 }
@@ -83,11 +94,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       error,
       async signUp(email, password, role, displayName) {
         const cred = await createUserWithEmailAndPassword(auth, email, password)
-        await createProfile(cred.user.uid, role, displayName)
+        const prefs = role === 'buyer' ? getShopperPrefs() : null
+        await createProfile(cred.user.uid, role, displayName, prefs ? { location: prefs.location, interests: prefs.interests } : {})
         return cred.user.uid
       },
       async signIn(email, password) {
         await signInWithEmailAndPassword(auth, email, password)
+      },
+      async signInWithGoogle(role) {
+        const cred = await googlePopup()
+        const u = cred.user
+        const existing = await getProfile(u.uid)
+        if (existing) return { uid: u.uid, email: u.email, displayName: u.displayName, isNew: false, existingRole: existing.role }
+        const prefs = role === 'buyer' ? getShopperPrefs() : null
+        await createProfile(u.uid, role, u.displayName ?? u.email?.split('@')[0] ?? 'Shopper', {
+          avatarUrl: u.photoURL ?? null,
+          ...(prefs ? { location: prefs.location, interests: prefs.interests } : {}),
+        })
+        return { uid: u.uid, email: u.email, displayName: u.displayName, isNew: true, existingRole: null }
       },
       async signOut() {
         await fbSignOut(auth)

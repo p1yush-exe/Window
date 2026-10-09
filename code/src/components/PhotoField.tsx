@@ -1,32 +1,45 @@
 import { useState } from 'react'
 import { Button, ErrorBanner, Input, cx } from '@/components/ui'
 import { env } from '@/lib/env'
-import { uploadImage } from '@/lib/upload'
+import { isNative } from '@/lib/native'
+import { pickNativePhotos, uploadPhoto } from '@/lib/upload'
 
 interface Props {
   label: string
   value: string | null
   onChange: (url: string | null) => void
   aspect?: string
+  folder?: string
 }
 
-/** Single photo: file upload when Cloudinary is configured, URL input otherwise. */
-export function PhotoField({ label, value, onChange, aspect = 'aspect-square' }: Props) {
+/** Single photo: camera/gallery upload when Cloudinary is configured, URL input otherwise. */
+export function PhotoField({ label, value, onChange, aspect = 'aspect-square', folder }: Props) {
   const [url, setUrl] = useState('')
-  const [busy, setBusy] = useState(false)
+  const [progress, setProgress] = useState<number | null>(null)
+  const [preview, setPreview] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  async function onFile(files: FileList | null) {
-    const f = files?.[0]
-    if (!f) return
-    setBusy(true)
+  async function handle(blob: Blob) {
     setError(null)
+    setPreview(URL.createObjectURL(blob))
+    setProgress(0)
     try {
-      onChange(await uploadImage(f))
+      const uploaded = await uploadPhoto(blob, (p) => setProgress(Math.round((p.loaded / p.total) * 100)), folder)
+      onChange(uploaded)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Upload failed')
     } finally {
-      setBusy(false)
+      setProgress(null)
+      setPreview(null)
+    }
+  }
+
+  async function native(source: 'photos' | 'camera') {
+    try {
+      const blobs = await pickNativePhotos(1, source)
+      if (blobs?.[0]) await handle(blobs[0])
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not open the camera')
     }
   }
 
@@ -41,20 +54,36 @@ export function PhotoField({ label, value, onChange, aspect = 'aspect-square' }:
     }
   }
 
+  const shown = preview ?? value
+
   return (
     <div className="space-y-2">
-      <span className="block text-sm font-medium text-neutral-700">{label}</span>
-      {value ? (
+      <span className="label block">{label}</span>
+      {shown ? (
         <div className="relative">
-          <img src={value} alt="" className={cx('w-full rounded-2xl object-cover ring-1 ring-black/10', aspect)} />
-          <button type="button" onClick={() => onChange(null)} className="absolute top-2 right-2 rounded-full bg-neutral-900/80 px-3 py-1 text-xs font-semibold text-white">Remove</button>
+          <img src={shown} alt="" className={cx('w-full rounded object-cover ring-1 ring-line', aspect, progress !== null && 'opacity-60')} />
+          {progress !== null && (
+            <div className="absolute inset-x-3 bottom-3 h-1 bg-bone-vellum/30">
+              <div className="h-full bg-accent transition-[width]" style={{ width: `${progress}%` }} />
+            </div>
+          )}
+          {progress === null && (
+            <button type="button" onClick={() => onChange(null)} className="absolute top-2 right-2 rounded bg-ink/80 px-3 py-1 font-mono text-[11px] text-canvas uppercase">Remove</button>
+          )}
         </div>
       ) : env.uploadsEnabled ? (
-        <label className={cx('flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-300 text-sm text-neutral-500 hover:border-brand-400', aspect)}>
-          <span className="text-3xl">📷</span>
-          {busy ? 'Uploading…' : 'Tap to take or choose a photo'}
-          <input type="file" accept="image/*" capture="environment" className="hidden" disabled={busy} onChange={(e) => void onFile(e.target.files)} />
-        </label>
+        isNative() ? (
+          <div className="flex gap-2">
+            <Button type="button" variant="secondary" className="flex-1" onClick={() => void native('camera')}>📷 Camera</Button>
+            <Button type="button" variant="secondary" className="flex-1" onClick={() => void native('photos')}>🖼 Gallery</Button>
+          </div>
+        ) : (
+          <label className={cx('flex cursor-pointer flex-col items-center justify-center gap-1 rounded border border-dashed border-line font-mono text-[12px] text-muted uppercase hover:border-ink', aspect)}>
+            <span className="text-2xl">📷</span>
+            Tap to take or choose a photo
+            <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void handle(f) }} />
+          </label>
+        )
       ) : (
         <div className="flex gap-2">
           <Input name="photoUrl" placeholder="https://… photo URL" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addUrl() } }} />

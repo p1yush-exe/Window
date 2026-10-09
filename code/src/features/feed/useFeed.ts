@@ -1,71 +1,74 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore'
-import { fetchFeedPage, loadSwipedIds, recordSwipe } from '@/lib/db'
-import type { Product, UserProfile } from '@/lib/types'
+import { fetchFeedPage, fetchLocalProducts, loadSwipedIds, recordSwipe } from '@/lib/db'
+import type { LatLng } from '@/lib/geo'
+import { FEED_MIN_RESULTS, RADIUS_STEPS_KM, type Product, type UserProfile } from '@/lib/types'
 import { telemetry } from '@/lib/telemetry'
+import { rankFeed, type RankedProduct } from './rank'
 
-const LOW_WATER = 5
+export interface FeedOptions {
+  center: LatLng | null
+  interests: string[]
+  /** null = adaptive (widen until enough results). */
+  radiusKm: number | null
+}
 
-export function useFeed(profile: UserProfile | null) {
-  const [queue, setQueue] = useState<Product[]>([])
+export function useFeed(profile: UserProfile | null, opts: FeedOptions) {
+  const [queue, setQueue] = useState<RankedProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [exhausted, setExhausted] = useState(false)
+  const [effectiveRadius, setEffectiveRadius] = useState<number | null>(opts.radiusKm)
+  const [nearbyCount, setNearbyCount] = useState(0)
   const [swipeCount, setSwipeCount] = useState(0)
   const [lastMatch, setLastMatch] = useState<Product | null>(null)
-
   const swiped = useRef<Set<string>>(new Set())
-  const cursor = useRef<QueryDocumentSnapshot<DocumentData> | null>(null)
-  const done = useRef(false)
-  const fetching = useRef(false)
+  const generation = useRef(0)
 
-  const fetchMore = useCallback(async () => {
-    if (fetching.current || done.current) return
-    fetching.current = true
+  const centerKey = opts.center ? `${opts.center.lat.toFixed(4)},${opts.center.lng.toFixed(4)}` : ''
+  const interestsKey = opts.interests.join('|')
+
+  const load = useCallback(async () => {
+    const gen = ++generation.current
+    setLoading(true)
+    setError(null)
     try {
-      // Pull pages until we have enough unseen cards or run out.
-      let added: Product[] = []
-      for (let i = 0; i < 5 && added.length < LOW_WATER && !done.current; i++) {
-        const page = await fetchFeedPage(cursor.current)
-        cursor.current = page.cursor
-        if (page.done) done.current = true
-        added = added.concat(page.products.filter((p) => !swiped.current.has(p.id) && p.vendorId !== profile?.uid))
+      swiped.current = profile ? await loadSwipedIds(profile.uid) : new Set()
+      const usable = (p: Product) => !swiped.current.has(p.id) && p.vendorId !== profile?.uid && p.availability !== 'out_of_stock'
+      let items: RankedProduct[] = []
+      let radius: number | null = null
+      if (opts.center) {
+        const steps = opts.radiusKm ? [opts.radiusKm] : [...RADIUS_STEPS_KM]
+        for (const r of steps) {
+          const raw = await fetchLocalProducts(opts.center, r)
+          items = rankFeed(raw.filter(usable), opts.center, r, opts.interests)
+          radius = r
+          if (items.length >= FEED_MIN_RESULTS) break
+        }
+      } else {
+        // No area yet: newest products everywhere.
+        const page = await fetchFeedPage(null)
+        items = page.products.filter(usable).map((p) => ({ ...p, distanceKm: Number.NaN, matchesInterests: false }))
       }
-      if (added.length) {
-        setQueue((q) => {
-          const ids = new Set(q.map((p) => p.id))
-          return q.concat(added.filter((p) => !ids.has(p.id)))
-        })
-      }
-      if (done.current) setExhausted(true)
+      if (gen !== generation.current) return
+      setQueue(items)
+      setNearbyCount(items.length)
+      setEffectiveRadius(radius)
+      setExhausted(items.length === 0)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not load products')
+      if (gen === generation.current) setError(e instanceof Error ? e.message : 'Could not load products')
     } finally {
-      fetching.current = false
+      if (gen === generation.current) setLoading(false)
     }
-  }, [profile?.uid])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.uid, centerKey, interestsKey, opts.radiusKm])
 
   useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      try {
-        // Guests keep dismissed cards in memory only; nothing is recorded.
-        swiped.current = profile ? await loadSwipedIds(profile.uid) : new Set()
-        if (!cancelled) await fetchMore()
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Could not load your history')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [profile?.uid, fetchMore])
+    void load()
+  }, [load])
 
   useEffect(() => {
-    if (!loading && queue.length < LOW_WATER && !done.current) void fetchMore()
-  }, [queue.length, loading, fetchMore])
+    if (!loading && queue.length === 0) setExhausted(true)
+  }, [queue.length, loading])
 
   /** Removes the card locally. Records it only when there is a signed-in profile. */
   const swipe = useCallback(
@@ -85,22 +88,17 @@ export function useFeed(profile: UserProfile | null) {
     [profile],
   )
 
-  /** Records a right swipe for a card that was liked before logging in. */
-  const completePending = useCallback((product: Product, as: UserProfile) => {
-    setLastMatch(product)
-    const started = performance.now()
-    recordSwipe(as, product, 'right')
-      .then(() => telemetry.record('swipe_to_match_ms', performance.now() - started))
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not save swipe'))
-  }, [])
-
-  const reset = useCallback(() => {
-    cursor.current = null
-    done.current = false
-    setExhausted(false)
-    setQueue([])
-    void fetchMore()
-  }, [fetchMore])
-
-  return { queue, loading, error, exhausted, swipeCount, lastMatch, swipe, completePending, reset, dismissMatch: () => setLastMatch(null) }
+  return {
+    queue,
+    loading,
+    error,
+    exhausted,
+    effectiveRadius,
+    nearbyCount,
+    swipeCount,
+    lastMatch,
+    swipe,
+    reload: load,
+    dismissMatch: () => setLastMatch(null),
+  }
 }

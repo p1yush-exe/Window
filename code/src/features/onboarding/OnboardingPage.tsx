@@ -12,12 +12,12 @@ function RoleCard({ value, selected, onSelect, title, body, icon }: { value: Rol
       onClick={() => onSelect(value)}
       className={cx(
         'flex flex-1 flex-col items-start rounded-2xl border-2 p-4 text-left transition',
-        selected ? 'border-brand-600 bg-brand-50' : 'border-neutral-200 bg-white hover:border-neutral-300',
+        selected ? 'border-accent bg-surface' : 'border-line bg-canvas hover:border-line',
       )}
     >
       <span className="text-2xl">{icon}</span>
-      <span className="mt-2 font-semibold text-neutral-900">{title}</span>
-      <span className="mt-0.5 text-xs text-neutral-500">{body}</span>
+      <span className="mt-2 font-semibold text-ink">{title}</span>
+      <span className="mt-0.5 text-xs text-muted">{body}</span>
     </button>
   )
 }
@@ -56,8 +56,8 @@ export function OnboardingPage() {
     <div className="flex min-h-full flex-col justify-center px-6 py-12 pt-safe">
       <form onSubmit={onSubmit} className="mx-auto w-full max-w-sm space-y-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Set up your account</h1>
-          <p className="text-sm text-neutral-500">Signed in as {user.email}</p>
+          <h1 className="text-2xl font-normal tracking-[-0.03em]">Set up your account</h1>
+          <p className="text-sm text-muted">Signed in as {user.email}</p>
         </div>
         <div className="flex gap-3">
           <RoleCard value="buyer" selected={role === 'buyer'} onSelect={setRole} title="I'm shopping" body="Swipe products and chat with sellers." icon="🛍️" />
@@ -74,7 +74,7 @@ export function OnboardingPage() {
         <Button type="submit" className="w-full" loading={busy}>
           {role === 'vendor' ? 'Open my store' : 'Start swiping'}
         </Button>
-        <button type="button" onClick={() => void signOut()} className="w-full text-center text-sm text-neutral-500 underline">
+        <button type="button" onClick={() => void signOut()} className="w-full text-center text-sm text-muted underline">
           Use a different account
         </button>
       </form>

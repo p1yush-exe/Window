@@ -17,13 +17,13 @@ export function VendorLandingPage() {
         <Link to="/login" className="block">
           <Button variant="secondary" className="w-full" size="lg">I already have a shop</Button>
         </Link>
-        <ul className="mt-4 space-y-1 text-sm text-neutral-500">
+        <ul className="mt-4 space-y-1 text-sm text-muted">
           <li>✔ Pin your store on the map</li>
           <li>✔ Add photos, prices optional</li>
           <li>✔ Chat with every shopper who likes a product</li>
         </ul>
         {profile?.role === 'buyer' && (
-          <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-800 ring-1 ring-amber-200">
+          <p className="rounded-xl bg-surface p-3 text-xs text-ink ring-1 ring-line">
             You are logged in as a shopper. Sellers use a separate account; log out from Profile first or use a different email.
           </p>
         )}

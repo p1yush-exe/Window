@@ -4,6 +4,7 @@ import { OnboardingGate, PublicOnly, RequireProfile, RequireRole, RoleHome, Shel
 import { LoginPage } from '@/features/auth/AuthPages'
 import { VendorLandingPage } from '@/features/vendor/VendorLandingPage'
 import { VendorSetupPage } from '@/features/vendor/VendorSetupPage'
+import { ShopperSetupPage } from '@/features/entry/ShopperSetupPage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { FeedPage } from '@/features/feed/FeedPage'
 import { LikedPage } from '@/features/matches/LikedPage'
@@ -27,6 +28,7 @@ export function AppRouter() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<Navigate to="/" replace />} />
         </Route>
+        <Route path="/shopper/setup" element={<ShopperSetupPage />} />
         <Route path="/vendor" element={<VendorLandingPage />} />
         <Route path="/vendor/setup" element={<VendorSetupPage />} />
         <Route element={<OnboardingGate />}>

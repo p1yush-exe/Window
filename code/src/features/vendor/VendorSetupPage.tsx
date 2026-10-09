@@ -4,6 +4,7 @@ import { Button, ErrorBanner, Input, Textarea, cx } from '@/components/ui'
 import { LocationPicker } from '@/components/LocationPicker'
 import { OtpField } from '@/components/OtpField'
 import { PhotoField } from '@/components/PhotoField'
+import { GoogleButton } from '@/components/GoogleButton'
 import { friendlyAuthError, useAuth } from '@/features/auth/AuthProvider'
 import { createVendor, emptyVendorInput, type VendorInput } from '@/lib/db'
 import { isValidEmail, isValidPhone } from '@/lib/otp'
@@ -17,6 +18,7 @@ export function VendorSetupPage() {
   const [step, setStep] = useState(0)
   const [v, setV] = useState<VendorInput>(emptyVendorInput())
   const [password, setPassword] = useState('')
+  const [googleUid, setGoogleUid] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const patch = (p: Partial<VendorInput>) => setV((cur) => ({ ...cur, ...p }))
@@ -45,10 +47,10 @@ export function VendorSetupPage() {
     if (v.ownerName.trim().length < 2) return setError('Enter the owner name')
     if (!v.phoneVerified) return setError('Verify the phone number')
     if (!v.emailVerified) return setError('Verify the email address')
-    if (password.length < 6) return setError('Choose a password of at least 6 characters')
+    if (!googleUid && password.length < 6) return setError('Choose a password of at least 6 characters')
     setBusy(true)
     try {
-      const uid = await signUp(v.ownerEmail.trim(), password, 'vendor', v.ownerName.trim())
+      const uid = googleUid ?? (await signUp(v.ownerEmail.trim(), password, 'vendor', v.ownerName.trim()))
       await createVendor(uid, { ...v, name: v.name.trim(), website: v.website?.trim() || null })
       navigate('/dashboard/new?welcome=1', { replace: true })
     } catch (err) {
@@ -58,11 +60,11 @@ export function VendorSetupPage() {
     }
   }
 
-  if (user && profile) {
+  if (user && profile && !googleUid) {
     return (
       <div className="p-6 text-center">
-        <p className="text-sm text-neutral-600">You are already logged in as {profile.displayName}.</p>
-        <Link to="/" className="mt-3 inline-block text-sm font-semibold text-brand-600 underline">Go to the app</Link>
+        <p className="text-sm text-ink">You are already logged in as {profile.displayName}.</p>
+        <Link to="/" className="mt-3 inline-block text-sm font-semibold text-accent-text underline">Go to the app</Link>
       </div>
     )
   }
@@ -70,28 +72,28 @@ export function VendorSetupPage() {
   return (
     <div className="mx-auto min-h-dvh w-full max-w-md px-4 py-6 pt-safe">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Set up your shop</h1>
-        <Link to="/vendor" className="text-sm text-neutral-500 underline">Cancel</Link>
+        <h1 className="text-2xl font-normal tracking-[-0.03em]">Set up your shop</h1>
+        <Link to="/vendor" className="text-sm text-muted underline">Cancel</Link>
       </div>
       <ol className="mb-5 flex gap-2">
         {STEPS.map((s, i) => (
-          <li key={s} className={cx('flex-1 rounded-full py-1 text-center text-xs font-semibold', i < step ? 'bg-brand-600 text-white' : i === step ? 'bg-brand-100 text-brand-800' : 'bg-neutral-100 text-neutral-400')}>
+          <li key={s} className={cx('flex-1 rounded py-1 text-center font-mono text-[11px] uppercase tracking-[0.04em]', i < step ? 'bg-accent text-on-accent' : i === step ? 'bg-surface text-accent-text' : 'bg-surface text-muted')}>
             {i + 1}. {s}
           </li>
         ))}
       </ol>
 
       {step === 0 && (
-        <form onSubmit={next} className="space-y-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+        <form onSubmit={next} className="space-y-4 rounded-2xl bg-canvas p-4 ring-1 ring-line">
           <Input label="Store name" name="name" required minLength={2} maxLength={80} value={v.name} onChange={(e) => patch({ name: e.target.value })} placeholder="e.g. Patiala Threads" />
           <div>
-            <span className="mb-1 block text-sm font-medium text-neutral-700">What do you sell? <span className="text-neutral-400">(pick up to {MAX_STORE_TAGS})</span></span>
+            <span className="mb-1 block text-sm font-medium text-ink">What do you sell? <span className="text-muted">(pick up to {MAX_STORE_TAGS})</span></span>
             <div className="flex flex-wrap gap-2">
               {STORE_TAGS.map((t) => {
                 const on = v.tags.includes(t)
                 const full = !on && v.tags.length >= MAX_STORE_TAGS
                 return (
-                  <button key={t} type="button" onClick={() => toggleTag(t)} disabled={full} className={cx('rounded-full px-3 py-1.5 text-sm font-medium ring-1 transition', on ? 'bg-brand-600 text-white ring-brand-600' : 'bg-white text-neutral-700 ring-neutral-200 hover:ring-brand-300', full && 'opacity-40')}>
+                  <button key={t} type="button" onClick={() => toggleTag(t)} disabled={full} className={cx('rounded px-3 py-1.5 font-mono text-[12px] uppercase tracking-[0.04em] ring-1 transition', on ? 'bg-accent text-on-accent ring-accent' : 'bg-canvas text-ink ring-line hover:ring-accent', full && 'opacity-40')}>
                     {t}
                   </button>
                 )
@@ -106,8 +108,8 @@ export function VendorSetupPage() {
       )}
 
       {step === 1 && (
-        <form onSubmit={next} className="space-y-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-          <p className="text-sm text-neutral-600">Where is your store? Shoppers see this on your store page.</p>
+        <form onSubmit={next} className="space-y-4 rounded-2xl bg-canvas p-4 ring-1 ring-line">
+          <p className="text-sm text-ink">Where is your store? Shoppers see this on your store page.</p>
           <LocationPicker value={v.location} onChange={(location) => patch({ location })} />
           <ErrorBanner message={error} />
           <div className="flex gap-2">
@@ -118,8 +120,8 @@ export function VendorSetupPage() {
       )}
 
       {step === 2 && (
-        <form onSubmit={next} className="space-y-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-          <p className="text-sm text-neutral-600">A photo of your storefront helps shoppers recognise you.</p>
+        <form onSubmit={next} className="space-y-4 rounded-2xl bg-canvas p-4 ring-1 ring-line">
+          <p className="text-sm text-ink">A photo of your storefront helps shoppers recognise you.</p>
           <PhotoField label="Storefront photo" value={v.storefrontUrl} onChange={(storefrontUrl) => patch({ storefrontUrl })} aspect="aspect-[4/3]" />
           <ErrorBanner message={error} />
           <div className="flex gap-2">
@@ -130,11 +132,29 @@ export function VendorSetupPage() {
       )}
 
       {step === 3 && (
-        <form onSubmit={finish} className="space-y-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+        <form onSubmit={finish} className="space-y-4 rounded-2xl bg-canvas p-4 ring-1 ring-line">
+          {!googleUid && (
+            <>
+              <GoogleButton
+                role="vendor"
+                label="Fill with Google"
+                onDone={(r) => {
+                  if (!r.isNew && r.existingRole === 'buyer') return setError('That Google account is a shopper account. Use another Google account or email.')
+                  if (!r.isNew && r.existingRole === 'vendor') return navigate('/dashboard', { replace: true })
+                  setGoogleUid(r.uid)
+                  patch({ ownerName: r.displayName ?? v.ownerName, ownerEmail: r.email ?? v.ownerEmail, emailVerified: Boolean(r.email) })
+                }}
+              />
+              <div className="flex items-center gap-3 font-mono text-[11px] text-muted uppercase"><span className="h-px flex-1 bg-line" />or fill by hand<span className="h-px flex-1 bg-line" /></div>
+            </>
+          )}
+          {googleUid && <p className="font-mono text-[12px] text-accent-text">Signed in with Google · email verified</p>}
           <Input label="Owner name" name="ownerName" required minLength={2} value={v.ownerName} onChange={(e) => patch({ ownerName: e.target.value })} />
           <OtpField label="Owner mobile number" kind="phone" placeholder="98xxxxxxxx" value={v.ownerPhone} onChange={(ownerPhone) => patch({ ownerPhone })} verified={v.phoneVerified} onVerified={(phoneVerified) => patch({ phoneVerified })} validate={isValidPhone} />
           <OtpField label="Owner email" kind="email" placeholder="you@example.com" value={v.ownerEmail} onChange={(ownerEmail) => patch({ ownerEmail })} verified={v.emailVerified} onVerified={(emailVerified) => patch({ emailVerified })} validate={isValidEmail} />
-          <Input label="Create a password" name="password" type="password" autoComplete="new-password" minLength={6} required value={password} onChange={(e) => setPassword(e.target.value)} hint="You log in with this email and password on other devices" />
+          {!googleUid && (
+            <Input label="Create a password" name="password" type="password" autoComplete="new-password" minLength={6} required value={password} onChange={(e) => setPassword(e.target.value)} hint="You log in with this email and password on other devices" />
+          )}
           <ErrorBanner message={error} />
           <div className="flex gap-2">
             <Button type="button" variant="secondary" onClick={() => setStep(2)}>Back</Button>

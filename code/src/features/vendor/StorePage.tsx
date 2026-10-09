@@ -19,15 +19,15 @@ export function StorePage() {
   return (
     <div className="px-4 pt-4 md:pt-8">
       {vendor.storefrontUrl && (
-        <img src={vendor.storefrontUrl} alt={`${vendor.name} storefront`} className="mb-4 aspect-[16/9] w-full rounded-2xl object-cover ring-1 ring-black/5" />
+        <img src={vendor.storefrontUrl} alt={`${vendor.name} storefront`} className="mb-4 aspect-[16/9] w-full rounded-2xl object-cover ring-1 ring-line" />
       )}
       <div className="mb-3 flex items-center gap-4">
         <Avatar name={vendor.name} url={vendor.logoUrl ?? vendor.storefrontUrl} size={64} />
         <div className="min-w-0">
-          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+          <h1 className="flex items-center gap-2 text-2xl font-normal tracking-[-0.03em]">
             {vendor.name} {vendor.verified && <Badge tone="brand">Verified</Badge>}
           </h1>
-          <div className="flex items-center gap-2 text-sm text-neutral-500">
+          <div className="flex items-center gap-2 text-sm text-muted">
             {summary.avg !== null ? (
               <>
                 <Stars value={summary.avg} size="sm" /> {summary.avg} · {summary.count} review{summary.count === 1 ? '' : 's'}
@@ -45,22 +45,22 @@ export function StorePage() {
           ))}
         </div>
       )}
-      {vendor.description && <p className="mb-3 text-sm text-neutral-700">{vendor.description}</p>}
+      {vendor.description && <p className="mb-3 text-sm text-ink">{vendor.description}</p>}
       <div className="mb-5 space-y-1 text-sm">
         {vendor.location && (
-          <a href={mapsLink(vendor.location)} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-neutral-700">
+          <a href={mapsLink(vendor.location)} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-ink">
             <span>📍</span>
-            <span className="underline decoration-neutral-300">{vendor.location.address || `${vendor.location.lat.toFixed(4)}, ${vendor.location.lng.toFixed(4)}`}</span>
+            <span className="underline decoration-line">{vendor.location.address || `${vendor.location.lat.toFixed(4)}, ${vendor.location.lng.toFixed(4)}`}</span>
           </a>
         )}
         {vendor.website && (
-          <a href={vendor.website} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-brand-700">
+          <a href={vendor.website} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-accent-text">
             <span>🔗</span>
             <span className="underline">{vendor.website.replace(/^https?:\/\//, '')}</span>
           </a>
         )}
         {vendor.ownerName && (
-          <p className="flex items-center gap-2 text-neutral-500">
+          <p className="flex items-center gap-2 text-muted">
             <span>👤</span>
             <span>Owner: {vendor.ownerName}{vendor.phoneVerified ? ' · phone verified' : ''}</span>
           </p>
@@ -69,17 +69,17 @@ export function StorePage() {
 
       <h2 className="mb-2 text-lg font-semibold">Products</h2>
       {products.length === 0 ? (
-        <p className="text-sm text-neutral-500">Nothing listed yet.</p>
+        <p className="text-sm text-muted">Nothing listed yet.</p>
       ) : (
         <ul className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {products.map((p) => (
-            <li key={p.id} className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+            <li key={p.id} className="overflow-hidden rounded-2xl bg-canvas ring-1 ring-line">
               <Link to={`/product/${p.id}`}>
                 <ProductImage src={p.imageUrls[0]} alt={p.title} className="aspect-[3/4] w-full" />
                 <div className="p-3">
                   <AvailabilityBadge value={p.availability} />
                   <p className="mt-1 line-clamp-1 text-sm font-semibold">{p.title}</p>
-                  <p className="text-xs text-neutral-500">{formatPrice(p.price, p.currency)}</p>
+                  <p className="text-xs text-muted">{formatPrice(p.price, p.currency)}</p>
                 </div>
               </Link>
             </li>

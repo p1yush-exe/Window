@@ -49,7 +49,7 @@ export function DashboardPage() {
       {!vendor && (
         <ErrorBanner message="Your store profile is missing. Open store settings to create it." />
       )}
-      {toast && <div className="mb-3 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white">{toast}</div>}
+      {toast && <div className="mb-3 rounded-xl bg-ink px-3 py-2 text-sm text-canvas">{toast}</div>}
 
       {products.length === 0 ? (
         <EmptyState
@@ -65,7 +65,7 @@ export function DashboardPage() {
       ) : (
         <ul className="space-y-3">
           {products.map((p) => (
-            <li key={p.id} className="flex gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-black/5">
+            <li key={p.id} className="flex gap-3 rounded-2xl bg-canvas p-3 ring-1 ring-line">
               <Link to={`/product/${p.id}`}>
                 <ProductImage src={p.imageUrls[0]} alt={p.title} className="h-24 w-20 rounded-xl" />
               </Link>
@@ -73,7 +73,7 @@ export function DashboardPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="truncate font-semibold">{p.title}</p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-muted">
                       {p.category} · {formatPrice(p.price, p.currency)}
                     </p>
                   </div>

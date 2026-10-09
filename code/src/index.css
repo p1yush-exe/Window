@@ -1,48 +1,131 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
 
+/* INVERSA design system: dark canvas by default, light variant available.
+   Editorial sans for copy, mono for every label; 3.6px radius; no shadows. */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --color-brand-50: #f3f1ff;
-  --color-brand-100: #e9e5ff;
-  --color-brand-200: #d5ceff;
-  --color-brand-300: #b7a8ff;
-  --color-brand-400: #9478ff;
-  --color-brand-500: #7447ff;
-  --color-brand-600: #6424f5;
-  --color-brand-700: #5518d8;
-  --color-brand-800: #4615b0;
-  --color-brand-900: #3b148d;
-  --color-like: #16a34a;
-  --color-nope: #e11d48;
+  --font-sans: "Inter Variable", "NB International Pro", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-obsidian-loam: #13140e;
+  --color-bone-vellum: #f4f3e8;
+  --color-iron-filings: #404040;
+  --color-drift-ash: #84837b;
+  --color-lime-surveyor: #ebfc72;
+  --color-marsh-olive: #bacd31;
+
+  --radius-xs: 3.6px;
+  --radius-sm: 3.6px;
+  --radius-md: 3.6px;
+  --radius-lg: 3.6px;
+  --radius-xl: 3.6px;
+  --radius-2xl: 3.6px;
+  --radius-3xl: 3.6px;
+  --radius-4xl: 3.6px;
+
+  --shadow-2xs: 0 0 #0000;
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 0 #0000;
+  --shadow-lg: 0 0 #0000;
+  --shadow-xl: 0 0 #0000;
+  --shadow-2xl: 0 0 #0000;
+
+  --tracking-editorial: -0.03em;
+}
+
+/* Semantic roles that flip with the theme. */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
+  --color-like: var(--accent);
+  --color-nope: var(--muted);
+}
+
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #13140e;
+  --surface: #1c1d15;
+  --surface-2: #26271d;
+  --ink: #f4f3e8;
+  --muted: #84837b;
+  --line: #404040;
+  --accent: #ebfc72;
+  --accent-deep: #bacd31;
+  --accent-text: #ebfc72;
+  --on-accent: #13140e;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --canvas: #f4f3e8;
+  --surface: #ebeadd;
+  --surface-2: #e0dfd0;
+  --ink: #13140e;
+  --muted: #6b6a62;
+  --line: #c9c8bb;
+  --accent: #ebfc72;
+  --accent-deep: #bacd31;
+  --accent-text: #6f7f12;
+  --on-accent: #13140e;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --canvas: #f4f3e8;
+    --surface: #ebeadd;
+    --surface-2: #e0dfd0;
+    --ink: #13140e;
+    --muted: #6b6a62;
+    --line: #c9c8bb;
+    --accent: #ebfc72;
+    --accent-deep: #bacd31;
+    --accent-text: #6f7f12;
+    --on-accent: #13140e;
+  }
 }
 
 :root {
-  color-scheme: light;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-html, body, #root {
-  height: 100%;
-}
+html, body, #root { height: 100%; }
 
 body {
   margin: 0;
-  background: #f6f6f8;
-  color: #111118;
+  background: var(--canvas);
+  color: var(--ink);
   font-family: var(--font-sans);
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
 }
 
+h1, h2, h3 { letter-spacing: -0.03em; font-weight: 400; }
+
+/* Mono voice for interface labels. */
+label > span:first-child, .label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+
+input, textarea, select { font-family: var(--font-sans); }
+::placeholder { color: var(--muted); opacity: 1; }
+
 .pt-safe { padding-top: var(--safe-top); }
 .pb-safe { padding-bottom: var(--safe-bottom); }
 
-img, a {
-  -webkit-user-drag: none;
-  user-drag: none;
-}
+img, a { -webkit-user-drag: none; user-drag: none; }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
@@ -52,7 +135,13 @@ img, a {
   100% { background-position: 400px 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, #ececf1 25%, #f6f6f8 37%, #ececf1 63%);
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 37%, var(--surface) 63%);
   background-size: 800px 100%;
   animation: shimmer 1.4s infinite linear;
 }
+
+/* Leaflet on a dark canvas */
+.leaflet-container { background: var(--surface); font-family: var(--font-mono); font-size: 11px; }
+.leaflet-control-zoom a { background: var(--canvas) !important; color: var(--ink) !important; border-color: var(--line) !important; }
+.leaflet-control-attribution { background: color-mix(in srgb, var(--canvas) 80%, transparent) !important; color: var(--muted) !important; }
+.leaflet-control-attribution a { color: var(--accent-text) !important; }

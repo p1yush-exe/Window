@@ -73,7 +73,7 @@ export function ChatPage() {
     return (
       <div className="p-6">
         <ErrorBanner message="This chat does not exist or you do not have access to it." />
-        <Link to="/chats" className="mt-4 inline-block text-sm text-brand-600 underline">Back to chats</Link>
+        <Link to="/chats" className="mt-4 inline-block text-sm text-accent-text underline">Back to chats</Link>
       </div>
     )
 
@@ -83,15 +83,15 @@ export function ChatPage() {
 
   return (
     <div className="flex h-[calc(100dvh-4.25rem-var(--safe-bottom)-var(--safe-top))] flex-col md:h-dvh">
-      <header className="flex items-center gap-3 border-b border-neutral-200 bg-white px-3 py-2">
-        <Link to="/chats" className="flex h-9 w-9 items-center justify-center rounded-full text-xl hover:bg-neutral-100" aria-label="Back">
+      <header className="flex items-center gap-3 border-b border-line bg-canvas px-3 py-2">
+        <Link to="/chats" className="flex h-9 w-9 items-center justify-center rounded text-xl hover:bg-surface" aria-label="Back">
           ←
         </Link>
         <Link to={otherLink} className="flex min-w-0 flex-1 items-center gap-3">
           <Avatar name={other} size={36} />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">{other}</p>
-            <p className="truncate text-xs text-neutral-500">{match.productTitle}</p>
+            <p className="truncate text-xs text-muted">{match.productTitle}</p>
           </div>
         </Link>
         <Link to={`/product/${match.productId}`} className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export function ChatPage() {
       <div className="flex-1 overflow-y-auto px-3 py-4">
         <ErrorBanner message={error} />
         {messages.length === 0 && (
-          <div className="mx-auto max-w-xs py-10 text-center text-sm text-neutral-500">
+          <div className="mx-auto max-w-xs py-10 text-center text-sm text-muted">
             {isVendor ? `${match.buyerName} is interested in ${match.productTitle}. Say hello!` : `Ask ${match.vendorName} about price, sizes or availability.`}
           </div>
         )}
@@ -116,13 +116,13 @@ export function ChatPage() {
               <li key={m.id} className={cx('flex', mine ? 'justify-end' : 'justify-start', grouped ? '' : 'mt-3')}>
                 <div
                   className={cx(
-                    'max-w-[78%] rounded-2xl px-3.5 py-2 text-sm shadow-sm',
-                    mine ? 'rounded-br-md bg-brand-600 text-white' : 'rounded-bl-md bg-white text-neutral-900 ring-1 ring-black/5',
+                    'max-w-[78%] rounded-2xl px-3.5 py-2 text-sm',
+                    mine ? 'rounded-br-md bg-accent text-on-accent' : 'rounded-bl-md bg-canvas text-ink ring-1 ring-line',
                     m.pending && 'opacity-70',
                   )}
                 >
                   <p className="break-words whitespace-pre-wrap">{m.body}</p>
-                  <p className={cx('mt-0.5 text-right text-[10px]', mine ? 'text-white/70' : 'text-neutral-400')}>
+                  <p className={cx('mt-0.5 text-right text-[10px]', mine ? 'text-bone-vellum/70' : 'text-muted')}>
                     {m.pending ? 'sending…' : formatClock(m.createdAt)}
                   </p>
                 </div>
@@ -135,16 +135,16 @@ export function ChatPage() {
 
       {!isVendor && messages.length >= 2 && <ReviewPrompt match={match} />}
 
-      <form onSubmit={onSend} className="flex items-center gap-2 border-t border-neutral-200 bg-white px-3 py-2">
+      <form onSubmit={onSend} className="flex items-center gap-2 border-t border-line bg-canvas px-3 py-2">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Write a message"
           maxLength={2000}
-          className="h-11 flex-1 rounded-full border border-neutral-200 bg-neutral-50 px-4 text-base outline-none focus:border-brand-500"
+          className="h-11 flex-1 rounded border border-line bg-surface px-4 text-base outline-none focus:border-accent"
           autoComplete="off"
         />
-        <Button type="submit" disabled={!text.trim() || sending} className="rounded-full px-5">
+        <Button type="submit" disabled={!text.trim() || sending} className="rounded px-5">
           Send
         </Button>
       </form>

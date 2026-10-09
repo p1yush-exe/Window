@@ -12,6 +12,8 @@ import {
   serverTimestamp,
   setDoc,
   startAfter,
+  startAt,
+  endAt,
   updateDoc,
   where,
   writeBatch,
@@ -22,6 +24,7 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { areaLabel, geohashBounds, geohashOf, type LatLng } from './geo'
 import {
   matchIdFor,
   reviewIdFor,
@@ -33,6 +36,7 @@ import {
   type Product,
   type Review,
   type Role,
+  type StoreLocation,
   type UserProfile,
   type Vendor,
 } from './types'
@@ -81,16 +85,23 @@ export async function getProfile(uid: string): Promise<UserProfile | null> {
   return snap.exists() ? ({ uid: snap.id, ...(snap.data() as object) } as UserProfile) : null
 }
 
-export async function createProfile(uid: string, role: Role, displayName: string) {
+export async function createProfile(
+  uid: string,
+  role: Role,
+  displayName: string,
+  extras: { avatarUrl?: string | null; location?: StoreLocation | null; interests?: string[] } = {},
+) {
   await setDoc(refs.user(uid), {
     role,
     displayName,
-    avatarUrl: null,
+    avatarUrl: extras.avatarUrl ?? null,
+    location: extras.location ?? null,
+    interests: (extras.interests ?? []).slice(0, 3),
     createdAt: serverTimestamp(),
   })
 }
 
-export async function updateProfile(uid: string, data: Partial<Pick<UserProfile, 'displayName' | 'avatarUrl'>>) {
+export async function updateProfile(uid: string, data: Partial<Pick<UserProfile, 'displayName' | 'avatarUrl' | 'location' | 'interests'>>) {
   await updateDoc(refs.user(uid), data)
 }
 
@@ -147,15 +158,39 @@ export interface ProductInput {
   availability: Availability
 }
 
+/** Location + tags every product carries so the feed can filter by area and interests. */
+export function vendorGeoFields(vendor: Pick<Vendor, 'location' | 'tags' | 'name'>) {
+  const loc = vendor.location
+  return {
+    lat: loc?.lat ?? null,
+    lng: loc?.lng ?? null,
+    geohash: loc ? geohashOf(loc) : null,
+    area: loc ? areaLabel(loc) : null,
+    vendorTags: (vendor.tags ?? []).slice(0, 3),
+    vendorName: vendor.name,
+  }
+}
+
 export async function createProduct(vendor: Vendor, input: ProductInput): Promise<string> {
   const ref = await addDoc(refs.products(), {
     ...input,
     vendorId: vendor.id,
-    vendorName: vendor.name,
+    ...vendorGeoFields(vendor),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
   return ref.id
+}
+
+/** After a vendor edits name, tags or location, push the copies down to their products. */
+export async function syncVendorToProducts(vendor: Vendor): Promise<number> {
+  const snap = await getDocs(query(refs.products(), where('vendorId', '==', vendor.id)))
+  if (snap.empty) return 0
+  const fields = vendorGeoFields(vendor)
+  const batch = writeBatch(db)
+  for (const d of snap.docs) batch.update(d.ref, fields)
+  await batch.commit()
+  return snap.size
 }
 
 export async function updateProduct(productId: string, input: Partial<ProductInput>) {
@@ -181,6 +216,7 @@ export function listenVendorProducts(vendorId: string, cb: (p: Product[]) => voi
 
 export const FEED_PAGE = 20
 
+/** Newest-first page of in-stock products, no location filter (fallback when no area is set). */
 export async function fetchFeedPage(cursor: QueryDocumentSnapshot<DocumentData> | null) {
   const base = [
     where('availability', 'in', ['in_stock', 'low']),
@@ -196,6 +232,22 @@ export async function fetchFeedPage(cursor: QueryDocumentSnapshot<DocumentData> 
     cursor: snap.docs.length ? snap.docs[snap.docs.length - 1]! : null,
     done: snap.docs.length < FEED_PAGE,
   }
+}
+
+const LOCAL_PAGE = 80
+
+/**
+ * Every product whose geohash falls inside the bounding cells for the radius.
+ * Callers still filter by exact distance (the cells over-cover) and availability.
+ */
+export async function fetchLocalProducts(center: LatLng, radiusKm: number): Promise<Product[]> {
+  const bounds = geohashBounds(center, radiusKm)
+  const snaps = await Promise.all(
+    bounds.map(([start, end]) => getDocs(query(refs.products(), orderBy('geohash'), startAt(start), endAt(end), limit(LOCAL_PAGE)))),
+  )
+  const out = new Map<string, Product>()
+  for (const snap of snaps) for (const d of snap.docs) out.set(d.id, fromQuerySnap<Product>(d))
+  return [...out.values()]
 }
 
 // ---------- swipes & matches ----------

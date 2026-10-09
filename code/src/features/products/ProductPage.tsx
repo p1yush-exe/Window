@@ -31,15 +31,15 @@ export function ProductPage() {
 
   return (
     <div className="pb-6">
-      <div className="relative bg-neutral-100">
+      <div className="relative bg-surface">
         <ProductImage src={product.imageUrls[active] ?? product.imageUrls[0]} alt={product.title} className="mx-auto aspect-[3/4] w-full max-w-md md:rounded-b-3xl" />
-        <button type="button" onClick={() => navigate(-1)} className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow" aria-label="Back">
+        <button type="button" onClick={() => navigate(-1)} className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded bg-canvas/90" aria-label="Back">
           ←
         </button>
         {product.imageUrls.length > 1 && (
           <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
             {product.imageUrls.map((_, i) => (
-              <button key={i} onClick={() => setActive(i)} className={`h-1.5 rounded-full ${i === active ? 'w-5 bg-white' : 'w-1.5 bg-white/60'}`} aria-label={`Image ${i + 1}`} />
+              <button key={i} onClick={() => setActive(i)} className={`h-1.5 rounded ${i === active ? 'w-5 bg-canvas' : 'w-1.5 bg-bone-vellum/60'}`} aria-label={`Image ${i + 1}`} />
             ))}
           </div>
         )}
@@ -47,14 +47,14 @@ export function ProductPage() {
       <div className="px-4 pt-4">
         <div className="mb-1 flex items-center gap-2">
           <AvailabilityBadge value={product.availability} />
-          <span className="text-xs text-neutral-500">{product.category}</span>
+          <span className="text-xs text-muted">{product.category}</span>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">{product.title}</h1>
-        <p className="text-lg font-semibold text-brand-700">{formatPrice(product.price, product.currency)}</p>
-        <Link to={`/store/${product.vendorId}`} className="mt-1 inline-flex items-center gap-1 text-sm text-neutral-600 underline">
+        <h1 className="text-2xl font-normal tracking-[-0.03em]">{product.title}</h1>
+        <p className="text-lg font-semibold text-accent-text">{formatPrice(product.price, product.currency)}</p>
+        <Link to={`/store/${product.vendorId}`} className="mt-1 inline-flex items-center gap-1 text-sm text-ink underline">
           {product.vendorName}
         </Link>
-        {product.description && <p className="mt-3 text-sm whitespace-pre-wrap text-neutral-700">{product.description}</p>}
+        {product.description && <p className="mt-3 text-sm whitespace-pre-wrap text-ink">{product.description}</p>}
 
         <div className="mt-4 flex gap-2">
           {isOwner ? (
@@ -75,7 +75,7 @@ export function ProductPage() {
         <div className="mt-6 mb-2 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Reviews</h2>
           {summary.avg !== null && (
-            <span className="flex items-center gap-1 text-sm text-neutral-600">
+            <span className="flex items-center gap-1 text-sm text-ink">
               <Stars value={summary.avg} size="sm" /> {summary.avg} ({summary.count})
             </span>
           )}

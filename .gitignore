@@ -468,3 +468,6 @@ TSWLatexianTemp*
  
 # Window app: the Python template rule 'lib/' above must not hide the app's source
 !code/src/lib/
+
+# Firebase service-account keys must never be committed
+*firebase-adminsdk*.json

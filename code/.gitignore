@@ -40,3 +40,6 @@ android/app/build/
 android/.gradle/
 android/build/
 android/capacitor-cordova-android-plugins/
+
+# Firebase service-account keys must never be committed
+*firebase-adminsdk*.json

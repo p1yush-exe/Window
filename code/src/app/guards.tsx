@@ -5,6 +5,7 @@ import { useAuth } from '@/features/auth/AuthProvider'
 import { LoginSheet } from '@/features/auth/LoginSheet'
 import { EntryPage } from '@/features/entry/EntryPage'
 import { getMode } from '@/lib/mode'
+import { hasShopperPrefs } from '@/lib/prefs'
 import type { Role } from '@/lib/types'
 
 export const homeFor = (role: Role) => (role === 'vendor' ? '/dashboard' : '/feed')
@@ -47,7 +48,7 @@ export function RoleHome() {
   if (loading) return <FullPageSpinner />
   if (profile) return <Navigate to={homeFor(profile.role)} replace />
   const mode = getMode()
-  if (mode === 'shopper') return <Navigate to="/feed" replace />
+  if (mode === 'shopper') return <Navigate to={hasShopperPrefs() ? '/feed' : '/shopper/setup'} replace />
   if (mode === 'vendor') return <Navigate to="/vendor" replace />
   return <EntryPage />
 }
