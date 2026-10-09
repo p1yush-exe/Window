@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { ICON_SM, Sparkles } from '@/components/icons'
 import { isApp } from '@/lib/platform'
+import { requestLocationPermission } from '@/lib/geo'
 
-const KEY = 'window.introDone'
-
+/** The doors open on every load: it is the signature moment. `?nointro=1` skips it for testing. */
 export function introPending(): boolean {
   try {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
     const q = new URLSearchParams(window.location.search)
-    if (q.has('intro')) return true // ?intro=1 forces it, handy while tuning the door art
+    if (q.has('intro')) return true
     if (q.has('nointro')) return false
-    return sessionStorage.getItem(KEY) !== '1'
+    return !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   } catch {
-    return false
+    return true
   }
 }
 
@@ -29,16 +28,13 @@ export function IntroGate({ onDone }: { onDone: () => void }) {
   function finish() {
     if (done.current) return
     done.current = true
-    try {
-      sessionStorage.setItem(KEY, '1')
-    } catch {
-      /* ignore */
-    }
     onDone()
   }
 
   function open() {
     if (phase === 'open' || phase === 'through') return
+    // The tap that opens the doors is the moment to ask for location, before the map needs it.
+    void requestLocationPermission().catch(() => undefined)
     setPhase('open')
     setTimeout(() => setPhase('through'), 850)
     setTimeout(finish, 2000)
@@ -56,13 +52,17 @@ export function IntroGate({ onDone }: { onDone: () => void }) {
   }
 
   const app = isApp()
-  const slide = phase === 'closed' ? 0 : phase === 'ajar' ? 2.5 : 11.5
+  // Slide amounts come from the CSS knobs (--door-ajar / --door-open) so everything is tuned in one place.
+  const css = getComputedStyle(document.documentElement)
+  const ajar = parseFloat(css.getPropertyValue('--door-ajar')) || 2.5
+  const openBy = parseFloat(css.getPropertyValue('--door-open')) || 11.5
+  const slide = phase === 'closed' ? 0 : phase === 'ajar' ? ajar : openBy
   const bgX = tilt.x * 1.2
   const bgY = tilt.y * 0.8
 
   return (
     <div
-      className={`intro fixed inset-0 z-[100] cursor-pointer select-none overflow-hidden bg-white ${phase === 'through' ? 'is-through' : ''}`}
+      className={`intro fixed inset-0 z-[5000] cursor-pointer select-none overflow-hidden bg-white ${phase === 'through' ? 'is-through' : ''}`}
       onPointerMove={app ? undefined : onMove}
       onPointerEnter={() => !app && phase === 'closed' && setPhase('ajar')}
       onPointerLeave={() => !app && phase === 'ajar' && setPhase('closed')}
@@ -70,10 +70,11 @@ export function IntroGate({ onDone }: { onDone: () => void }) {
       role="button"
       aria-label="Open the shop"
     >
-      <div className="intro-scene" style={{ transform: `translate(${-bgX * 0.4}%, ${-bgY * 0.4}%)` }}>
-        <div className="intro-layer intro-bg" style={{ transform: `scale(1.06) translate(${bgX}%, ${bgY}%)` }} />
-        <div className="intro-layer intro-door" style={{ transform: `translate(${bgX * 0.5 - slide}%, ${bgY * 0.5}%)` }} />
-        <div className="intro-layer intro-door" style={{ transform: `scaleX(-1) translate(${-bgX * 0.5 - slide}%, ${bgY * 0.5}%)` }} />
+      <div className="intro-scene" style={{ '--px': bgX, '--py': bgY, '--slide': slide } as React.CSSProperties}>
+        <div className="intro-layer intro-bg" />
+        <div className="intro-sign" aria-hidden="true">WINDOW</div>
+        <div className="intro-door-wrap"><div className="intro-layer intro-door" /></div>
+        <div className="intro-door-wrap intro-door-wrap-right"><div className="intro-layer intro-door" /></div>
         <div className="intro-glow" style={{ opacity: phase === 'closed' ? 0 : phase === 'ajar' ? 0.35 : 1 }} />
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-end px-5 pb-[calc(var(--safe-bottom)+20px)]">

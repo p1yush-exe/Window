@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { Button, ErrorBanner, cx } from '@/components/ui'
 import { LocationPicker } from '@/components/LocationPicker'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { updateProfile } from '@/lib/db'
 import { getShopperPrefs, setShopperPrefs } from '@/lib/prefs'
+import { requestLocationPermission } from '@/lib/geo'
+import { isApp } from '@/lib/platform'
 import { MAX_STORE_TAGS, STORE_TAGS, type StoreLocation } from '@/lib/types'
 
 /** Where are you, and what are you into? Guests keep it on the device; accounts also save it. */
@@ -17,6 +19,10 @@ export function ShopperSetupPage() {
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? initial.interests)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    if (isApp()) void requestLocationPermission().catch(() => undefined)
+  }, [])
 
   function toggle(tag: string) {
     setInterests((cur) => (cur.includes(tag) ? cur.filter((t) => t !== tag) : cur.length < MAX_STORE_TAGS ? [...cur, tag] : cur))

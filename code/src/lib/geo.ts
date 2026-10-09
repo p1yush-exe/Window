@@ -11,6 +11,29 @@ export interface LatLng {
 export const DEFAULT_CENTER: LatLng = { lat: 30.3398, lng: 76.3869 }
 
 const LOCATION_OFF = 'Location is switched off on this phone. Turn it on in quick settings and try again, or search for your area instead.'
+const INSECURE = 'This page is opened over plain http, so the browser blocks GPS and the camera. Use the Window app or an https address, or search for your area instead.'
+
+/**
+ * Asks for location permission up front (after a tap, so the OS dialog is expected),
+ * without waiting for a fix. Safe to call repeatedly.
+ */
+export async function requestLocationPermission(): Promise<'granted' | 'denied' | 'prompt' | 'unavailable'> {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const { Geolocation } = await import('@capacitor/geolocation')
+      const cur = await Geolocation.checkPermissions()
+      if (cur.location === 'granted' || cur.coarseLocation === 'granted') return 'granted'
+      const perm = await Geolocation.requestPermissions({ permissions: ['location', 'coarseLocation'] })
+      return perm.location === 'granted' || perm.coarseLocation === 'granted' ? 'granted' : perm.location === 'denied' ? 'denied' : 'prompt'
+    } catch {
+      return 'unavailable'
+    }
+  }
+  if (typeof navigator === 'undefined' || !navigator.geolocation || !window.isSecureContext) return 'unavailable'
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(() => resolve('granted'), (e) => resolve(e.code === e.PERMISSION_DENIED ? 'denied' : 'prompt'), { timeout: 8000, maximumAge: 600000 })
+  })
+}
 
 export async function getCurrentPosition(): Promise<LatLng> {
   if (Capacitor.isNativePlatform()) {
@@ -33,9 +56,10 @@ export async function getCurrentPosition(): Promise<LatLng> {
   }
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) return reject(new Error('Geolocation is not available in this browser'))
+    if (!window.isSecureContext) return reject(new Error(INSECURE))
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      (err) => reject(new Error(err.code === err.PERMISSION_DENIED ? 'Location permission denied' : 'Could not get your location')),
+      (err) => reject(new Error(err.code === err.PERMISSION_DENIED ? 'Location permission was denied. Allow it for this site in the browser settings, or search for your area.' : 'Could not get your location')),
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
     )
   })

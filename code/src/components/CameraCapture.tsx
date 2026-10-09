@@ -25,6 +25,10 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
     if (native) return
     let cancelled = false
     setReady(false)
+    if (!window.isSecureContext) {
+      setError('This page is opened over plain http, so the browser blocks the camera. Use the Window app or an https address; you can still choose a photo from the gallery.')
+      return
+    }
     navigator.mediaDevices
       ?.getUserMedia({ video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 1600 } }, audio: false })
       .then((s) => {

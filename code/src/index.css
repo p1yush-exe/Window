@@ -108,7 +108,7 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #fafafa 37%, #f0f0f0 63%); background-size: 800px 100%; animation: shimmer 1.4s infinite linear; }
 
 /* Leaflet */
-.leaflet-container { background: #f7f7f7; font-family: var(--font-sans); font-size: 11px; border-radius: 12px; }
+.leaflet-container { background: #f7f7f7; font-family: var(--font-sans); font-size: 11px; border-radius: 12px; isolation: isolate; z-index: 0; }
 .leaflet-control-zoom a { background: #fff !important; color: #4b4b4b !important; border-color: #afafaf !important; font-weight: 700; }
 .leaflet-control-attribution { background: rgba(255,255,255,0.8) !important; color: #777 !important; }
 .leaflet-control-attribution a { color: #1cb0f6 !important; }
@@ -156,16 +156,54 @@ img, a { -webkit-user-drag: none; user-drag: none; }
 .ambient { background-size: cover; background-position: center; filter: blur(44px) saturate(1.1); transform: scale(1.15); opacity: 0.18; animation: ambient-in 0.8s ease-out; }
 @keyframes ambient-in { from { opacity: 0; } }
 
-/* Storefront intro */
+/* Storefront intro ------------------------------------------------------------
+   TUNE THE DOORS HERE. Both door panels are the same image (assets/door.png);
+   the right one is a mirror of the left around the screen's centre line.
+   Values are percentages of the scene width/height unless noted. */
+:root {
+  --doors-shift: 5%;  /* move BOTH panels together sideways (+ = right) */
+  --door-x: 0%;       /* gap between the panels: + pushes them apart, - overlaps them */
+  --door-y: 9%;       /* move both panels down (+) or up (-) */
+  --door-scale: 1.12;    /* grow or shrink both panels around the scene centre (1 = as drawn in door.png) */
+  --door-ajar: 2.5;   /* how far (in %) they slide when hovering on the web */
+  --door-open: 11.5;  /* how far they slide when opened; should be about the panel width */
+  --intro-zoom: 3.4;  /* how far the camera pushes through the doorway at the end */
+  --intro-focus-x: 53%; /* which part of the picture sits at screen centre; bigger = scene moves LEFT */
+  --intro-focus-y: 50%;
+  --sign-y: 7%;        /* signboard distance from the top (% of screen height) */
+  --sign-size: 15vw;   /* signboard letter size */
+}
 .intro { perspective: 1200px; }
-.intro-scene { position: absolute; inset: 0; transition: transform 0.4s ease-out; transform-origin: 50% 50%; }
-.intro-layer { position: absolute; inset: 0; background-size: cover; background-position: 50% 50%; transition: transform 1.1s cubic-bezier(0.3, 0.8, 0.2, 1); will-change: transform; }
-.intro-bg { background-image: url('/intro/storefront.jpg'); transition-duration: 0.5s; }
-.intro-door { background-image: url('/intro/door.webp'); }
-.intro-glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 16% 30% at 50% 50%, rgba(255, 236, 170, 0.6), transparent 70%); transition: opacity 0.8s ease; }
-.intro.is-through .intro-scene { transition: transform 1.25s cubic-bezier(0.6, 0, 0.4, 1); transform: scale(3.4) !important; }
+.intro-scene {
+  position: absolute; inset: 0;
+  transition: transform 0.4s ease-out;
+  transform-origin: var(--intro-focus-x) var(--intro-focus-y);
+  transform: translate(calc(var(--px, 0) * -0.4%), calc(var(--py, 0) * -0.4%));
+}
+.intro-layer { position: absolute; inset: 0; background-size: cover; background-position: var(--intro-focus-x) var(--intro-focus-y); will-change: transform; }
+.intro-bg { background-image: url('/intro/storefront.jpg'); transition: transform 0.5s ease-out; transform: scale(1.06) translate(calc(var(--px, 0) * 1%), calc(var(--py, 0) * 1%)); }
+.intro-sign {
+  position: absolute; top: var(--sign-y); left: 50%;
+  transform: translate(calc(-50% + var(--px, 0) * 1%), calc(var(--py, 0) * 1%));
+  font-family: var(--font-display); font-weight: 900; font-size: var(--sign-size); line-height: 1;
+  letter-spacing: 0.06em; color: #1b1b1b; white-space: nowrap;
+  text-shadow: 0 2px 0 rgba(255,255,255,0.7), 0 0 14px rgba(255,255,255,0.8);
+  transition: transform 0.5s ease-out;
+  pointer-events: none;
+}
+.intro-door-wrap { position: absolute; inset: 0; transform: translateX(var(--doors-shift)); }
+.intro-door-wrap-right { transform: translateX(var(--doors-shift)) scaleX(-1); }
+.intro-door {
+  background-image: url('/intro/door.webp');
+  transition: transform 1.1s cubic-bezier(0.3, 0.8, 0.2, 1);
+  transform-origin: 50% 50%;
+  transform: translate(calc(var(--door-x) + var(--px, 0) * 0.5% - var(--slide, 0) * 1%), calc(var(--door-y) + var(--py, 0) * 0.5%)) scale(var(--door-scale));
+}
+.intro-door-wrap-right .intro-door { transform: translate(calc(var(--door-x) - var(--px, 0) * 0.5% - var(--slide, 0) * 1%), calc(var(--door-y) + var(--py, 0) * 0.5%)) scale(var(--door-scale)); }
+.intro-glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 16% 30% at var(--intro-focus-x) var(--intro-focus-y), rgba(255, 236, 170, 0.6), transparent 70%); transition: opacity 0.8s ease; }
+.intro.is-through .intro-scene { transition: transform 1.25s cubic-bezier(0.6, 0, 0.4, 1); transform: scale(var(--intro-zoom)) !important; }
 .intro.is-through { animation: intro-fade 1.25s ease-in forwards; }
-.intro.is-through .intro-layer, .intro.is-through .intro-glow { transition: opacity 1s ease; opacity: 0.0; }
+.intro.is-through .intro-layer, .intro.is-through .intro-glow { transition: opacity 1s ease; opacity: 0; }
 @keyframes intro-fade { 0% { opacity: 1; } 55% { opacity: 1; } 100% { opacity: 0; } }
 
 /* Tinder-style edge light while dragging */
