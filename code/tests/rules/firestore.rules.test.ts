@@ -107,12 +107,27 @@ describe('likes and matches', () => {
     await assertFails(setDoc(doc(as(BUYER), 'likes', LIKE), likeData('swipe', 'accepted')))
     await assertFails(setDoc(doc(as(BUYER), 'likes', `${BUYER}_superonly`), likeData('swipe', 'pending', 'superonly')))
   })
-  it('a super swipe creates like + match in one batch', async () => {
+  it('a super swipe creates like + match, claims the product and notifies the seller in one batch', async () => {
     const db = as(BUYER)
     const batch = writeBatch(db)
     batch.set(doc(db, 'likes', LIKE), likeData('super', 'accepted'))
     batch.set(doc(db, 'matches', LIKE), { ...matchData(), likeType: 'super' })
+    batch.update(doc(db, 'products', PRODUCT), { claimedBy: BUYER, claimedByName: 'Buyer', claimedAt: serverTimestamp(), updatedAt: serverTimestamp() })
+    batch.set(doc(db, 'users', VENDOR, 'notifications', 'n-super'), { type: 'superswipe', matchId: LIKE, productId: PRODUCT, title: 'Kurta', body: 'claimed', read: false, createdAt: serverTimestamp() })
     await assertSucceeds(batch.commit())
+  })
+  it('a buyer cannot claim a product without a super like, or change anything else on it', async () => {
+    await assertFails(updateDoc(doc(as(BUYER), 'products', PRODUCT), { claimedBy: BUYER }))
+    const db = as(BUYER)
+    const batch = writeBatch(db)
+    batch.set(doc(db, 'likes', LIKE), likeData('super', 'accepted'))
+    batch.set(doc(db, 'matches', LIKE), { ...matchData(), likeType: 'super' })
+    batch.update(doc(db, 'products', PRODUCT), { claimedBy: BUYER, title: 'Hacked' })
+    await assertFails(batch.commit())
+  })
+  it('seller releases a claim', async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => updateDoc(doc(ctx.firestore(), 'products', PRODUCT), { claimedBy: BUYER }))
+    await assertSucceeds(updateDoc(doc(as(VENDOR), 'products', PRODUCT), { claimedBy: null, claimedByName: null, claimedAt: null }))
   })
   it('auto-matching shop lets a plain swipe match instantly', async () => {
     await env.withSecurityRulesDisabled(async (ctx) => updateDoc(doc(ctx.firestore(), 'shops', SHOP), { autoMatchUntil: Timestamp.fromMillis(Date.now() + 3600_000) }))

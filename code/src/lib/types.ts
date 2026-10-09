@@ -129,6 +129,10 @@ export interface Product {
   geohash: string | null
   area: string | null
   vendorTags: string[]
+  /** Set by a super swipe: the product is reserved for this buyer and leaves other feeds. */
+  claimedBy?: string | null
+  claimedByName?: string | null
+  claimedAt?: Timestamp | null
   createdAt: Timestamp | null
   updatedAt: Timestamp | null
 }
@@ -195,7 +199,7 @@ export interface Review {
   createdAt: Timestamp | null
 }
 
-export type NotificationType = 'availability' | 'like' | 'match' | 'system'
+export type NotificationType = 'availability' | 'like' | 'match' | 'superswipe' | 'system'
 
 export interface AppNotification {
   id: string

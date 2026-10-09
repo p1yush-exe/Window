@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { Avatar, Button, ErrorBanner, FullPageSpinner, Input, PageHeader } from '@/components/ui'
-import { ArrowLeftRight, ICON, LogOut, Plus, Store, Ticket } from '@/components/icons'
+import { ArrowLeftRight, Bell, ICON, LogOut, Plus, Store, Ticket } from '@/components/icons'
 import { useAuth, useSession } from '@/features/auth/AuthProvider'
 import { updateProfile, updateVendor, uploadsLeft } from '@/lib/db'
 import { setMode } from '@/lib/mode'
@@ -80,6 +80,7 @@ export function VendorMePage() {
       </section>
 
       <div className="mt-5 divide-y divide-faded-gray border-2 border-faded-gray">
+        <Link to="/vendor/alerts" className="flex items-center gap-3 p-4 text-[14px] text-charcoal"><Bell {...ICON} /> <span className="flex-1">Alerts (super swipes, likes)</span></Link>
         <Link to="/vendor/shop" className="flex items-center gap-3 p-4 text-[14px] text-charcoal"><Ticket {...ICON} /> <span className="flex-1">Tokens &amp; decorations</span></Link>
         <Link to="/feed" onClick={() => setMode('shopper')} className="flex items-center gap-3 p-4 text-[14px] text-charcoal"><ArrowLeftRight {...ICON} /> <span className="flex-1">Switch to shopping</span></Link>
         <button type="button" onClick={() => void signOut()} className="flex w-full items-center gap-3 p-4 text-left text-[14px] text-charcoal"><LogOut {...ICON} /> Log out</button>

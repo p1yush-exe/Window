@@ -4,7 +4,7 @@ import { AvailabilityBadge, Avatar, Button, EmptyState, ErrorBanner, FullPageSpi
 import { Check, HeartPlus, ICON_SM, Inbox, MessageCircle, Package, ThumbsDown } from '@/components/icons'
 import { useSession } from '@/features/auth/AuthProvider'
 import { priceRange } from '@/features/feed/SwipeCard'
-import { acceptLike, declineLike, listenMatches, listenVendorLikes, setAvailability, uploadsLeft } from '@/lib/db'
+import { acceptLike, declineLike, listenMatches, listenVendorLikes, releaseClaim, setAvailability, uploadsLeft } from '@/lib/db'
 import { timeAgo } from '@/lib/format'
 import { AVAILABILITY_LABEL, type Availability, type Like, type Match, type Product } from '@/lib/types'
 import { useOwnerShops, useVendor, useVendorProducts } from './useVendor'
@@ -40,6 +40,19 @@ export function VendorHomePage() {
     }
   }
 
+  async function release(productId: string, likeId: string) {
+    setBusyId(`rel${likeId}`)
+    try {
+      await releaseClaim(productId)
+      setToast('Product is back on the market.')
+      setTimeout(() => setToast(null), 2500)
+    } catch (e) {
+      setToast(e instanceof Error ? e.message : 'Could not release')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   async function changeAvailability(p: Product, value: Availability) {
     setBusyId(p.id)
     try {
@@ -55,6 +68,7 @@ export function VendorHomePage() {
 
   if (vendor === undefined || products === null || likes === null || matches === null || shops === null) return <FullPageSpinner />
   const pending = likes.filter((l) => l.status === 'pending')
+  const claims = likes.filter((l) => l.type === 'super' && l.status === 'accepted')
   const unread = matches.filter((m) => (m.unread?.[profile.uid] ?? 0) > 0).length
   const shopName = (id: string) => shops.find((s) => s.id === id)?.name ?? ''
 
@@ -71,12 +85,37 @@ export function VendorHomePage() {
       <div className="mb-4 flex border-2 border-faded-gray font-mono text-[12px] uppercase">
         {(['likes', 'products', 'chats'] as Tab[]).map((t) => (
           <button key={t} type="button" onClick={() => setTab(t)} className={cx('flex-1 py-2', tab === t ? 'bg-eager-green text-white' : 'text-charcoal')}>
-            {t}{t === 'likes' && pending.length ? ` · ${pending.length}` : ''}{t === 'chats' && unread ? ` · ${unread}` : ''}
+            {t}{t === 'likes' && pending.length + claims.length ? ` · ${pending.length + claims.length}` : ''}{t === 'chats' && unread ? ` · ${unread}` : ''}
           </button>
         ))}
       </div>
       <ErrorBanner message={error} />
       {toast && <div className="mb-3 border border-eager-green px-3 py-2 font-mono text-[12px] text-charcoal">{toast}</div>}
+
+      {tab === 'likes' && claims.length > 0 && (
+        <section className="mb-4">
+          <p className="label mb-2">Super swipes · reserved</p>
+          <ul className="space-y-2">
+            {claims.map((l) => {
+              const product = products.find((x) => x.id === l.productId)
+              const stillClaimed = product?.claimedBy === l.buyerUid
+              return (
+                <li key={l.id} className="flex gap-3 rounded-xl border-2 border-super bg-[#f7f0ff] p-3">
+                  <ProductImage src={l.productImage} alt={l.productTitle} className="h-20 w-16 rounded-lg border-2 border-faded-gray" />
+                  <div className="min-w-0 flex-1">
+                    <p className="flex items-center gap-1.5 text-[15px] text-charcoal"><HeartPlus {...ICON_SM} className="text-super" /> {l.buyerName} claimed {l.productTitle}</p>
+                    <p className="text-[12px] font-bold text-pencil-gray uppercase">{stillClaimed ? 'Reserved · hidden from other shoppers' : 'Released'} · {timeAgo(l.createdAt)}</p>
+                    <div className="mt-2 flex gap-2">
+                      <Link to={`/vendor/chat/${l.id}`}><Button size="sm"><MessageCircle {...ICON_SM} /> Chat</Button></Link>
+                      {stillClaimed && <Button size="sm" variant="secondary" loading={busyId === `rel${l.id}`} onClick={() => void release(l.productId, l.id)}>Release</Button>}
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )}
 
       {tab === 'likes' &&
         (pending.length === 0 ? (
@@ -118,7 +157,10 @@ export function VendorHomePage() {
                       <p className="truncate text-[15px] text-charcoal">{p.title}</p>
                       <p className="font-mono text-[11px] text-pencil-gray uppercase">{p.productCode} · {priceRange(p)}</p>
                     </div>
-                    <AvailabilityBadge value={p.availability} />
+                    <div className="flex shrink-0 flex-col items-end gap-1">
+                      <AvailabilityBadge value={p.availability} />
+                      {p.claimedBy && <span className="rounded-lg bg-super px-2 py-0.5 text-[11px] font-bold text-white uppercase">Reserved</span>}
+                    </div>
                   </div>
                   <div className="mt-2 flex items-center gap-2">
                     <Select aria-label="Availability" value={p.availability} disabled={busyId === p.id} onChange={(e) => void changeAvailability(p, e.target.value as Availability)} className="h-9 text-[12px]">

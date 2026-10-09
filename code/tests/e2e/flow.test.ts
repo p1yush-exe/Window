@@ -118,6 +118,14 @@ describe('Window end-to-end', () => {
     await refreshBuyer()
     expect(buyer.superSwipes).toBe(4)
     expect((await getMatch(likeIdFor(buyerUid, superProduct.id)))!.likeType).toBe('super')
+    // The product is now reserved for this buyer and gone from other shoppers' feeds
+    const claimed = (await getProduct(superProduct.id))!
+    expect(claimed.claimedBy).toBe(buyerUid)
+    await as(vendorEmail)
+    const notes = await waitFor<AppNotification[]>((cb) => listenNotifications(vendorUid, cb), (n) => n.some((x) => x.type === 'superswipe'))
+    expect(notes.find((x) => x.type === 'superswipe')!.productId).toBe(superProduct.id)
+    await as(buyerEmail)
+    await refreshBuyer()
   })
 
   it('auto-matcher makes plain swipes match instantly', async () => {

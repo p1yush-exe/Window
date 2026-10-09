@@ -32,7 +32,7 @@ export function useFeed(profile: UserProfile | null, opts: FeedOptions) {
     setError(null)
     try {
       swiped.current = profile ? await loadSwipedIds(profile.uid) : new Set()
-      const usable = (p: Product) => !swiped.current.has(p.id) && p.vendorId !== profile?.uid && p.availability !== 'out_of_stock'
+      const usable = (p: Product) => !swiped.current.has(p.id) && p.vendorId !== profile?.uid && p.availability !== 'out_of_stock' && !(p.claimedBy && p.claimedBy !== profile?.uid)
       let items: RankedProduct[] = []
       let radius: number | null = null
       if (opts.center) {

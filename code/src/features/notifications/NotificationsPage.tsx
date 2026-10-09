@@ -55,7 +55,7 @@ export function NotificationsPage() {
           {items.map((n) => (
             <li key={n.id}>
               <Link
-                to={n.matchId && n.type !== 'like' ? `/bag/chat/${n.matchId}` : n.productId ? `/product/${n.productId}` : '#'}
+                to={n.type === 'superswipe' && n.matchId ? `/vendor/chat/${n.matchId}` : n.matchId && n.type !== 'like' ? `/bag/chat/${n.matchId}` : n.productId ? `/product/${n.productId}` : '#'}
                 onClick={() => {
                   if (!n.read) void markNotificationRead(profile.uid, n.id)
                 }}

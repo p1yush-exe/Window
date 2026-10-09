@@ -353,6 +353,11 @@ export async function updateProduct(productId: string, input: Partial<ProductInp
   await updateDoc(refs.product(productId), patch)
 }
 
+/** Seller puts a claimed product back on the market. */
+export async function releaseClaim(productId: string) {
+  await updateDoc(refs.product(productId), { claimedBy: null, claimedByName: null, claimedAt: null, updatedAt: serverTimestamp() })
+}
+
 export async function deleteProduct(productId: string) {
   await deleteDoc(refs.product(productId))
 }
@@ -450,6 +455,21 @@ function matchData(buyer: UserProfile, product: Product, type: LikeType, shop: S
 
 export type LikeOutcome = { kind: 'matched'; matchId: string } | { kind: 'pending'; likeId: string }
 
+/** Writes the claim on the product and the seller's notification into an in-progress super-swipe batch. */
+function claimInBatch(batch: ReturnType<typeof writeBatch>, buyer: UserProfile, product: Product, likeId: string) {
+  batch.update(refs.product(product.id), { claimedBy: buyer.uid, claimedByName: buyer.displayName, claimedAt: serverTimestamp(), updatedAt: serverTimestamp() })
+  batch.set(doc(refs.notifications(product.vendorId)), {
+    type: 'superswipe',
+    matchId: likeId,
+    productId: product.id,
+    title: product.title,
+    body: `${buyer.displayName} super swiped ${product.title}. It is reserved for them; the chat is open.`,
+    read: false,
+    createdAt: serverTimestamp(),
+    sentAt: Date.now(),
+  })
+}
+
 /**
  * Right swipe or super swipe. Spends the balance, writes the swipe + like, and
  * creates the match immediately for super swipes or when the shop's auto-matcher is on.
@@ -458,6 +478,7 @@ export async function recordLike(buyer: UserProfile, product: Product, type: Lik
   if (type === 'swipe' && product.superOnly) throw new Error('This product only accepts super swipes.')
   if (type === 'swipe' && buyer.swipes <= 0) throw new Error('No swipes left.')
   if (type === 'super' && buyer.superSwipes <= 0) throw new Error('No super swipes left.')
+  if (product.claimedBy && product.claimedBy !== buyer.uid) throw new Error('Someone already claimed this product with a super swipe.')
   const shop = product.shopId ? await getShop(product.shopId) : null
   const instant = type === 'super' || autoMatchActive(shop)
   const clientTs = Date.now()
@@ -480,6 +501,7 @@ export async function recordLike(buyer: UserProfile, product: Product, type: Lik
   // Absolute values (not increment) so profiles that predate the balances cannot go negative.
   batch.update(refs.user(buyer.uid), type === 'swipe' ? { swipes: Math.max(0, buyer.swipes - 1) } : { superSwipes: Math.max(0, buyer.superSwipes - 1) })
   if (instant) batch.set(refs.match(likeId), matchData(buyer, product, type, shop, clientTs))
+  if (type === 'super') claimInBatch(batch, buyer, product, likeId)
   await batch.commit()
   return instant ? { kind: 'matched', matchId: likeId } : { kind: 'pending', likeId }
 }
@@ -496,11 +518,13 @@ export async function upgradeLikeToSuper(buyer: UserProfile, product: Product): 
   const like = existing.data() as Like
   if (like.status === 'accepted') return { kind: 'matched', matchId: likeId }
   if (like.status !== 'pending' || like.type !== 'swipe') throw new Error('This like can no longer be upgraded.')
+  if (product.claimedBy && product.claimedBy !== buyer.uid) throw new Error('Someone already claimed this product with a super swipe.')
   const shop = product.shopId ? await getShop(product.shopId) : null
   const batch = writeBatch(db)
   batch.update(refs.like(likeId), { type: 'super', status: 'accepted', decidedAt: serverTimestamp() })
   batch.set(refs.match(likeId), matchData(buyer, product, 'super', shop, Date.now()))
   batch.update(refs.user(buyer.uid), { superSwipes: Math.max(0, buyer.superSwipes - 1), swipes: buyer.swipes + 1 })
+  claimInBatch(batch, buyer, product, likeId)
   await batch.commit()
   return { kind: 'matched', matchId: likeId }
 }

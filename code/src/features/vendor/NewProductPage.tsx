@@ -11,7 +11,7 @@ import { compressImage, uploadImage } from '@/lib/upload'
 import { ProductForm } from './ProductForm'
 import { useOwnerShops, useVendor } from './useVendor'
 
-type Stage = 'capture' | 'crop' | 'form' | 'done'
+type Stage = 'capture' | 'processing' | 'crop' | 'form' | 'done'
 
 /** Plus button flow: camera → crop → details → publish (consumes an upload). */
 export function NewProductPage() {
@@ -40,8 +40,9 @@ export function NewProductPage() {
   const left = uploadsLeft(vendor)
 
   async function captured(blob: Blob) {
-    // Pre-process before cropping so the cropper works on a smaller image.
-    const small = await compressImage(blob)
+    // Camera frames are already small; only gallery files need shrinking before the cropper.
+    setStage('processing')
+    const small = blob.size > 400_000 ? await compressImage(blob) : blob
     setRaw(small)
     setStage('crop')
   }
@@ -74,6 +75,7 @@ export function NewProductPage() {
   }
 
   if (stage === 'capture') return <CameraCapture onCapture={(b) => void captured(b)} onCancel={() => navigate('/vendor/home')} />
+  if (stage === 'processing') return <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-black text-white"><FullPageSpinner /><p className="text-[14px] font-bold uppercase">Preparing photo…</p></div>
   if (stage === 'crop' && raw) return <ImageCropper blob={raw} onDone={(b) => { setPhoto(b); setStage('form') }} onCancel={() => setStage('capture')} />
 
   if (stage === 'done' && result) {

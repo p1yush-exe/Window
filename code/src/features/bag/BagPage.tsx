@@ -51,7 +51,7 @@ export function BagPage() {
                 </Link>
                 <div className="p-2.5">
                   <div className="mb-1 flex items-center gap-1">
-                    <span className={cx('rounded px-[6px] py-[2px] font-mono text-[10px] uppercase', statusTone[l.status])}>{l.status === 'accepted' ? 'Matched' : l.status}</span>
+                    <span className={cx('rounded px-[6px] py-[2px] font-mono text-[10px] uppercase', statusTone[l.status])}>{l.type === 'super' && l.status === 'accepted' ? 'Claimed' : l.status === 'accepted' ? 'Matched' : l.status}</span>
                     {l.type === 'super' && <HeartPlus {...ICON_SM} size={12} className="text-super" />}
                   </div>
                   <p className="line-clamp-1 text-[14px] text-charcoal">{l.productTitle}</p>

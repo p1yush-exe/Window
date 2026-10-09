@@ -84,7 +84,7 @@ export function ChatPage() {
   const backLink = isVendor ? '/vendor/home' : '/bag'
 
   return (
-    <div className="flex h-[calc(100dvh-var(--safe-top)-74px)] flex-col">
+    <div className="fixed inset-0 z-40 flex flex-col bg-white pt-[var(--safe-top)] pb-[var(--safe-bottom)]">
       <header className="flex items-center gap-3 border-b border-faded-gray bg-white px-3 py-2">
         <Link to={backLink} className="flex h-9 w-9 items-center justify-center rounded border-2 border-faded-gray text-charcoal hover:bg-[#f7f7f7]" aria-label="Back">
           <ChevronLeft {...ICON} />

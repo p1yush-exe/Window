@@ -65,6 +65,7 @@ export function AppRouter() {
               <Route path="/vendor/shop/new" element={<ShopEditPage />} />
               <Route path="/vendor/shop/:shopId" element={<ShopEditPage />} />
               <Route path="/vendor/chat/:matchId" element={<ChatPage />} />
+              <Route path="/vendor/alerts" element={<NotificationsPage />} />
               <Route path="/vendor/me" element={<VendorMePage />} />
             </Route>
           </Route>

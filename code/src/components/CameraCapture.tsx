@@ -58,17 +58,19 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
   function snap() {
     const v = video.current
     if (!v || !v.videoWidth) return
+    // Downscale while grabbing the frame so the crop step gets a small image straight away.
+    const scale = Math.min(1, 1280 / Math.max(v.videoWidth, v.videoHeight))
     const c = document.createElement('canvas')
-    c.width = v.videoWidth
-    c.height = v.videoHeight
+    c.width = Math.round(v.videoWidth * scale)
+    c.height = Math.round(v.videoHeight * scale)
     const ctx = c.getContext('2d')
     if (!ctx) return
     if (facing === 'user') {
       ctx.translate(c.width, 0)
       ctx.scale(-1, 1)
     }
-    ctx.drawImage(v, 0, 0)
-    c.toBlob((b) => b && onCapture(b), 'image/jpeg', 0.92)
+    ctx.drawImage(v, 0, 0, c.width, c.height)
+    c.toBlob((b) => b && onCapture(b), 'image/jpeg', 0.85)
   }
 
   const [useSystem, setUseSystem] = useState(false)
@@ -112,16 +114,11 @@ export function CameraCapture({ onCapture, onCancel }: Props) {
       <div className="space-y-3 px-5 pt-4 pb-[calc(var(--safe-bottom)+20px)]">
         <ErrorBanner message={error} />
         <div className="flex items-center justify-between gap-3">
-          {native ? (
-            <button type="button" onClick={() => void nativePick('photos')} className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-white/60 text-white" aria-label="Choose from gallery">
-              <ImageIcon {...ICON} />
-            </button>
-          ) : (
-            <label className="relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl border-2 border-white/60 text-white" aria-label="Choose from gallery">
-              <ImageIcon {...ICON} />
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onCapture(f) }} />
-            </label>
-          )}
+          {/* Gallery goes through the system picker on every platform: it needs no plugin and no extra permission. */}
+          <label className="relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl border-2 border-white/60 text-white" aria-label="Choose from gallery">
+            <ImageIcon {...ICON} />
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onCapture(f) }} />
+          </label>
           <button
             type="button"
             onClick={() => (native && previewFailed ? void nativePick('camera') : snap())}

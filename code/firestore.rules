@@ -52,6 +52,15 @@ service cloud.firestore {
               || (likeAfter(request.resource.data.matchId).vendorId == request.auth.uid
                 && likeAfter(request.resource.data.matchId).buyerUid == uid)
             )
+          )
+          // A buyer tells the seller about their super swipe, in the same batch as the like.
+          || (
+            signedIn()
+            && request.resource.data.type == 'superswipe'
+            && request.resource.data.matchId is string
+            && likeAfter(request.resource.data.matchId).buyerUid == request.auth.uid
+            && likeAfter(request.resource.data.matchId).vendorId == uid
+            && likeAfter(request.resource.data.matchId).type == 'super'
           );
       }
     }
@@ -111,6 +120,14 @@ service cloud.firestore {
         && resource.data.vendorId == request.auth.uid
         && unchanged('vendorId')
         && validProduct(request.resource.data);
+      // A super swipe claims the product: the buyer may set claimedBy/claimedAt (nothing else)
+      // in the same batch as their accepted super like.
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedBy', 'claimedByName', 'claimedAt', 'updatedAt'])
+        && (resource.data.claimedBy == null || !('claimedBy' in resource.data))
+        && request.resource.data.claimedBy == request.auth.uid
+        && likeAfter(request.auth.uid + '_' + productId).type == 'super'
+        && likeAfter(request.auth.uid + '_' + productId).status == 'accepted';
       allow delete: if signedIn() && resource.data.vendorId == request.auth.uid;
     }
 
