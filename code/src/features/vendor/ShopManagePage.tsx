@@ -5,7 +5,9 @@ import { Button, ErrorBanner, FullPageSpinner, PageHeader, Textarea, cx } from '
 import { Check, Gem, ICON, ICON_SM, Pencil, Plus, Store, Ticket, Zap } from '@/components/icons'
 import { useSession } from '@/features/auth/AuthProvider'
 import { Price } from '@/features/economy/BuySwipesSheet'
+import { env } from '@/lib/env'
 import { autoMatchActive, purchase, updateShop, uploadsLeft } from '@/lib/db'
+import { openRazorpayCheckout } from '@/lib/razorpay'
 import { AUTO_MATCH_PRICE_PER_DAY, DECORATIONS, TOKEN_BUNDLES, type Bundle, type Shop } from '@/lib/types'
 import { useOwnerShops, useVendor } from './useVendor'
 
@@ -42,9 +44,80 @@ export function ShopManagePage() {
     }
   }
 
-  const buyTokens = (b: Bundle) => run(`t${b.qty}`, () => purchase(profile.uid, 'tokens', b.qty, b.price), `Added ${b.qty} tokens`)
-  const buyAutoMatch = (s: Shop) => run('am', () => purchase(profile.uid, 'autoMatch', 1, AUTO_MATCH_PRICE_PER_DAY, { shopId: s.id }), 'Auto-matcher on for 24 hours')
-  const buyDecoration = (s: Shop, id: string, price: number) => run(id, () => purchase(profile.uid, 'decoration', 1, price, { shopId: s.id, decorationId: id }), 'Decoration unlocked')
+  const buyTokens = (b: Bundle) =>
+    run(
+      `t${b.qty}`,
+      async () => {
+        if (env.razorpayEnabled) {
+          await openRazorpayCheckout({
+            amount: b.price,
+            name: 'Window Seller',
+            description: `${b.qty} Upload Tokens`,
+            prefill: {
+              name: profile.displayName,
+              email: profile.email,
+              contact: profile.phone,
+            },
+            onSuccess: async (paymentId) => {
+              await purchase(profile.uid, 'tokens', b.qty, b.price, { paymentId })
+            },
+          })
+        } else {
+          await purchase(profile.uid, 'tokens', b.qty, b.price)
+        }
+      },
+      `Added ${b.qty} tokens`
+    )
+
+  const buyAutoMatch = (s: Shop) =>
+    run(
+      'am',
+      async () => {
+        if (env.razorpayEnabled) {
+          await openRazorpayCheckout({
+            amount: AUTO_MATCH_PRICE_PER_DAY,
+            name: 'Window Seller',
+            description: `Auto-matcher for ${s.name} (24h)`,
+            prefill: {
+              name: profile.displayName,
+              email: profile.email,
+              contact: profile.phone,
+            },
+            onSuccess: async (paymentId) => {
+              await purchase(profile.uid, 'autoMatch', 1, AUTO_MATCH_PRICE_PER_DAY, { shopId: s.id, paymentId })
+            },
+          })
+        } else {
+          await purchase(profile.uid, 'autoMatch', 1, AUTO_MATCH_PRICE_PER_DAY, { shopId: s.id })
+        }
+      },
+      'Auto-matcher on for 24 hours'
+    )
+
+  const buyDecoration = (s: Shop, id: string, price: number) =>
+    run(
+      id,
+      async () => {
+        if (env.razorpayEnabled) {
+          await openRazorpayCheckout({
+            amount: price,
+            name: 'Window Seller',
+            description: `Shop Card Decoration for ${s.name}`,
+            prefill: {
+              name: profile.displayName,
+              email: profile.email,
+              contact: profile.phone,
+            },
+            onSuccess: async (paymentId) => {
+              await purchase(profile.uid, 'decoration', 1, price, { shopId: s.id, decorationId: id, paymentId })
+            },
+          })
+        } else {
+          await purchase(profile.uid, 'decoration', 1, price, { shopId: s.id, decorationId: id })
+        }
+      },
+      'Decoration unlocked'
+    )
   const equip = (s: Shop, id: string) => {
     const d = DECORATIONS.find((x) => x.id === id)
     if (!d) return
