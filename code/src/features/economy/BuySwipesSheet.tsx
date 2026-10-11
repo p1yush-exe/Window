@@ -3,7 +3,9 @@ import { motion } from 'motion/react'
 import { Button, ErrorBanner, cx } from '@/components/ui'
 import { Heart, HeartPlus, ICON, X } from '@/components/icons'
 import { useSession } from '@/features/auth/AuthProvider'
+import { env } from '@/lib/env'
 import { purchase } from '@/lib/db'
+import { openRazorpayCheckout } from '@/lib/razorpay'
 import { SUPER_BUNDLES, SWIPE_BUNDLES, type Bundle } from '@/lib/types'
 
 export function Price({ bundle, className }: { bundle: Bundle; className?: string }) {
@@ -15,7 +17,7 @@ export function Price({ bundle, className }: { bundle: Bundle; className?: strin
   )
 }
 
-/** Simulated checkout for swipe and super-swipe bundles. */
+/** Checkout for swipe and super-swipe bundles with Razorpay support. */
 export function BuySwipesSheet({ kind: initialKind, onClose }: { kind: 'swipes' | 'superSwipes'; onClose: () => void }) {
   const { profile } = useSession()
   const [kind, setKind] = useState<'swipes' | 'superSwipes'>(initialKind)
@@ -27,9 +29,27 @@ export function BuySwipesSheet({ kind: initialKind, onClose }: { kind: 'swipes' 
   async function buy(b: Bundle) {
     setBusy(b.qty)
     setError(null)
+    setDone(null)
     try {
-      await purchase(profile.uid, kind, b.qty, b.price)
-      setDone(`Added ${b.qty} ${kind === 'swipes' ? 'swipes' : 'super swipes'}.`)
+      if (env.razorpayEnabled) {
+        await openRazorpayCheckout({
+          amount: b.price,
+          name: 'Window',
+          description: `${b.qty} ${kind === 'swipes' ? 'Swipes' : 'Super Swipes'}`,
+          prefill: {
+            name: profile.displayName,
+            email: profile.email,
+            contact: profile.phone,
+          },
+          onSuccess: async (paymentId) => {
+            await purchase(profile.uid, kind, b.qty, b.price, { paymentId })
+            setDone(`Added ${b.qty} ${kind === 'swipes' ? 'swipes' : 'super swipes'}.`)
+          },
+        })
+      } else {
+        await purchase(profile.uid, kind, b.qty, b.price)
+        setDone(`Added ${b.qty} ${kind === 'swipes' ? 'swipes' : 'super swipes'}.`)
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Purchase failed')
     } finally {
@@ -83,7 +103,9 @@ export function BuySwipesSheet({ kind: initialKind, onClose }: { kind: 'swipes' 
         </ul>
         {done && <p className="mt-3 font-mono text-[12px] text-spark-blue">{done}</p>}
         <ErrorBanner message={error} />
-        <p className="mt-3 font-mono text-[11px] text-pencil-gray uppercase">Prototype: payments are simulated.</p>
+        <p className="mt-3 font-mono text-[11px] text-pencil-gray uppercase">
+          {env.razorpayEnabled ? 'Secured by Razorpay' : 'Prototype: payments are simulated.'}
+        </p>
       </motion.div>
     </>
   )

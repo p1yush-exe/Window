@@ -17,6 +17,12 @@ export const env = {
     cloudName: read('VITE_CLOUDINARY_CLOUD_NAME'),
     uploadPreset: read('VITE_CLOUDINARY_UPLOAD_PRESET'),
   },
+  razorpay: {
+    keyId: read('VITE_RAZORPAY_KEY_ID', 'rzp_live_TNchiSRxiiDan9'),
+  },
+  get razorpayEnabled() {
+    return this.razorpay.keyId.length > 0
+  },
   get uploadsEnabled() {
     return this.cloudinary.cloudName.length > 0 && this.cloudinary.uploadPreset.length > 0
   },

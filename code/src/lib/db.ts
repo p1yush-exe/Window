@@ -182,8 +182,8 @@ export async function grantAppBonus(profile: UserProfile): Promise<boolean> {
   return true
 }
 
-/** Simulated purchase: records it and credits the balance immediately. */
-export async function purchase(uid: string, kind: PurchaseKind, qty: number, amount: number, target?: { shopId?: string; decorationId?: string }) {
+/** Purchase: records the transaction (including optional Razorpay paymentId) and credits balance. */
+export async function purchase(uid: string, kind: PurchaseKind, qty: number, amount: number, target?: { shopId?: string; decorationId?: string; paymentId?: string }) {
   const batch = writeBatch(db)
   batch.set(doc(refs.purchases()), { uid, kind, qty, amount, ...target, createdAt: serverTimestamp() })
   if (kind === 'swipes') batch.update(refs.user(uid), { swipes: increment(qty) })
